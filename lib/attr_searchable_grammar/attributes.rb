@@ -25,7 +25,7 @@ module AttrSearchableGrammar
 
       [:eq, :not_eq, :lt, :lteq, :gt, :gteq, :matches].each do |method|
         define_method method do |value|
-          return relation.where(Arel::Nodes::SqlLiteral.new("1 = 0")) unless compatible?(value)
+          return AttrSearchable::IncompatibleDatatype unless compatible?(value)
 
           super value
         end
