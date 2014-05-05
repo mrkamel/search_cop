@@ -94,6 +94,7 @@ class Book < ActiveRecord::Base
 
   # ...
 end
+```
 
 AttrSearchable will then skip any association auto loading and will use
 the `search_scope` instead.
