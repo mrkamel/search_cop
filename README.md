@@ -1,5 +1,8 @@
 # AttrSearchable
 
+[![Build Status](https://secure.travis-ci.org/mrkamel/attr_searchable.png?branch=master)](http://travis-ci.org/mrkamel/attr_searchable)
+[![Code Climate](https://codeclimate.com/github/mrkamel/attr_searchable.png)](https://codeclimate.com/github/mrkamel/attr_searchable)
+
 AttrSearchable extends your ActiveRecord models to support fulltext search engine like queries
 via simple query strings. Assume you have a `Book` model having various attributes like
 `title`, `author`, `stock`, `price`. Using AttrSearchable you can perform:
@@ -57,7 +60,7 @@ end
 ## How does it work
 
 AttrSearchable parses the query and maps it to an SQL Query using Arel.
-Thus, AttSearchable is not bound to a specific RDBMS.
+Thus, AttrSearchable is not bound to a specific RDBMS.
 
 ```ruby
 Book.search("stock > 0")
@@ -67,7 +70,7 @@ Book.search("price > 10 stock > 0")
 # ... WHERE books.price > 10 AND books.stock > 0
 
 Book.search("Harry Potter")
-# ... WHERE (books.title LIKE '%Harry%' OR books.description LIKE '%Harray%' OR ...) AND (books.title LIKE '%Potter%' OR books.description LIKE '%Potter%' ...)
+# ... WHERE (books.title LIKE '%Harry%' OR books.description LIKE '%Harry%' OR ...) AND (books.title LIKE '%Potter%' OR books.description LIKE '%Potter%' ...)
 ```
 
 ## Performance
@@ -79,8 +82,9 @@ will be used. Moreover, other indices (on price, stock, ect) will of course be
 used by your RDBMS when you search for `Book.search("stock > 0")`, etc.
 
 Regarding the `LIKE` penalty, we plan to support FULLTEXT index capabilities,
-but are simply not there yet, as every RDBMS has different FULLTEXT options and
-syntaxes.
+such that Mysql's `MATCH() ... AGAINST()` can be used, etc. However, we are
+simply not there yet, as every RDBMS has different FULLTEXT capabilities and
+syntaxes - and AttrSearchable will stay RDBMS agnostic.
 
 ## Contributing
 
