@@ -9,3 +9,5 @@ rvm:
 install:
   - "travis_retry bundle install"
 
+script: "bundle exec rake test"
+
