@@ -2,6 +2,7 @@
 
 [![Build Status](https://secure.travis-ci.org/mrkamel/attr_searchable.png?branch=master)](http://travis-ci.org/mrkamel/attr_searchable)
 [![Code Climate](https://codeclimate.com/github/mrkamel/attr_searchable.png)](https://codeclimate.com/github/mrkamel/attr_searchable)
+[![Dependency Status](https://gemnasium.com/mrkamel/attr_searchable.png?travis)](https://gemnasium.com/mrkamel/attr_searchable)
 
 AttrSearchable extends your ActiveRecord models to support fulltext search engine like queries
 via simple query strings. Assume you have a `Book` model having various attributes like
@@ -106,7 +107,7 @@ will be used. Moreover, other indices (on price, stock, ect) will of course be
 used by your RDBMS when you search for `Book.search("stock > 0")`, etc.
 
 Regarding the `LIKE` penalty, we plan to support FULLTEXT index capabilities,
-such that Mysql's `MATCH() ... AGAINST()` can be used, etc. However, we are
+such that `MATCH() ... AGAINST()` of MySQL can be used, etc. However, we are
 simply not there yet, as every RDBMS has different FULLTEXT capabilities and
 syntaxes - and AttrSearchable will stay RDBMS agnostic.
 
