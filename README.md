@@ -44,7 +44,7 @@ To enable AttrSearchable for a model, `include AttrSearchable` and specify the a
 you want make searchable:
 
 ```ruby
-class Book
+class Book < ActiveRecord::Base
   include AttrSearchable
 
   attr_searchable :title, :description, :stock, :price, :created_at
@@ -72,6 +72,30 @@ Book.search("price > 10 stock > 0")
 Book.search("Harry Potter")
 # ... WHERE (books.title LIKE '%Harry%' OR books.description LIKE '%Harry%' OR ...) AND (books.title LIKE '%Potter%' OR books.description LIKE '%Potter%' ...)
 ```
+
+## Associations
+
+If you specify searchable attributes from another model, like
+
+```ruby
+  attr_searchable :author => "authors.name"
+```
+
+AttrSearchable will by default `eager_load` these associations, when you
+perform `Book.search(...)`. If you don't want that or need to perform special
+operations, define a `search_scope` within your model:
+
+```ruby
+class Book < ActiveRecord::Base
+  # ...
+
+  scope :search_scope, lambda { joins(:author).eager_load(:comments) } # etc.
+
+  # ...
+end
+
+AttrSearchable will then skip any association auto loading and will use
+the `search_scope` instead.
 
 ## Performance
 
