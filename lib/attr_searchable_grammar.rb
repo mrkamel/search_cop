@@ -20,11 +20,11 @@ module AttrSearchableGrammar
     def arel_attributes_for(column)
       raise AttrSearchable::UnknownColumn, "Unknown column: #{column}" if model.searchable_attributes[column].nil?
 
-      Array(model.searchable_attributes[column]).collect do |attribute|
-        klass, attribute = attribute.split(".")
-        klass = klass.classify.constantize
+      Array(model.searchable_attributes[column]).collect do |_column|
+        table, attribute = _column.split(".")
+        klass = table.classify.constantize
 
-        Attributes.const_get(klass.columns_hash[attribute].type.to_s.classify).new(klass.arel_table[attribute], klass)
+        Attributes.const_get(klass.columns_hash[attribute].type.to_s.classify).new(klass.arel_table.alias(table)[attribute], klass)
       end
     end
   end

@@ -36,7 +36,11 @@ module AttrSearchable
 
     def attr_searchable_hash(hash)
       hash.each do |key, value|
-        self.searchable_attributes[key.to_s] = Array(value).collect { |column| column.to_s =~ /\./ ? column.to_s : "#{name.tableize}.#{column}" }
+        self.searchable_attributes[key.to_s] = Array(value).collect do |column|
+          table, attribute = column.to_s =~ /\./ ? column.to_s.split(".") : [name, column]
+
+          "#{table.tableize}.#{attribute}"
+        end
       end
     end
 

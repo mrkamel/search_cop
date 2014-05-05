@@ -79,7 +79,13 @@ Book.search("Harry Potter")
 If you specify searchable attributes from another model, like
 
 ```ruby
+class Book < ActiveRecord::Base
+  # ...
+
   attr_searchable :author => "authors.name"
+
+  # ...
+end
 ```
 
 AttrSearchable will by default `eager_load` these associations, when you
@@ -101,10 +107,10 @@ the `search_scope` instead.
 
 ## Performance
 
-As `LIKE '%...%'` queries can not use SQL indices, every row will be fetched by
-your RDBMS when you search for `Book.search("Harry Potter")` or similar.
+As `LIKE '%...%'` queries can not use SQL indices, every row need to be scanned
+by your RDBMS when you search for `Book.search("Harry Potter")` or similar.
 Contrary, when you search for `Book.search("title=Potter")` indices can and
-will be used. Moreover, other indices (on price, stock, ect) will of course be
+will be used. Moreover, other indices (on price, stock, etc) will of course be
 used by your RDBMS when you search for `Book.search("stock > 0")`, etc.
 
 Regarding the `LIKE` penalty, we plan to support FULLTEXT index capabilities,
