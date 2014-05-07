@@ -5,6 +5,10 @@ rvm:
   - 2.0.0
   - 2.1.1
   - jruby-19mode
+env:
+  - DATABASE=sqlite
+  - DATABASE=mysql
+  - DATABASE=postgres
 
 install:
   - "travis_retry bundle install"

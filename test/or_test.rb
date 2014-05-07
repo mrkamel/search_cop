@@ -3,11 +3,11 @@ require File.expand_path("../test_helper", __FILE__)
 
 class OrTest < MiniTest::Test
   def test_or
-    expected1 = FactoryGirl.create(:product, :title => "Product 1")
-    expected2 = FactoryGirl.create(:product, :title => "Product 2")
-    rejected = FactoryGirl.create(:product, :title => "Product 3")
+    expected1 = FactoryGirl.create(:product, :title => "Expected1")
+    expected2 = FactoryGirl.create(:product, :title => "Expected2")
+    rejected = FactoryGirl.create(:product, :title => "Rejected")
 
-    results = Product.search("title: 'Product 1' OR title: 'Product 2'")
+    results = Product.search("title: Expected1 OR title: Expected2")
 
     assert_includes results, expected1
     assert_includes results, expected2

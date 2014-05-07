@@ -132,12 +132,12 @@ and syntaxes - and AttrSearchable will stay RDBMS agnostic.
 ## Security
 
 Exposing complex SQL query capabilities should always be done with caution.
-Otherwise you get vulnerable to SQL injection. AttrSearchable does not generate
-any SQL itself. Instead, it uses Arel. Using Arel does not by definition mean
-that you're safe, but Arel sanitizes strings, converts between datatypes,
-quotes table and column names, etc before sending the query to your RDBMS.
-Moreover, you are of course always very welcome to review the code and report
-any found issues.
+Otherwise you get vulnerable to SQL injection. Besides tiny arel fulltext
+extensions, AttrSearchable does not generate or manipulate any SQL itself.
+Instead, it uses Arel. Using Arel does not by definition mean that you're safe,
+but Arel sanitizes strings, converts between datatypes, quotes table and column
+names, etc before sending the query to your RDBMS. Moreover, you are of course
+always very welcome to review the code and report any found issues.
 
 ## Contributing
 

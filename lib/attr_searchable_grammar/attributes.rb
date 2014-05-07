@@ -56,6 +56,12 @@ module AttrSearchableGrammar
 
     class Text < String; end
 
+    class Fulltext < Base
+      def matches(value)
+        matches_fulltext value
+      end
+    end
+
     class WithoutMatches < Base
       def matches(value)
         eq value

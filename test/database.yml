@@ -1,5 +1,19 @@
 
-test:
+sqlite:
   adapter: sqlite3
   database: ":memory:"
+
+mysql:
+  adapter: mysql2
+  database: attr_searchable
+  username: root
+  password:
+  encoding: utf8
+
+postgres:
+  adapter: postgresql
+  database: attr_searchable
+  username: root
+  password:
+  encoding: utf8
 

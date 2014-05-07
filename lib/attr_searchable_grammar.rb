@@ -17,15 +17,20 @@ module AttrSearchableGrammar
       super.select { |element| element.class != Treetop::Runtime::SyntaxNode }
     end
 
-    def arel_attributes_for(column)
-      raise AttrSearchable::UnknownColumn, "Unknown column: #{column}" if model.searchable_attributes[column].nil?
+    def arel_attributes_for(key)
+      attributes = model.searchable_attributes[key]
 
-      Array(model.searchable_attributes[column]).collect do |_column|
-        table, attribute = _column.split(".")
-        klass = table.classify.constantize
+      raise AttrSearchable::UnknownColumn, "Unknown key: #{key}" if attributes.nil?
 
-        Attributes.const_get(klass.columns_hash[attribute].type.to_s.classify).new(klass.arel_table.alias(table)[attribute], klass)
-      end
+      Array(attributes).collect { |attribute| arel_attribute_for key, attribute }
+    end
+
+    def arel_attribute_for(key, attribute)
+      table, column = attribute.split(".")
+      klass = table.classify.constantize
+      type = ((model.searchable_attribute_options[key] || {})[:type]) || klass.columns_hash[column].type
+
+      Attributes.const_get(type.to_s.classify).new(klass.arel_table.alias(table)[column], klass)
     end
   end
 

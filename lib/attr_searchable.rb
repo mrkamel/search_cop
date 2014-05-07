@@ -1,5 +1,6 @@
 
 require "attr_searchable/version"
+require "attr_searchable/arel"
 require "attr_searchable_grammar"
 require "treetop"
 
@@ -24,6 +25,9 @@ module AttrSearchable
     base.class_attribute :searchable_attributes
     base.searchable_attributes = {}
 
+    base.class_attribute :searchable_attribute_options
+    base.searchable_attribute_options = {}
+
     base.extend ClassMethods
   end
 
@@ -42,6 +46,10 @@ module AttrSearchable
           "#{table.tableize}.#{attribute}"
         end
       end
+    end
+
+    def attr_searchable_options(key, options = {})
+      self.searchable_attribute_options[key.to_s] = options
     end
 
     def search(str)
