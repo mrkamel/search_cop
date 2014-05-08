@@ -6,9 +6,9 @@ require "active_record"
 require "factory_girl"
 require "yaml"
 
-config = YAML.load_file(File.expand_path("../database.yml", __FILE__))
+DATABASE = ENV["DATABASE"] || "sqlite"
 
-ActiveRecord::Base.establish_connection config[ENV["DATABASE"]]
+ActiveRecord::Base.establish_connection YAML.load_file(File.expand_path("../database.yml", __FILE__))[DATABASE]
 
 class Comment < ActiveRecord::Base; end
 
@@ -18,7 +18,7 @@ class Product < ActiveRecord::Base
   attr_searchable :title, :description, :stock, :price, :created_at, :available
   attr_searchable :comment => ["comments.title", "comments.message"]
 
-  if ENV["DATABASE"] != "sqlite"
+  if DATABASE != "sqlite"
     attr_searchable_options :title, :type => :fulltext
     attr_searchable_options :description, :type => :fulltext
   end
@@ -52,7 +52,7 @@ ActiveRecord::Base.connection.create_table :comments do |t|
   t.text :message
 end
 
-if ENV["DATABASE"] == "mysql"
+if DATABASE == "mysql"
   ActiveRecord::Base.connection.execute "ALTER TABLE products ENGINE=MyISAM"
 end
 

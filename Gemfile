@@ -3,8 +3,13 @@ source 'https://rubygems.org'
 # Specify your gem's dependencies in attr_searchable.gemspec
 gemspec
 
-gem 'activerecord-jdbcsqlite3-adapter', :platforms => :jruby
-gem 'sqlite3', :platforms => :ruby
+gem 'activerecord-jdbc-adapter', :platforms => :jruby
+
+platforms :ruby do
+  gem 'sqlite3'
+  gem 'mysql2'
+  gem 'pg'
+end
 
 platforms :rbx do
   gem 'racc'
