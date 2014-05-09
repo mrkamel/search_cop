@@ -150,7 +150,7 @@ attributes having fulltext indices to:
 ```ruby
 Book.search("Harry Potter")
 # MySQL: ... WHERE MATCH(books.title) AGAINST('+Harry' IN BOOLEAN MODE) AND MATCH(books.title) AGAINST('+Potter' IN BOOLEAN MODE)
-# PostgresSQL: ... WHere to_tsvector('simple', books.title) @@ to_tsquery('simple', 'Harry') AND to_tsvector('simple', books.title) @@ to_tsquery('simple', books.title)
+# PostgresSQL: ... WHERE to_tsvector('simple', books.title) @@ to_tsquery('simple', 'Harry') AND to_tsvector('simple', books.title) @@ to_tsquery('simple', books.title)
 ```
 
 Obviously, theses queries won't always return the same results as wildcard
@@ -163,12 +163,20 @@ To create a fulltext index on `books.title` in MySQL, simply use:
 add_index :books, :title, :type => :fulltext
 ```
 
+Please note that MySQL supports fulltext indices for MyISAM and, as of MySQL
+version 5.6+, for InnoDB as well. For more details about MySQL fulltext indices
+visit
+[http://dev.mysql.com/doc/refman/5.6/en/fulltext-search.html](http://dev.mysql.com/doc/refman/5.6/en/fulltext-search.html)
+
 Regarding PostgreSQL there are more ways to create a fulltext index. However,
 one of the easiest ways is:
 
 ```ruby
 ActiveRecord::Base.connection.execute "CREATE INDEX fulltext_index_books_on_title ON books USING GIN(to_tsvector('simple', title))"
 ```
+
+For more details about PostgreSQL fulltext indices visit
+[http://www.postgresql.org/docs/9.3/static/textsearch.html](http://www.postgresql.org/docs/9.3/static/textsearch.html)
 
 ## Security
 
