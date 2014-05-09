@@ -15,7 +15,9 @@ Book.search("price > 10 AND price < 20 -stock:0 (Potter OR Rowling)")
 # ...
 ```
 
-Thus, you can hand out a search query string to your models:
+Thus, you can hand out a search query string to your models, such that your
+app's admins and/or users will get powerful query features without the need for
+building complex forms, because all you need is a simple text field:
 
 ```ruby
 class BooksController < ApplicationController
@@ -24,6 +26,10 @@ class BooksController < ApplicationController
   end
 end
 ```
+
+AttrSearchable can even use fulltext index capabilities of your favorite RDBMS
+(currently MySQL and PostgreSQL fulltext indices are supported) in a database
+agnostic way.
 
 ## Installation
 
@@ -41,8 +47,8 @@ Or install it yourself as:
 
 ## Usage
 
-To enable AttrSearchable for a model, `include AttrSearchable` and specify the attributes
-you want to expose to search queries:
+To enable AttrSearchable for a model, `include AttrSearchable` and specify the
+attributes you want to expose to search queries:
 
 ```ruby
 class Book < ActiveRecord::Base
@@ -115,29 +121,65 @@ end
 AttrSearchable will then skip any association auto loading and will use
 the `search_scope` instead.
 
-## Performance
+## Fulltext index capabilities
 
-As `LIKE '%...%'` queries can not use SQL indices, every row needs to be
-scanned by your RDBMS when you search for `Book.search("Harry Potter")` or
-similar. Contrary, when you search for `Book.search("title=Potter")` indices
-can and will be used. Moreover, other indices (on price, stock, etc) will of
-course be used by your RDBMS when you search for `Book.search("stock > 0")`,
-etc.
+By default, AttrSearchable will use `LIKE '%...%'` queries. Unfortunately,
+theses queries can not use SQL indices, such that every row needs to be scanned
+by your RDBMS when you search for `Book.search("Harry Potter")` or similar.
+Contrary, when you search for `Book.search("title=Potter")` indices can and
+will be used. Moreover, other indices (on price, stock, etc) will of course be
+used by your RDBMS when you search for `Book.search("stock > 0")`, etc.
 
-Regarding the `LIKE` penalty, we plan to support FULLTEXT index capabilities,
-such that `MATCH() ... AGAINST()` of MySQL can be used in the future. However,
-we are simply not there yet, as every RDBMS has different FULLTEXT capabilities
-and syntaxes - and AttrSearchable will stay RDBMS agnostic.
+Regarding the `LIKE` penalty, AttrSearchable can exploit the fulltext index
+capabilities of MySQL and PostgreSQL. To use already existing fulltext indices,
+simply tell AttrSearchable to use it via:
+
+```ruby
+class Book < ActiveRecord::Base
+  # ...
+
+  attr_searchable_options :title, :type => :fulltext
+
+  # ...
+end
+```
+
+AttrSearchable will then transparently change its SQL queries for the
+attributes having fulltext indices to:
+
+```ruby
+Book.search("Harry Potter")
+# MySQL: ... WHERE MATCH(books.title) AGAINST('+Harry' IN BOOLEAN MODE) AND MATCH(books.title) AGAINST('+Potter' IN BOOLEAN MODE)
+# PostgresSQL: ... WHere to_tsvector('simple', books.title) @@ to_tsquery('simple', 'Harry') AND to_tsvector('simple', books.title) @@ to_tsquery('simple', books.title)
+```
+
+Obviously, theses queries won't always return the same results as wildcard
+`LIKE` queries, because we search for words instead of substrings. However,
+fulltext indices will provide better performance.
+
+To create a fulltext index on `books.title` in MySQL, simply use:
+
+```ruby
+add_index :books, :title, :type => :fulltext
+```
+
+Regarding PostgreSQL there are more ways to create a fulltext index. However,
+one of the easiest ways is:
+
+```ruby
+ActiveRecord::Base.connection.execute "CREATE INDEX fulltext_index_books_on_title ON books USING GIN(to_tsvector('simple', title))"
+```
 
 ## Security
 
 Exposing complex SQL query capabilities should always be done with caution.
-Otherwise you get vulnerable to SQL injection. Besides tiny arel fulltext
-extensions, AttrSearchable does not generate or manipulate any SQL itself.
-Instead, it uses Arel. Using Arel does not by definition mean that you're safe,
-but Arel sanitizes strings, converts between datatypes, quotes table and column
-names, etc before sending the query to your RDBMS. Moreover, you are of course
-always very welcome to review the code and report any found issues.
+Besides tiny arel fulltext extensions, AttrSearchable does not generate or
+manipulate any SQL itself. Instead, it uses Arel. Using Arel does not by
+definition mean that you're safe against SQL injection, but Arel sanitizes
+strings, converts between datatypes, quotes table and column names, etc before
+sending the query to your RDBMS. Moreover, you are of course very welcome to
+review the code, send pull requests for additional features and database
+fulltext support, open issues, etc.
 
 ## Contributing
 

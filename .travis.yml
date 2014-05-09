@@ -8,14 +8,19 @@ before_script:
 
 rvm:
   - 1.9.3
-  - rbx
   - 2.0.0
   - 2.1.1
-  - jruby-19mode
+  - rbx-2
+  - jruby
 env:
   - DATABASE=sqlite
   - DATABASE=mysql
   - DATABASE=postgres
+matrix:
+  allow_failures:
+    - rvm: rbx-2
+    - rvm: jruby
+  fast_finish: true
 
 install:
   - "travis_retry bundle install"
