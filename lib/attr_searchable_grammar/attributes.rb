@@ -3,14 +3,32 @@ require "treetop"
 
 module AttrSearchableGrammar
   module Attributes
+    class Collection
+      def initialize(model, key)
+        @attributes = model.searchable_attributes[key].collect do |attribute|
+          table, column = attribute.split(".")
+          klass = table.classify.constantize
+          type = ((model.searchable_attribute_options[key] || {})[:type]) || klass.columns_hash[column].type
+
+          Attributes.const_get(type.to_s.classify).new(klass.arel_table.alias(table)[column], klass)
+        end
+      end
+
+      [:eq, :not_eq, :lt, :lteq, :gt, :gteq, :matches].each do |method|
+        define_method method do |value|
+          @attributes.collect! { |attribute| attribute.send method, value }.inject(:or)
+        end
+      end
+
+      def compatible?(value)
+        @attributes.all? { |attribute| attribute.compatible? value }
+      end
+    end
+
     class Base
       def initialize(attribute, klass)
         @attribute = attribute
         @klass = klass
-      end
-
-      def datatype?(*args)
-        args.include? @klass.columns_hash[name].type
       end
 
       def map(value)
@@ -36,7 +54,7 @@ module AttrSearchableGrammar
       end
 
       def respond_to?(*args)
-        @attribute.send *args
+        @attribute.respond_to? *args
       end
     end
 

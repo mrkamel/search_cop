@@ -17,20 +17,10 @@ module AttrSearchableGrammar
       super.select { |element| element.class != Treetop::Runtime::SyntaxNode }
     end
 
-    def arel_attributes_for(key)
-      attributes = model.searchable_attributes[key]
+    def arel_collection_for(key)
+      raise AttrSearchable::UnknownColumn, "Unknown key: #{key}" if model.searchable_attributes[key].nil?
 
-      raise AttrSearchable::UnknownColumn, "Unknown key: #{key}" if attributes.nil?
-
-      Array(attributes).collect { |attribute| arel_attribute_for key, attribute }
-    end
-
-    def arel_attribute_for(key, attribute)
-      table, column = attribute.split(".")
-      klass = table.classify.constantize
-      type = ((model.searchable_attribute_options[key] || {})[:type]) || klass.columns_hash[column].type
-
-      Attributes.const_get(type.to_s.classify).new(klass.arel_table.alias(table)[column], klass)
+      Attributes::Collection.new model, key
     end
   end
 
@@ -50,7 +40,7 @@ module AttrSearchableGrammar
 
   class ComparativeExpression < BaseNode
     def to_arel
-      elements[0].arel_attributes.collect { |attribute| attribute.send elements[1].to_arel_method, elements[2].text_value }.inject(:or)
+      elements[0].arel_collection.send elements[1].to_arel_method, elements[2].text_value
     end
   end
 
@@ -98,9 +88,7 @@ module AttrSearchableGrammar
 
   class AnywhereExpression < BaseNode
     def to_arel
-      queries = model.searchable_attributes.keys.collect do |key|
-        arel_attributes_for(key).select { |attribute| attribute.compatible? text_value }.collect { |attribute| attribute.matches text_value }
-      end
+      queries = model.searchable_attributes.keys.collect { |key| arel_collection_for key }.select { |attribute| attribute.compatible? text_value }.collect { |attribute| attribute.matches text_value }
 
       raise AttrSearchable::NoSearchableAttributes unless model.searchable_attributes
 
@@ -127,8 +115,8 @@ module AttrSearchableGrammar
   end
 
   class Column < BaseNode
-    def arel_attributes
-      arel_attributes_for text_value
+    def arel_collection
+      arel_collection_for text_value
     end
   end
 
