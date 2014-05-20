@@ -9,6 +9,13 @@ class StringTest < MiniTest::Test
     refute_includes Product.search("Rejected"), product
   end
 
+  def test_multiple
+    product = FactoryGirl.create(:product, :comments => [FactoryGirl.create(:comment, :title => "Expected title", :message => "Expected message")])
+
+    assert_includes Product.search("Expected"), product
+    refute_includes Product.search("Rejected"), product
+  end
+
   def test_includes
     product = FactoryGirl.create(:product, :title => "Expected title")
 

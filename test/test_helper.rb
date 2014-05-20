@@ -20,7 +20,7 @@ class Product < ActiveRecord::Base
 
   if DATABASE != "sqlite"
     attr_searchable_options :title, :type => :fulltext
-    attr_searchable_options :description, :type => :fulltext
+    attr_searchable_options :comment, :type => :fulltext
   end
 
   has_many :comments
@@ -54,6 +54,7 @@ end
 
 if DATABASE == "mysql"
   ActiveRecord::Base.connection.execute "ALTER TABLE products ENGINE=MyISAM"
+  ActiveRecord::Base.connection.execute "ALTER TABLE comments ENGINE=MyISAM"
 end
 
 

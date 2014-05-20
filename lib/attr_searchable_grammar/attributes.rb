@@ -2,30 +2,52 @@
 require "treetop"
 
 module AttrSearchableGrammar
+  module Nodes
+    class MatchesFulltext < Arel::Nodes::Binary; end
+  end
+
   module Attributes
     class Collection
       def initialize(model, key)
-        @attributes = model.searchable_attributes[key].collect do |attribute|
-          table, column = attribute.split(".")
-          klass = table.classify.constantize
-          type = ((model.searchable_attribute_options[key] || {})[:type]) || klass.columns_hash[column].type
+        @model = model
+        @key = key
+      end
 
-          Attributes.const_get(type.to_s.classify).new(klass.arel_table.alias(table)[column], klass)
+      [:eq, :not_eq, :lt, :lteq, :gt, :gteq].each do |method|
+         define_method method do |value|
+           attributes.collect! { |attribute| attribute.send method, value }.inject(:or)
+         end
+      end
+
+      def matches(value)
+        if fulltext?
+          AttrSearchableGrammar::Nodes::MatchesFulltext.new self, value
+        else
+          attributes.collect! { |attribute| attribute.matches value }.inject(:or)
         end
       end
 
-      [:eq, :not_eq, :lt, :lteq, :gt, :gteq, :matches].each do |method|
-        define_method method do |value|
-          @attributes.collect! { |attribute| attribute.send method, value }.inject(:or)
-        end
+      def fulltext?
+        (@model.searchable_attribute_options[@key] || {})[:type] == :fulltext
       end
 
       def compatible?(value)
-        @attributes.all? { |attribute| attribute.compatible? value }
+        attributes.all? { |attribute| attribute.compatible? value }
+      end
+
+      def attributes
+        @attributes ||= @model.searchable_attributes[@key].collect do |attribute|
+          table, column = attribute.split(".")
+          klass = table.classify.constantize
+
+          Attributes.const_get(klass.columns_hash[column].type.to_s.classify).new(klass.arel_table.alias(table)[column], klass)
+        end
       end
     end
 
     class Base
+      attr_reader :attribute
+
       def initialize(attribute, klass)
         @attribute = attribute
         @klass = klass
@@ -38,6 +60,10 @@ module AttrSearchableGrammar
       def compatible?(value)
         map value
       rescue AttrSearchable::IncompatibleDatatype
+        false
+      end
+
+      def fulltext?
         false
       end
 
@@ -73,12 +99,6 @@ module AttrSearchableGrammar
     end
 
     class Text < String; end
-
-    class Fulltext < Base
-      def matches(value)
-        matches_fulltext value
-      end
-    end
 
     class WithoutMatches < Base
       def matches(value)
