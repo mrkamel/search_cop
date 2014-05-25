@@ -27,8 +27,6 @@ class Product < ActiveRecord::Base
     attr_searchable_options :title, :dictionary => "english"
   end
 
-  attr_searchable_options :brand, :left_wildcard => false
-
   has_many :comments
 end
 
@@ -64,4 +62,15 @@ if DATABASE == "mysql"
   ActiveRecord::Base.connection.execute "ALTER TABLE comments ENGINE=MyISAM"
 end
 
+class MiniTest::Test
+  def with_attr_searchable_options(model, key, options = {})
+    opts = model.searchable_attribute_options[key.to_s] || {}
+
+    model.searchable_attribute_options[key.to_s] = opts.merge(options)
+
+    yield
+  ensure
+    model.searchable_attribute_options[key.to_s] = opts
+  end
+end
 

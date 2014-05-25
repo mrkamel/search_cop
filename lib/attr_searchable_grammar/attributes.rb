@@ -91,8 +91,7 @@ module AttrSearchableGrammar
 
     class String < Base
       def matches_value(value)
-        return value.gsub(/\*/, "%") if options[:left_wildcard] != false && value.strip =~ /^[^*]+\*$|^\*[^*]+$/
-        return value.gsub(/\*/, "%") if value.strip =~ /^[^*]+\*$/
+        return value.gsub(/\*/, "%") if (options[:left_wildcard] != false && value.strip =~ /^[^*]+\*$|^\*[^*]+$/) || value.strip =~ /^[^*]+\*$/
 
         options[:left_wildcard] != false ? "%#{value}%" : "#{value}%"
       end

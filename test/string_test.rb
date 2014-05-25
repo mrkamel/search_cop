@@ -33,7 +33,7 @@ class StringTest < MiniTest::Test
     expected = FactoryGirl.create(:product, :brand => "Brand")
     rejected = FactoryGirl.create(:product, :brand => "Rejected brand")
 
-    results = Product.search("brand: Brand")
+    results = with_attr_searchable_options(Product, :brand, :left_wildcard => false) { Product.search "brand: Brand" }
 
     assert_includes results, expected
     refute_includes results, rejected

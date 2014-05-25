@@ -88,7 +88,10 @@ module AttrSearchableGrammar
 
   class AnywhereExpression < BaseNode
     def to_arel
-      queries = model.searchable_attributes.keys.collect { |key| arel_collection_for key }.select { |attribute| attribute.compatible? text_value }.collect { |attribute| attribute.matches text_value }
+      keys = model.searchable_attribute_options.select { |key, value| value[:default] == true }.keys
+      keys = model.searchable_attributes.keys if keys.empty?
+
+      queries = keys.collect { |key| arel_collection_for key }.select { |attribute| attribute.compatible? text_value }.collect { |attribute| attribute.matches text_value }
 
       raise AttrSearchable::NoSearchableAttributes unless model.searchable_attributes
 

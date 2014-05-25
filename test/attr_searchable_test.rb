@@ -19,5 +19,25 @@ class AttrSearchableTest < MiniTest::Test
     assert_includes Product.search("comment: Title"), product
     assert_includes Product.search("comment: Message"), product
   end
+
+  def test_default
+    product1 = FactoryGirl.create(:product, :title => "Value")
+    product2 = FactoryGirl.create(:product, :description => "Value")
+
+    results = Product.search("Value")
+
+    assert_includes results, product1
+    assert_includes results, product2
+  end
+
+  def test_custom_default
+    product1 = FactoryGirl.create(:product, :title => "Value")
+    product2 = FactoryGirl.create(:product, :description => "Value")
+
+    results = with_attr_searchable_options(Product, :title, :default => true) { Product.search "Value" }
+
+    assert_includes results, product1
+    refute_includes results, product2
+  end
 end
 
