@@ -35,18 +35,22 @@ module AttrSearchableGrammar
         attributes.all? { |attribute| attribute.compatible? value }
       end
 
+      def options
+        @model.searchable_attribute_options[@key]
+      end
+
       def attributes
         @attributes ||= @model.searchable_attributes[@key].collect do |attribute|
           table, column = attribute.split(".")
           klass = table.classify.constantize
 
-          Attributes.const_get(klass.columns_hash[column].type.to_s.classify).new(klass.arel_table.alias(table)[column], klass, @model.searchable_attribute_options[@key])
+          Attributes.const_get(klass.columns_hash[column].type.to_s.classify).new(klass.arel_table.alias(table)[column], klass, options)
         end
       end
     end
 
     class Base
-      attr_reader :attribute
+      attr_reader :attribute, :options
 
       def initialize(attribute, klass, options = {})
         @attribute = attribute
@@ -87,10 +91,10 @@ module AttrSearchableGrammar
 
     class String < Base
       def matches_value(value)
-        return value.gsub(/\*/, "%") if @options[:left_wildcard] != false && value.strip =~ /^[^*]+\*$|^\*[^*]+$/
+        return value.gsub(/\*/, "%") if options[:left_wildcard] != false && value.strip =~ /^[^*]+\*$|^\*[^*]+$/
         return value.gsub(/\*/, "%") if value.strip =~ /^[^*]+\*$/
 
-        @options[:left_wildcard] != false ? "%#{value}%" : "#{value}%"
+        options[:left_wildcard] != false ? "%#{value}%" : "#{value}%"
       end
 
       def matches(value)

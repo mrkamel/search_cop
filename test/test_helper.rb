@@ -23,6 +23,10 @@ class Product < ActiveRecord::Base
     attr_searchable_options :comment, :type => :fulltext
   end
 
+  if DATABASE == "postgres"
+    attr_searchable_options :title, :dictionary => "english"
+  end
+
   attr_searchable_options :brand, :left_wildcard => false
 
   has_many :comments

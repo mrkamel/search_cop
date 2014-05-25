@@ -49,7 +49,7 @@ module AttrSearchable
     end
 
     def attr_searchable_options(key, options = {})
-      self.searchable_attribute_options[key.to_s] = options
+      self.searchable_attribute_options[key.to_s] = (self.searchable_attribute_options[key.to_s] || {}).merge(options)
     end
 
     def search(str)

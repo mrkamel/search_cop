@@ -29,7 +29,9 @@ module AttrSearchable
           end
 
           def visit_AttrSearchableGrammar_Nodes_MatchesFulltext(o, a)
-            "to_tsvector('simple', #{visit o.left, a}) @@ to_tsquery('simple', #{visit o.right.split(/[\s&|!:'"]+/).join(" & "), a})"
+            dictionary = o.left.options[:dictionary] || "simple"
+
+            "to_tsvector(#{visit dictionary, a}, #{visit o.left, a}) @@ to_tsquery(#{visit dictionary, a}, #{visit o.right.split(/[\s&|!:'"]+/).join(" & "), a})"
           end
         else
           def visit_AttrSearchableGrammar_Attributes_Collection(o)
@@ -37,7 +39,9 @@ module AttrSearchable
           end
 
           def visit_AttrSearchableGrammar_Nodes_MatchesFulltext(o)
-            "to_tsvector('simple', #{visit o.left}) @@ to_tsquery('simple', #{visit o.right.split(/[\s&|!:'"]+/).join(" & ")})"
+            dictionary = o.left.options[:dictionary] || "simple"
+
+            "to_tsvector(#{visit dictionary, a}, #{visit o.left}) @@ to_tsquery(#{visit dictionary, a}, #{visit o.right.split(/[\s&|!:'"]+/).join(" & ")})"
           end
         end
       end
