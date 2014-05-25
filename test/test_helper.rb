@@ -15,13 +15,15 @@ class Comment < ActiveRecord::Base; end
 class Product < ActiveRecord::Base
   include AttrSearchable
 
-  attr_searchable :title, :description, :stock, :price, :created_at, :available
+  attr_searchable :title, :description, :brand, :stock, :price, :created_at, :available
   attr_searchable :comment => ["comments.title", "comments.message"]
 
   if DATABASE != "sqlite"
     attr_searchable_options :title, :type => :fulltext
     attr_searchable_options :comment, :type => :fulltext
   end
+
+  attr_searchable_options :brand, :left_wildcard => false
 
   has_many :comments
 end
@@ -44,6 +46,7 @@ ActiveRecord::Base.connection.create_table :products do |t|
   t.float :price
   t.datetime :created_at
   t.boolean :available
+  t.string :brand
 end
 
 ActiveRecord::Base.connection.create_table :comments do |t|

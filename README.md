@@ -124,6 +124,7 @@ the `search_scope` instead.
 ## Fulltext index capabilities
 
 By default, AttrSearchable will use `LIKE '%...%'` queries. Unfortunately,
+unless you create a [trigram index](http://www.postgresql.org/docs/9.1/static/pgtrgm.html) (postgres only),
 theses queries can not use SQL indices, such that every row needs to be scanned
 by your RDBMS when you search for `Book.search("Harry Potter")` or similar.
 Contrary, when you search for `Book.search("title=Potter")` indices can and
@@ -132,7 +133,7 @@ used by your RDBMS when you search for `Book.search("stock > 0")`, etc.
 
 Regarding the `LIKE` penalty, AttrSearchable can exploit the fulltext index
 capabilities of MySQL and PostgreSQL. To use already existing fulltext indices,
-simply tell AttrSearchable to use it via:
+simply tell AttrSearchable to use them via:
 
 ```ruby
 class Book < ActiveRecord::Base

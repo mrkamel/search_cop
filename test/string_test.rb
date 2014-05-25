@@ -17,10 +17,26 @@ class StringTest < MiniTest::Test
   end
 
   def test_includes
-    product = FactoryGirl.create(:product, :title => "Expected title")
+    product = FactoryGirl.create(:product, :title => "Expected")
 
     assert_includes Product.search("title: Expected"), product
     refute_includes Product.search("title: Rejected"), product
+  end
+
+  def test_includes_with_left_wildcard
+    product = FactoryGirl.create(:product, :title => "Some title")
+
+    assert_includes Product.search("title: Title"), product
+  end
+
+  def test_includes_without_left_wildcard
+    expected = FactoryGirl.create(:product, :brand => "Brand")
+    rejected = FactoryGirl.create(:product, :brand => "Rejected brand")
+
+    results = Product.search("brand: Brand")
+
+    assert_includes results, expected
+    refute_includes results, rejected
   end
 
   def test_equals
