@@ -58,7 +58,7 @@ module AttrSearchable
       scope = respond_to?(:search_scope) ? search_scope : nil
       scope ||= eager_load(searchable_attributes.values.flatten.uniq.collect { |column| column.split(".").first.to_sym } - [name.tableize.to_sym])
 
-      scope.where AttrSearchable::Parser.parse(str, self).to_arel
+      scope.where AttrSearchable::Parser.parse(str, self).to_arel.optimize!
     rescue AttrSearchable::Error
       respond_to?(:none) ? none : where("1 = 0")
     end

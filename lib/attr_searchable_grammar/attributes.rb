@@ -3,11 +3,97 @@ require "treetop"
 
 module AttrSearchableGrammar
   module Nodes
-    class MatchesFulltext < Arel::Nodes::Binary; end
+    module Base
+      def and(node)
+        And.new self, node
+      end
+
+      def or(node)
+        Or.new self, node
+      end
+
+      def not
+        Not.new self
+      end
+
+      def flatten!
+        self
+      end
+
+      def group!
+        self
+      end
+
+      def optimize!
+        flatten!.group!
+      end
+    end
+
+    ["Equality", "NotEqual", "GreaterThan", "LessThan", "GreaterThanOrEqual", "LessThanOrEqual", "Matches", "Not"].each do |name|
+      const_set name, Class.new(Arel::Nodes.const_get(name))
+      const_get(name).send :include, Base
+    end
+
+    class MatchesFulltext < Arel::Nodes::Binary
+      include Base
+    end
+
+    class Collection
+      include Base
+
+      attr_reader :nodes
+
+      def initialize(*nodes)
+        @nodes = nodes.flatten
+      end
+
+      def flatten!
+        @nodes = @nodes.collect { |node| node.is_a?(self.class) ? node.flatten!.nodes : node.flatten! }.flatten
+
+        self
+      end
+
+      def fulltext_groups
+        @nodes.select { |node| node.is_a? MatchesFulltext }.group_by { |node| node.left.key }.values
+      end
+
+      def standard_nodes
+        @nodes.reject { |node| node.is_a? MatchesFulltext }
+      end
+    end
+
+    class FulltextAnd < Collection; end
+    class FulltextOr < Collection; end
+
+    class And < Collection
+      def to_arel
+        @nodes.inject { |res, cur| Arel::Nodes::And.new [res, cur] }
+      end
+
+      def group!
+        @nodes = standard_nodes.each(&:group!) + fulltext_groups.collect { |group| FulltextAnd.new *group }
+
+        self
+      end
+    end
+
+    class Or < Collection
+      def to_arel
+        @nodes.inject { |res, cur| Arel::Nodes::Or.new res, cur }
+      end
+
+      def group!
+        @nodes = standard_nodes.each(&:group!) + fulltext_groups.collect { |group| FulltextOr.new *group }
+
+        self
+      end
+    end
   end
 
   module Attributes
     class Collection
+      attr_reader :model, :key
+
       def initialize(model, key)
         @model = model
         @key = key
@@ -28,7 +114,7 @@ module AttrSearchableGrammar
       end
 
       def fulltext?
-        (@model.searchable_attribute_options[@key] || {})[:type] == :fulltext
+        (model.searchable_attribute_options[key] || {})[:type] == :fulltext
       end
 
       def compatible?(value)
@@ -36,11 +122,11 @@ module AttrSearchableGrammar
       end
 
       def options
-        @model.searchable_attribute_options[@key]
+        model.searchable_attribute_options[key]
       end
 
       def attributes
-        @attributes ||= @model.searchable_attributes[@key].collect do |attribute|
+        @attributes ||= model.searchable_attributes[key].collect do |attribute|
           table, column = attribute.split(".")
           klass = table.classify.constantize
 
@@ -72,11 +158,11 @@ module AttrSearchableGrammar
         false
       end
 
-      [:eq, :not_eq, :lt, :lteq, :gt, :gteq, :matches].each do |method|
+      { :eq => "Equality", :not_eq => "NotEqual", :lt => "LessThan", :lteq => "LessThanOrEqual", :gt => "GreaterThan", :gteq => "GreaterThanOrEqual", :matches => "Matches" }.each do |method, class_name|
         define_method method do |value|
           return AttrSearchable::IncompatibleDatatype unless compatible?(value)
 
-          super value
+          AttrSearchableGrammar::Nodes.const_get(class_name).new(@attribute, value)
         end
       end
 
