@@ -36,7 +36,12 @@ module AttrSearchableGrammar
   end
 
   class ComplexExpression < BaseNode; end
-  class ParenthesesExpression < BaseNode; end
+
+  class ParenthesesExpression < BaseNode
+    def to_arel
+      model.arel_table.grouping(elements[0].to_arel)
+    end
+  end
 
   class ComparativeExpression < BaseNode
     def to_arel
