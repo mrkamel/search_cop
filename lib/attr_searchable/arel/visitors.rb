@@ -3,94 +3,66 @@ module AttrSearchable
   module Arel
     module Visitors
       module ToSql
-        if ::Arel::VERSION >= "4.0.1"
-          def visit_AttrSearchableGrammar_Nodes_And(o, a)
-            visit o.to_arel, a
-          end
+        def visit_AttrSearchableGrammar_Nodes_And(o, a)
+          visit o.to_arel, a
+        end
 
-          def visit_AttrSearchableGrammar_Nodes_Or(o, a)
-            visit o.to_arel, a
-          end
-
-          def visit_AttrSearchableGrammar_Nodes_FulltextAnd(o, a)
-            visit AttrSearchableGrammar::Nodes::MatchesFulltext.new(o.nodes.first.left, o.nodes.collect(&:right).join(" ")), a
-          end
-        else
-          def visit_AttrSearchableGrammar_Nodes_And(o)
-            visit o.to_arel
-          end
-
-          def visit_AttrSearchableGrammar_Nodes_Or(o)
-            visit o.to_arel
-          end
-
-          def visit_AttrSearchableGrammar_Nodes_FulltextAnd(o)
-            visit AttrSearchableGrammar::Nodes::MatchesFulltext.new(o.nodes.first.left, o.nodes.collect(&:right).join(" "))
-          end
+        def visit_AttrSearchableGrammar_Nodes_Or(o, a)
+          visit o.to_arel, a
         end
       end
 
       module MySQL
-        if ::Arel::VERSION >= "4.0.1"
-          def visit_AttrSearchableGrammar_Attributes_Collection(o, a)
-            o.attributes.collect { |attribute| visit attribute.attribute, a }.join(", ")
-          end
+        def visit_AttrSearchableGrammar_Attributes_Collection(o, a)
+          o.attributes.collect { |attribute| visit attribute.attribute, a }.join(", ")
+        end
 
-          def visit_AttrSearchableGrammar_Nodes_MatchesFulltext(o, a)
-            "MATCH(#{visit o.left, a}) AGAINST(#{visit o.right.split(/[\s+'"<>()~-]+/).collect { |word| "+#{word}" }.join(" "), a} IN BOOLEAN MODE)"
-          end
+        def visit_AttrSearchableGrammar_Nodes_FulltextExpression(o, a)
+          "MATCH(#{visit o.collection, a}) AGAINST(#{visit visit(o.node, a), a} IN BOOLEAN MODE)"
+        end
 
-          def visit_AttrSearchableGrammar_Nodes_FulltextOr(o, a)
-            "MATCH(#{visit o.nodes.first.left, a}) AGAINST(#{visit o.nodes.collect(&:right).join(" ").split(/[\s+'"<>()~-]+/).join(" "), a} IN BOOLEAN MODE)"
-          end
-        else
-          def visit_AttrSearchableGrammar_Attributes_Collection(o)
-            o.attributes.collect { |attribute| visit attribute.attribute }.join(", ")
-          end
+        def visit_AttrSearchableGrammar_Nodes_MatchesFulltextNot(o, a)
+          "-\"#{o.right.gsub(/[\s+'"<>()~-]+/, " ")}\""
+        end
 
-          def visit_AttrSearchableGrammar_Nodes_MatchesFulltext(o)
-            "MATCH(#{visit o.left}) AGAINST(#{visit o.right.split(/[\s+'"<>()~-]+/).collect { |word| "+#{word}" }.join(" ")} IN BOOLEAN MODE)"
-          end
+        def visit_AttrSearchableGrammar_Nodes_MatchesFulltext(o, a)
+          "\"#{o.right.gsub(/[\s+'"<>()~-]+/, " ")}\""
+        end
 
-          def visit_AttrSearchableGrammar_Nodes_FulltextOr(o)
-            "MATCH(#{visit o.nodes.first.left}) AGAINST(#{visit o.nodes.collect(&:right).join(" ").split(/[\s+'"<>()~-]+/).join(" ")} IN BOOLEAN MODE)"
-          end
+        def visit_AttrSearchableGrammar_Nodes_FulltextAnd(o, a)
+          o.nodes.collect { |node| node.is_a?(AttrSearchableGrammar::Nodes::MatchesFulltextNot) ? visit(node, a) : "+(#{visit node, a})" }.join(" ")
+        end
+
+        def visit_AttrSearchableGrammar_Nodes_FulltextOr(o, a)
+          o.nodes.collect { |node| "(#{visit node, a})" }.join(" ")
         end
       end
 
       module PostgreSQL
-        if ::Arel::VERSION >= "4.0.1"
-          def visit_AttrSearchableGrammar_Attributes_Collection(o, a)
-            o.attributes.collect { |attribute| visit attribute.attribute, a }.join(" || ' ' || ")
-          end
+        def visit_AttrSearchableGrammar_Attributes_Collection(o, a)
+          o.attributes.collect { |attribute| visit attribute.attribute, a }.join(" || ' ' || ")
+        end
 
-          def visit_AttrSearchableGrammar_Nodes_MatchesFulltext(o, a)
-            dictionary = o.left.options[:dictionary] || "simple"
+        def visit_AttrSearchableGrammar_Nodes_FulltextExpression(o, a)
+          dictionary = o.collection.options[:dictionary] || "simple"
 
-            "to_tsvector(#{visit dictionary, a}, #{visit o.left, a}) @@ to_tsquery(#{visit dictionary, a}, #{visit o.right.split(/[\s&|!:'"]+/).join(" & "), a})"
-          end
+          "to_tsvector(#{visit dictionary, a}, #{visit o.collection, a}) @@ to_tsquery(#{visit dictionary, a}, #{visit visit(o.node, a), a})"
+        end
 
-          def visit_AttrSearchableGrammar_Nodes_FulltextOr(o, a)
-            dictionary = o.nodes.first.left.options[:dictionary] || "simple"
+        def visit_AttrSearchableGrammar_Nodes_MatchesFulltextNot(o, a)
+          "!'#{o.right}'"
+        end
 
-            "to_tsvector(#{visit dictionary, a}, #{visit o.nodes.first.left, a}) @@ to_tsquery(#{visit dictionary, a}, #{visit o.nodes.collect(&:right).join(" ").split(/[\s&|!:'"]+/).join(" | "), a})"
-          end
-        else
-          def visit_AttrSearchableGrammar_Attributes_Collection(o)
-            o.attributes.collect { |attribute| visit attribute.attribute }.join(" || ' ' || ")
-          end
+        def visit_AttrSearchableGrammar_Nodes_MatchesFulltext(o, a)
+          "'#{o.right.gsub /[\s&|!:'"]+/, " "}'"
+        end
 
-          def visit_AttrSearchableGrammar_Nodes_MatchesFulltext(o)
-            dictionary = o.left.options[:dictionary] || "simple"
+        def visit_AttrSearchableGrammar_Nodes_FulltextAnd(o, a)
+          o.nodes.collect { |node| "(#{visit node, a})" }.join(" & ")
+        end
 
-            "to_tsvector(#{visit dictionary, a}, #{visit o.left}) @@ to_tsquery(#{visit dictionary, a}, #{visit o.right.split(/[\s&|!:'"]+/).join(" & ")})"
-          end
-
-          def visit_AttrSearchableGrammar_Nodes_FulltextOr(o)
-            dictionary = o.nodes.first.left.options[:dictionary] || "simple"
-
-            "to_tsvector(#{visit dictionary}, #{visit o.nodes.first.left}) @@ to_tsquery(#{visit dictionary}, #{visit o.nodes.collect(&:right).join(" ").split(/[\s&|!:'"]+/).join(" | ")})"
-          end
+        def visit_AttrSearchableGrammar_Nodes_FulltextOr(o, a)
+          o.nodes.collect { |node| "(#{visit node, a})" }.join(" | ")
         end
       end
     end

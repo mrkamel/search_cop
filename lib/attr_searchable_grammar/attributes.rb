@@ -2,94 +2,6 @@
 require "treetop"
 
 module AttrSearchableGrammar
-  module Nodes
-    module Base
-      def and(node)
-        And.new self, node
-      end
-
-      def or(node)
-        Or.new self, node
-      end
-
-      def not
-        Not.new self
-      end
-
-      def flatten!
-        self
-      end
-
-      def group!
-        self
-      end
-
-      def optimize!
-        flatten!.group!
-      end
-    end
-
-    ["Equality", "NotEqual", "GreaterThan", "LessThan", "GreaterThanOrEqual", "LessThanOrEqual", "Matches", "Not"].each do |name|
-      const_set name, Class.new(Arel::Nodes.const_get(name))
-      const_get(name).send :include, Base
-    end
-
-    class MatchesFulltext < Arel::Nodes::Binary
-      include Base
-    end
-
-    class Collection
-      include Base
-
-      attr_reader :nodes
-
-      def initialize(*nodes)
-        @nodes = nodes.flatten
-      end
-
-      def flatten!
-        @nodes = @nodes.collect { |node| node.is_a?(self.class) ? node.flatten!.nodes : node.flatten! }.flatten
-
-        self
-      end
-
-      def fulltext_groups
-        @nodes.select { |node| node.is_a? MatchesFulltext }.group_by { |node| node.left.key }.values
-      end
-
-      def standard_nodes
-        @nodes.reject { |node| node.is_a? MatchesFulltext }
-      end
-    end
-
-    class FulltextAnd < Collection; end
-    class FulltextOr < Collection; end
-
-    class And < Collection
-      def to_arel
-        @nodes.inject { |res, cur| Arel::Nodes::And.new [res, cur] }
-      end
-
-      def group!
-        @nodes = standard_nodes.each(&:group!) + fulltext_groups.collect { |group| FulltextAnd.new *group }
-
-        self
-      end
-    end
-
-    class Or < Collection
-      def to_arel
-        @nodes.inject { |res, cur| Arel::Nodes::Or.new res, cur }
-      end
-
-      def group!
-        @nodes = standard_nodes.each(&:group!) + fulltext_groups.collect { |group| FulltextOr.new *group }
-
-        self
-      end
-    end
-  end
-
   module Attributes
     class Collection
       attr_reader :model, :key
@@ -97,6 +9,18 @@ module AttrSearchableGrammar
       def initialize(model, key)
         @model = model
         @key = key
+      end
+
+      def eql?(other)
+        self == other
+      end
+
+      def ==(other)
+        other.is_a?(self.class) && [model, key] == [other.model, other.key]
+      end
+
+      def hash
+        [model, key].hash
       end
 
       [:eq, :not_eq, :lt, :lteq, :gt, :gteq].each do |method|

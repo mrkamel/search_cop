@@ -25,7 +25,7 @@ grammar AttrSearchableGrammar
   end
 
   rule not_expression
-    ('NOT' space / 'not' space / '-') expression <NotExpression>
+    ('NOT' space / 'not' space / '-') (comparative_expression / anywhere_expression) <NotExpression>
   end
 
   rule comparative_expression

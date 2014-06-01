@@ -1,5 +1,6 @@
 
 require "attr_searchable_grammar/attributes"
+require "attr_searchable_grammar/nodes"
 
 module AttrSearchableGrammar
   class BaseNode < Treetop::Runtime::SyntaxNode
@@ -33,9 +34,9 @@ module AttrSearchableGrammar
   class ComplexExpression < BaseNode; end
 
   class ParenthesesExpression < BaseNode
-    def to_arel
-      model.arel_table.grouping(elements[0].to_arel)
-    end
+    #def to_arel
+    #  model.arel_table.grouping(elements[0].to_arel)
+    #end
   end
 
   class ComparativeExpression < BaseNode
