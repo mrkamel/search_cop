@@ -33,11 +33,13 @@ class AttrSearchableTest < AttrSearchable::TestCase
   def test_custom_default
     product1 = FactoryGirl.create(:product, :title => "Expected")
     product2 = FactoryGirl.create(:product, :description => "Expected")
+    product3 = FactoryGirl.create(:product, :brand => "Expected")
 
-    results = with_attr_searchable_options(Product, :title, :default => true) { Product.search "Expected" }
+    results = with_attr_searchable_options(Product, :primary, :default => true) { Product.search "Expected" }
 
     assert_includes results, product1
-    refute_includes results, product2
+    assert_includes results, product2
+    refute_includes results, product3
   end
 end
 

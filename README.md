@@ -131,15 +131,29 @@ Contrary, when you search for `Book.search("title=Potter")` indices can and
 will be used. Moreover, other indices (on price, stock, etc) will of course be
 used by your RDBMS when you search for `Book.search("stock > 0")`, etc.
 
-Regarding the `LIKE` penalty, AttrSearchable can exploit the fulltext index
-capabilities of MySQL and PostgreSQL. To use already existing fulltext indices,
-simply tell AttrSearchable to use them via:
+Regarding the `LIKE` penalty, the easiest way to make them use indices is
+to remove the left wildcard. AttrSearchble supports this via:
+
+```ruby
+class Book < ActiveRecord::Base
+  # ...
+
+  attr_searchable_options, :title, :left_wildcard => false
+
+  # ...
+end
+```
+
+However, this often not desirable. Therefore, AttrSearchable can exploit the
+fulltext index capabilities of MySQL and PostgreSQL. To use already existing
+fulltext indices, simply tell AttrSearchable to use them via:
 
 ```ruby
 class Book < ActiveRecord::Base
   # ...
 
   attr_searchable_options :title, :type => :fulltext
+  attr_searchable_options :author, :type => :fulltext
 
   # ...
 end
@@ -150,18 +164,56 @@ attributes having fulltext indices to:
 
 ```ruby
 Book.search("Harry Potter")
-# MySQL: ... WHERE MATCH(books.title) AGAINST('+Harry' IN BOOLEAN MODE) AND MATCH(books.title) AGAINST('+Potter' IN BOOLEAN MODE)
-# PostgresSQL: ... WHERE to_tsvector('simple', books.title) @@ to_tsquery('simple', 'Harry') AND to_tsvector('simple', books.title) @@ to_tsquery('simple', books.title)
+# MySQL: ... WHERE MATCH(books.title) AGAINST('+Harry +Potter' IN BOOLEAN MODE)
+# PostgreSQL: ... WHERE to_tsvector('simple', books.title) @@ to_tsquery('simple', 'Harry & Potter')
 ```
 
 Obviously, theses queries won't always return the same results as wildcard
 `LIKE` queries, because we search for words instead of substrings. However,
-fulltext indices will provide better performance.
+fulltext indices will provide better performance for most cases.
+
+Moreover, AttrSearchable tries to optimize the queries to make optimal use of a
+fulltext index while still allowing to mix them with non-fulltext attributes:
+
+```ruby
+Book.search("author:Rowling OR author:Tolkien stock > 1")
+# MySQL: ... WHERE MATCH(books.author) AGAINST("Rowling Tokien") AND books.stock > 1
+# PostgreSQL: ... WHERE to_tsvector('simple', books.author) @@ to_tsquery('simple', 'Rowling | Tolkien') AND books.stock > 1
+```
+
+Using fulltext indices, you probably want to specify a default field to search
+in:
+
+```ruby
+attr_searchable :all => [:author, :title]
+attr_searchable_options :all, :type => :fulltext, :default => true
+```
+
+such that AttrSearchable can optimize the following queries:
+
+```ruby
+BookSearch("Rowling OR Tolkien stock > 1")
+# MySQL: ... WHERE (MATCH(books.author) AGAINST("+Rowling") OR MATCH(books.title) AGAINST("+Tolkien")) AND books.stock > 1
+# PostgreSQL: ... WHERE (to_tsvector('simple', books.author) @@ to_tsquery('simple', 'Rowling') OR to_tsvector('simple', books.title) @@ to_tsquery('simple', 'Tolkien')) AND books.stock > 1
+```
+
+to the following, more performant query:
+
+```ruby
+# MySQL: ... WHERE MATCH(books.author, books.title) AGAINST("Rowling Tolkien") AND books.stock > 1
+# PostgreSQL: ... WHERE to_tsvector('simple', books.author || ' ' || books.title) @@ to_tsquery('simple', 'Rowling | Tokien') and books.stock > 1
+```
 
 To create a fulltext index on `books.title` in MySQL, simply use:
 
 ```ruby
 add_index :books, :title, :type => :fulltext
+```
+
+Regarding compound indices, use:
+
+```ruby
+add_index :books, [:author, :title], :type => :fulltext
 ```
 
 Please note that MySQL supports fulltext indices for MyISAM and, as of MySQL
@@ -176,19 +228,25 @@ one of the easiest ways is:
 ActiveRecord::Base.connection.execute "CREATE INDEX fulltext_index_books_on_title ON books USING GIN(to_tsvector('simple', title))"
 ```
 
+Regardinc compound indices for PostgreSQL, use:
+
+```ruby
+ActiveRecord::Base.connection.execute "CREATE INDEX fulltext_index_books_on_title ON books USING GIN(to_tsvector('simple', author || ' ' || title))"
+```
+
 For more details about PostgreSQL fulltext indices visit
 [http://www.postgresql.org/docs/9.3/static/textsearch.html](http://www.postgresql.org/docs/9.3/static/textsearch.html)
 
 ## Security
 
 Exposing complex SQL query capabilities should always be done with caution.
-Besides tiny arel fulltext extensions, AttrSearchable does not generate or
-manipulate any SQL itself. Instead, it uses Arel. Using Arel does not by
-definition mean that you're safe against SQL injection, but Arel sanitizes
-strings, converts between datatypes, quotes table and column names, etc before
-sending the query to your RDBMS. Moreover, you are of course very welcome to
-review the code, send pull requests for additional features and database
-fulltext support, open issues, etc.
+Besides its fulltext extensions, AttrSearchable does not generate or manipulate
+any SQL itself. Instead, it uses Arel. Using Arel does not by definition mean
+that you're safe against SQL injection, but Arel sanitizes strings, converts
+between datatypes, quotes table and column names, etc before sending the query
+to your RDBMS. Moreover, you are of course very welcome to review the code,
+send pull requests for additional features and database fulltext support, open
+issues, etc.
 
 ## Contributing
 

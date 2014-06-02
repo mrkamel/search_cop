@@ -54,7 +54,7 @@ module AttrSearchableGrammar
           table, column = attribute.split(".")
           klass = table.classify.constantize
 
-          Attributes.const_get(klass.columns_hash[column].type.to_s.classify).new(klass.arel_table.alias(table)[column], klass, options)
+          Attributes.const_get(klass.columns_hash[column].type.to_s.classify).new(klass.arel_table.alias(klass.table_name)[column], klass, options)
         end
       end
     end

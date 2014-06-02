@@ -28,6 +28,8 @@ class Product < ActiveRecord::Base
   attr_searchable :title, :description, :brand, :stock, :price, :created_at, :available
   attr_searchable :comment => ["comments.title", "comments.message"]
 
+  attr_searchable :primary => [:title, :description]
+
   if DATABASE != "sqlite"
     attr_searchable_options :title, :type => :fulltext
     attr_searchable_options :comment, :type => :fulltext
