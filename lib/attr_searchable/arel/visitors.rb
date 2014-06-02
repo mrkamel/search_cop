@@ -4,11 +4,11 @@ module AttrSearchable
     module Visitors
       module ToSql
         def visit_AttrSearchableGrammar_Nodes_And(o, a)
-          visit o.to_arel, a
+          visit ::Arel::Nodes::Grouping.new(o.to_arel), a
         end
 
         def visit_AttrSearchableGrammar_Nodes_Or(o, a)
-          visit o.to_arel, a
+          visit ::Arel::Nodes::Grouping.new(o.to_arel), a
         end
       end
 

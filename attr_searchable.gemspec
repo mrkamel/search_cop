@@ -24,4 +24,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake"
   spec.add_development_dependency "activerecord", ">= 3.0.0"
   spec.add_development_dependency "factory_girl"
+  spec.add_development_dependency "appraisal"
 end

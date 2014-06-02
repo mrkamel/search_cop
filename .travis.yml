@@ -22,6 +22,11 @@ matrix:
     - rvm: jruby
   fast_finish: true
 
+gemfile:
+  - gemfiles/3.2.gemfile
+  - gemfiles/4.0.gemfile
+  - gemfiles/4.1.gemfile
+
 install:
   - "travis_retry bundle install"
 

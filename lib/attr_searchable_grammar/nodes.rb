@@ -129,7 +129,7 @@ module AttrSearchableGrammar
       def group!
         @nodes = standard_nodes.collect(&:group!) + fulltext_groups.collect do |collection, group|
           if group.size > 1
-            fulltext_collection.new collection, *group.collect { |node| node.is_a?(fulltext_collection) ? node.nodes : node }
+            fulltext_collection_type.new collection, *group.collect { |node| node.is_a?(fulltext_collection_type) ? node.nodes : node }
           else
             group.first
           end
@@ -170,7 +170,7 @@ module AttrSearchableGrammar
     class FulltextAnd < FulltextCollection; end
 
     class And < Collection
-      def fulltext_collection
+      def fulltext_collection_type
         FulltextAnd
       end
 
@@ -182,7 +182,7 @@ module AttrSearchableGrammar
     class FulltextOr < FulltextCollection; end
 
     class Or < Collection
-      def fulltext_collection
+      def fulltext_collection_type
         FulltextOr
       end
 
