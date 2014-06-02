@@ -1,7 +1,7 @@
 
 require File.expand_path("../test_helper", __FILE__)
 
-class OrTest < MiniTest::Test
+class OrTest < AttrSearchable::TestCase
   def test_or
     expected1 = FactoryGirl.create(:product, :title => "Expected1")
     expected2 = FactoryGirl.create(:product, :title => "Expected2")

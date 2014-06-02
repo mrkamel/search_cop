@@ -1,7 +1,7 @@
 
 require File.expand_path("../test_helper", __FILE__)
 
-class StringTest < MiniTest::Test
+class StringTest < AttrSearchable::TestCase
   def test_anywhere
     product = FactoryGirl.create(:product, :title => "Expected title")
 

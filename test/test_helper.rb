@@ -1,6 +1,16 @@
 
 require "attr_searchable"
-require "minitest"
+
+begin
+  require "minitest"
+
+  class AttrSearchable::TestCase < MiniTest::Test; end
+rescue LoadError
+  require "minitest/unit"
+
+  class AttrSearchable::TestCase < MiniTest::Unit::TestCase; end
+end
+
 require "minitest/autorun"
 require "active_record"
 require "factory_girl"
@@ -62,7 +72,7 @@ if DATABASE == "mysql"
   ActiveRecord::Base.connection.execute "ALTER TABLE comments ENGINE=MyISAM"
 end
 
-class MiniTest::Test
+class AttrSearchable::TestCase
   def with_attr_searchable_options(model, key, options = {})
     opts = model.searchable_attribute_options[key.to_s] || {}
 

@@ -2,7 +2,7 @@
 require File.expand_path("../test_helper", __FILE__)
 require "irb"
 
-class AttrSearchableTest < MiniTest::Test
+class AttrSearchableTest < AttrSearchable::TestCase
   def test_associations
     product = FactoryGirl.create(:product, :comments => [
       FactoryGirl.create(:comment, :title => "Title1", :message => "Message1"),

@@ -1,7 +1,7 @@
 
 require File.expand_path("../test_helper", __FILE__)
 
-class AndTest < MiniTest::Test
+class AndTest < AttrSearchable::TestCase
   def test_and
     expected = FactoryGirl.create(:product, :title => "Expected title", :description => "Description")
     rejected = FactoryGirl.create(:product, :title => "Rejected title", :description => "Description")

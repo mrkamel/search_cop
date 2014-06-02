@@ -1,7 +1,7 @@
 
 require File.expand_path("../test_helper", __FILE__)
 
-class IntegerTest < MiniTest::Test
+class IntegerTest < AttrSearchable::TestCase
   def test_mapping
     product = FactoryGirl.create(:product, :available => true)
 
