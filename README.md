@@ -177,7 +177,7 @@ fulltext index while still allowing to mix them with non-fulltext attributes:
 
 ```ruby
 Book.search("author:Rowling OR author:Tolkien stock > 1")
-# MySQL: ... WHERE MATCH(books.author) AGAINST("Rowling Tokien") AND books.stock > 1
+# MySQL: ... WHERE MATCH(books.author) AGAINST('Rowling Tokien' IN BOOLEAN MODE) AND books.stock > 1
 # PostgreSQL: ... WHERE to_tsvector('simple', books.author) @@ to_tsquery('simple', 'Rowling | Tolkien') AND books.stock > 1
 ```
 
@@ -193,14 +193,14 @@ such that AttrSearchable can optimize the following queries:
 
 ```ruby
 BookSearch("Rowling OR Tolkien stock > 1")
-# MySQL: ... WHERE (MATCH(books.author) AGAINST("+Rowling") OR MATCH(books.title) AGAINST("+Tolkien")) AND books.stock > 1
+# MySQL: ... WHERE (MATCH(books.author) AGAINST('+Rowling' IN BOOLEAN MODE) OR MATCH(books.title) AGAINST('+Tolkien' IN BOOLEAN MODE)) AND books.stock > 1
 # PostgreSQL: ... WHERE (to_tsvector('simple', books.author) @@ to_tsquery('simple', 'Rowling') OR to_tsvector('simple', books.title) @@ to_tsquery('simple', 'Tolkien')) AND books.stock > 1
 ```
 
 to the following, more performant query:
 
 ```ruby
-# MySQL: ... WHERE MATCH(books.author, books.title) AGAINST("Rowling Tolkien") AND books.stock > 1
+# MySQL: ... WHERE MATCH(books.author, books.title) AGAINST('Rowling Tolkien' IN BOOLEAN MODE) AND books.stock > 1
 # PostgreSQL: ... WHERE to_tsvector('simple', books.author || ' ' || books.title) @@ to_tsquery('simple', 'Rowling | Tokien') and books.stock > 1
 ```
 
