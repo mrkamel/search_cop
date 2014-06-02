@@ -109,7 +109,7 @@ module AttrSearchable
           def visit_AttrSearchableGrammar_Nodes_FulltextExpression(o)
             dictionary = o.collection.options[:dictionary] || "simple"
 
-            "to_tsvector(#{visit dictionary}, #{visit o.collection}) @@ to_tsquery(#{visit dictionary}, #{visit visit(o.node)})"
+            "to_tsvector(#{visit dictionary.to_sym}, #{visit o.collection}) @@ to_tsquery(#{visit dictionary.to_sym}, #{visit visit(o.node)})"
           end
 
           def visit_AttrSearchableGrammar_Nodes_MatchesFulltextNot(o)
