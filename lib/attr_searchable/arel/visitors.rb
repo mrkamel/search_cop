@@ -33,15 +33,25 @@ module AttrSearchable
           end
 
           def visit_AttrSearchableGrammar_Nodes_MatchesFulltextNot(o, a)
-            "-\"#{o.right.gsub(/[\s+'"<>()~-]+/, " ")}\""
+            o.right.split(/[\s+'"<>()~-]+/).collect { |word| "-#{word}" }.join(" ")
           end
 
           def visit_AttrSearchableGrammar_Nodes_MatchesFulltext(o, a)
-            "\"#{o.right.gsub(/[\s+'"<>()~-]+/, " ")}\""
+            words = o.right.split(/[\s+'"<>()~-]+/)
+
+            words.size > 1 ? "\"#{words.join " "}\"" : words.first
           end
 
           def visit_AttrSearchableGrammar_Nodes_FulltextAnd(o, a)
-            o.nodes.collect { |node| node.is_a?(AttrSearchableGrammar::Nodes::MatchesFulltextNot) ? visit(node, a) : "+(#{visit node, a})" }.join(" ")
+            res = o.nodes.collect do |node|
+              if node.is_a?(AttrSearchableGrammar::Nodes::MatchesFulltextNot)
+                visit node, a
+              else
+                node.respond_to?(:nodes) && node.nodes.size > 1 ? "+(#{visit node, a})" : "+#{visit node, a}"
+              end
+            end
+
+            res.join(" ")
           end
 
           def visit_AttrSearchableGrammar_Nodes_FulltextOr(o, a)
@@ -57,15 +67,25 @@ module AttrSearchable
           end
 
           def visit_AttrSearchableGrammar_Nodes_MatchesFulltextNot(o)
-            "-\"#{o.right.gsub(/[\s+'"<>()~-]+/, " ")}\""
+            o.right.split(/[\s+'"<>()~-]+/).collect { |word| "-#{word}" }.join(" ")
           end
 
           def visit_AttrSearchableGrammar_Nodes_MatchesFulltext(o)
-            "\"#{o.right.gsub(/[\s+'"<>()~-]+/, " ")}\""
+            words = o.right.split(/[\s+'"<>()~-]+/)
+
+            words.size > 1 ? "\"#{words.join " "}\"" : words.first
           end
 
           def visit_AttrSearchableGrammar_Nodes_FulltextAnd(o)
-            o.nodes.collect { |node| node.is_a?(AttrSearchableGrammar::Nodes::MatchesFulltextNot) ? visit(node) : "+(#{visit node})" }.join(" ")
+            res = o.nodes.collect do |node|
+              if node.is_a?(AttrSearchableGrammar::Nodes::MatchesFulltextNot)
+                visit node
+              else
+                node.respond_to?(:nodes) && node.nodes.size > 1 ? "+(#{visit node})" : "+#{visit node}"
+              end
+            end
+
+            res.join(" ")
           end
 
           def visit_AttrSearchableGrammar_Nodes_FulltextOr(o)

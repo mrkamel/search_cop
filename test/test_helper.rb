@@ -32,6 +32,7 @@ class Product < ActiveRecord::Base
 
   if DATABASE != "sqlite"
     attr_searchable_options :title, :type => :fulltext
+    attr_searchable_options :description, :type => :fulltext
     attr_searchable_options :comment, :type => :fulltext
   end
 
@@ -71,7 +72,10 @@ end
 
 if DATABASE == "mysql"
   ActiveRecord::Base.connection.execute "ALTER TABLE products ENGINE=MyISAM"
+  ActiveRecord::Base.connection.execute "ALTER TABLE products ADD FULLTEXT INDEX(title), ADD FULLTEXT INDEX(description), ADD FULLTEXT INDEX(title, description)"
+
   ActiveRecord::Base.connection.execute "ALTER TABLE comments ENGINE=MyISAM"
+  ActiveRecord::Base.connection.execute "ALTER TABLE comments ADD FULLTEXT INDEX(title, message)"
 end
 
 class AttrSearchable::TestCase

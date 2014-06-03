@@ -144,7 +144,7 @@ class Book < ActiveRecord::Base
 end
 ```
 
-However, this often not desirable. Therefore, AttrSearchable can exploit the
+However, this is often not desirable. Therefore, AttrSearchable can exploit the
 fulltext index capabilities of MySQL and PostgreSQL. To use already existing
 fulltext indices, simply tell AttrSearchable to use them via:
 
@@ -164,32 +164,26 @@ attributes having fulltext indices to:
 
 ```ruby
 Book.search("Harry Potter")
-# MySQL: ... WHERE MATCH(books.title) AGAINST('+Harry +Potter' IN BOOLEAN MODE)
-# PostgreSQL: ... WHERE to_tsvector('simple', books.title) @@ to_tsquery('simple', 'Harry & Potter')
+# MySQL: ... WHERE MATCH(books.title) AGAINST('+Harry +Potter' IN BOOLEAN MODE) OR MATCH(books.author) AGAINST('+Harry +Potter' IN BOOLEAN MODE)
+# PostgreSQL: ... WHERE to_tsvector('simple', books.title) @@ to_tsquery('simple', 'Harry & Potter') OR to_tsvector('simple', books.author) @@ to_tsquery('simple', 'Harry & Potter')
 ```
 
 Obviously, theses queries won't always return the same results as wildcard
 `LIKE` queries, because we search for words instead of substrings. However,
 fulltext indices will provide better performance for most cases.
 
-Moreover, AttrSearchable tries to optimize the queries to make optimal use of a
-fulltext index while still allowing to mix them with non-fulltext attributes:
-
-```ruby
-Book.search("author:Rowling OR author:Tolkien stock > 1")
-# MySQL: ... WHERE MATCH(books.author) AGAINST('Rowling Tokien' IN BOOLEAN MODE) AND books.stock > 1
-# PostgreSQL: ... WHERE to_tsvector('simple', books.author) @@ to_tsquery('simple', 'Rowling | Tolkien') AND books.stock > 1
-```
-
-Using fulltext indices, you probably want to specify a default field to search
-in:
+Moreover, the query above is not yet perfect. To improve it even more,
+AttrSearchable tries to optimize the queries to make optimal use of fulltext
+indices while still allowing to mix them with non-fulltext attributes. To
+improve queries, the first thing you want to do is to specify a default field
+to search in:
 
 ```ruby
 attr_searchable :all => [:author, :title]
 attr_searchable_options :all, :type => :fulltext, :default => true
 ```
 
-such that AttrSearchable can optimize the following queries:
+Now AttrSearchable can optimize the following query:
 
 ```ruby
 BookSearch("Rowling OR Tolkien stock > 1")
@@ -200,17 +194,22 @@ BookSearch("Rowling OR Tolkien stock > 1")
 to the following, more performant query:
 
 ```ruby
+BookSearch("Rowling OR Tolkien stock > 1")
 # MySQL: ... WHERE MATCH(books.author, books.title) AGAINST('Rowling Tolkien' IN BOOLEAN MODE) AND books.stock > 1
 # PostgreSQL: ... WHERE to_tsvector('simple', books.author || ' ' || books.title) @@ to_tsquery('simple', 'Rowling | Tokien') and books.stock > 1
 ```
 
-To create a fulltext index on `books.title` in MySQL, simply use:
+Other queries will be optimized in a similar way, such that AttrSearchable
+tries to minimize the fultext constraints within a query, namely `MATCH()
+AGAINST()` for MySQL and `to_tsvector() @@ to_tsquery()` for PostgreSQL. To
+create a fulltext index on `books.title` in MySQL, simply use:
 
 ```ruby
 add_index :books, :title, :type => :fulltext
 ```
 
-Regarding compound indices, use:
+Regarding compound indices, which will e.g. be used for the default field `all`
+we already specified above, use:
 
 ```ruby
 add_index :books, [:author, :title], :type => :fulltext
@@ -228,7 +227,7 @@ one of the easiest ways is:
 ActiveRecord::Base.connection.execute "CREATE INDEX fulltext_index_books_on_title ON books USING GIN(to_tsvector('simple', title))"
 ```
 
-Regardinc compound indices for PostgreSQL, use:
+Regarding compound indices for PostgreSQL, use:
 
 ```ruby
 ActiveRecord::Base.connection.execute "CREATE INDEX fulltext_index_books_on_title ON books USING GIN(to_tsvector('simple', author || ' ' || title))"
