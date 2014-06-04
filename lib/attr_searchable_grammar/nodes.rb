@@ -24,14 +24,6 @@ module AttrSearchableGrammar
         self
       end
 
-      def can_reduce?
-        false
-      end
-
-      def reduce!
-        self
-      end
-
       def can_group?
         false
       end
@@ -40,22 +32,26 @@ module AttrSearchableGrammar
         self
       end
 
+      def fulltext?
+        false
+      end
+
       def can_optimize?
-        can_flatten? || can_reduce? || can_group?
+        can_flatten? || can_group?
       end
 
       def optimize!
-        flatten!.reduce!.group! while can_optimize?
+        flatten!.group! while can_optimize?
 
-        self
+        finalize!
       end
 
       def finalize!
-        fulltext? ? FulltextExpression.new(collection, self) : self
+        self
       end
 
-      def fulltext?
-        false
+      def nodes
+        []
       end
     end
 
@@ -73,6 +69,10 @@ module AttrSearchableGrammar
 
       def fulltext?
         true
+      end
+
+      def finalize!
+        FulltextExpression.new collection, self
       end
 
       def collection
@@ -103,53 +103,29 @@ module AttrSearchableGrammar
       end
 
       def can_flatten?
-        @nodes.any?(&:can_flatten?) || @nodes.any? { |node| node.is_a? self.class }
+        nodes.any?(&:can_flatten?) || nodes.any? { |node| node.is_a?(self.class) || node.nodes.size == 1 }
       end
 
-      def flatten!
-        @nodes = @nodes.collect(&:flatten!).collect { |node| node.is_a?(self.class) ? node.nodes : node }.flatten
-
-        self
-      end
-
-      def can_reduce?
-        @nodes.any?(&:can_reduce?) || @nodes.any? { |node| node.respond_to?(:nodes) && node.nodes.size == 1 }
-      end
-        
-      def reduce!
-        @nodes = @nodes.collect(&:reduce!).collect { |node| node.respond_to?(:nodes) && node.nodes.size == 1 ? node.nodes : node }.flatten
+      def flatten!(&block)
+        @nodes = nodes.collect(&:flatten!).collect { |node| node.is_a?(self.class) || node.nodes.size == 1 ? node.nodes : node }.flatten
 
         self
       end
 
       def can_group?
-        standard_nodes.any?(&:can_group?) || fulltext_groups.any? { |_, group| group.size > 1 }
+        nodes.reject(&:fulltext?).any?(&:can_group?) || nodes.select(&:fulltext?).group_by(&:collection).any? { |_, group| group.size > 1 }
       end
 
       def group!
-        @nodes = standard_nodes.collect(&:group!) + fulltext_groups.collect do |collection, group|
-          if group.size > 1
-            fulltext_collection_type.new collection, *group.collect { |node| node.is_a?(fulltext_collection_type) ? node.nodes : node }
-          else
-            group.first
-          end
-        end
+        @nodes = nodes.reject(&:fulltext?).collect(&:group!) + nodes.select(&:fulltext?).group_by(&:collection).collect { |collection, group| group.size > 1 ? self.class::Fulltext.new(collection, group) : group.first }
 
         self
       end
 
       def finalize!
-        @nodes = @nodes.collect { |node| node.fulltext? ? FulltextExpression.new(node.collection, node) : node.finalize! }
+        @nodes = nodes.collect(&:finalize!)
 
         self
-      end
-
-      def fulltext_groups
-        @nodes.select(&:fulltext?).group_by(&:collection)
-      end
-
-      def standard_nodes
-        @nodes.reject(&:fulltext?)
       end
     end
 
@@ -165,29 +141,25 @@ module AttrSearchableGrammar
       def fulltext?
         true
       end
-    end
 
-    class FulltextAnd < FulltextCollection; end
+      def finalize!
+        FulltextExpression.new collection, self
+      end
+    end
 
     class And < Collection
-      def fulltext_collection_type
-        FulltextAnd
-      end
+      class Fulltext < FulltextCollection; end
 
       def to_arel
-        @nodes.inject { |res, cur| Arel::Nodes::And.new [res, cur] }
+        nodes.inject { |res, cur| Arel::Nodes::And.new [res, cur] }
       end
     end
 
-    class FulltextOr < FulltextCollection; end
-
     class Or < Collection
-      def fulltext_collection_type
-        FulltextOr
-      end
+      class Fulltext < FulltextCollection; end
 
       def to_arel
-        @nodes.inject { |res, cur| Arel::Nodes::Or.new res, cur }
+        nodes.inject { |res, cur| Arel::Nodes::Or.new res, cur }
       end
     end
   end

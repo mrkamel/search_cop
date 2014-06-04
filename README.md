@@ -233,6 +233,13 @@ Regarding compound indices for PostgreSQL, use:
 ActiveRecord::Base.connection.execute "CREATE INDEX fulltext_index_books_on_title ON books USING GIN(to_tsvector('simple', author || ' ' || title))"
 ```
 
+To use another PostgreSQL dictionary than `simple`, you have to create the
+index accordingly and you need tell AttrSearchable about it, e.g.:
+
+```ruby
+attr_searchable_options :title, :dictionary => "english"
+```
+
 For more details about PostgreSQL fulltext indices visit
 [http://www.postgresql.org/docs/9.3/static/textsearch.html](http://www.postgresql.org/docs/9.3/static/textsearch.html)
 

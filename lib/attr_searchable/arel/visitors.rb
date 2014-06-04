@@ -42,19 +42,19 @@ module AttrSearchable
             words.size > 1 ? "\"#{words.join " "}\"" : words.first
           end
 
-          def visit_AttrSearchableGrammar_Nodes_FulltextAnd(o, a)
+          def visit_AttrSearchableGrammar_Nodes_And_Fulltext(o, a)
             res = o.nodes.collect do |node|
               if node.is_a?(AttrSearchableGrammar::Nodes::MatchesFulltextNot)
                 visit node, a
               else
-                node.respond_to?(:nodes) && node.nodes.size > 1 ? "+(#{visit node, a})" : "+#{visit node, a}"
+                node.nodes.size > 1 ? "+(#{visit node, a})" : "+#{visit node, a}"
               end
             end
 
-            res.join(" ")
+            res.join " "
           end
 
-          def visit_AttrSearchableGrammar_Nodes_FulltextOr(o, a)
+          def visit_AttrSearchableGrammar_Nodes_Or_Fulltext(o, a)
             o.nodes.collect { |node| "(#{visit node, a})" }.join(" ")
           end
         else
@@ -76,19 +76,19 @@ module AttrSearchable
             words.size > 1 ? "\"#{words.join " "}\"" : words.first
           end
 
-          def visit_AttrSearchableGrammar_Nodes_FulltextAnd(o)
+          def visit_AttrSearchableGrammar_Nodes_And_Fulltext(o)
             res = o.nodes.collect do |node|
               if node.is_a?(AttrSearchableGrammar::Nodes::MatchesFulltextNot)
                 visit node
               else
-                node.respond_to?(:nodes) && node.nodes.size > 1 ? "+(#{visit node})" : "+#{visit node}"
+                node.nodes.size > 1 ? "+(#{visit node})" : "+#{visit node}"
               end
             end
 
-            res.join(" ")
+            res.join " "
           end
 
-          def visit_AttrSearchableGrammar_Nodes_FulltextOr(o)
+          def visit_AttrSearchableGrammar_Nodes_Or_Fulltext(o)
             o.nodes.collect { |node| "(#{visit node})" }.join(" ")
           end
         end
@@ -114,11 +114,11 @@ module AttrSearchable
             "'#{o.right.gsub /[\s&|!:'"]+/, " "}'"
           end
 
-          def visit_AttrSearchableGrammar_Nodes_FulltextAnd(o, a)
+          def visit_AttrSearchableGrammar_Nodes_And_Fulltext(o, a)
             o.nodes.collect { |node| "(#{visit node, a})" }.join(" & ")
           end
 
-          def visit_AttrSearchableGrammar_Nodes_FulltextOr(o, a)
+          def visit_AttrSearchableGrammar_Nodes_Or_Fulltext(o, a)
             o.nodes.collect { |node| "(#{visit node, a})" }.join(" | ")
           end
         else
@@ -140,11 +140,11 @@ module AttrSearchable
             "'#{o.right.gsub /[\s&|!:'"]+/, " "}'"
           end
 
-          def visit_AttrSearchableGrammar_Nodes_FulltextAnd(o)
+          def visit_AttrSearchableGrammar_Nodes_And_Fulltext(o)
             o.nodes.collect { |node| "(#{visit node})" }.join(" & ")
           end
 
-          def visit_AttrSearchableGrammar_Nodes_FulltextOr(o)
+          def visit_AttrSearchableGrammar_Nodes_Or_Fulltext(o)
             o.nodes.collect { |node| "(#{visit node})" }.join(" | ")
           end
         end
