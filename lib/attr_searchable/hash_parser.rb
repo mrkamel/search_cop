@@ -1,5 +1,5 @@
 
-class AttrSearchableHashParser
+class AttrSearchable::HashParser
   def initialize(model)
     @model = model
   end

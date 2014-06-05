@@ -2,7 +2,7 @@
 require "attr_searchable/version"
 require "attr_searchable/arel"
 require "attr_searchable_grammar"
-require "attr_searchable_hash_parser"
+require "attr_searchable/hash_parser"
 require "treetop"
 
 Treetop.load File.expand_path("../attr_searchable_grammar.treetop", __FILE__)
@@ -20,7 +20,7 @@ module AttrSearchable
     end
 
     def self.parse_hash(hash, model)
-      AttrSearchableHashParser.new(model).parse(hash) || raise(ParseError)
+      AttrSearchable::HashParser.new(model).parse(hash) || raise(ParseError)
     end
 
     def self.parse_string(string, model)
