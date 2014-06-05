@@ -7,6 +7,8 @@ module AttrSearchableGrammar
       attr_reader :model, :key
 
       def initialize(model, key)
+        raise AttrSearchable::IncompatibleDatatype unless model.searchable_attributes[key]
+
         @model = model
         @key = key
       end
@@ -31,7 +33,7 @@ module AttrSearchableGrammar
 
       def matches(value)
         if fulltext?
-          AttrSearchableGrammar::Nodes::MatchesFulltext.new self, value
+          AttrSearchableGrammar::Nodes::MatchesFulltext.new self, value.to_s
         else
           attributes.collect! { |attribute| attribute.matches value }.inject(:or)
         end

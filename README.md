@@ -83,6 +83,10 @@ Book.search("available:yes OR created_at:2014")
 # ... WHERE books.available = 1 OR (books.created_at >= '2014-01-01 00:00:00' and books.created_at <= '2014-12-31 00:00:00')
 ```
 
+Of course, these `LIKE '%...%'` queries won't achieve optimal performance, but
+check out the section below on AttrSearchable's fulltext capabilities to
+understand how the resulting queries can be optimized.
+
 As `Book.search(...)` returns an `ActiveRecord::Relation`, you are free to pre-
 or post-process the search results in every possible way:
 

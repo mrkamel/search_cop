@@ -2,6 +2,7 @@
 require "attr_searchable/version"
 require "attr_searchable/arel"
 require "attr_searchable_grammar"
+require "attr_searchable_hash_parser"
 require "treetop"
 
 Treetop.load File.expand_path("../attr_searchable_grammar.treetop", __FILE__)
@@ -14,10 +15,18 @@ module AttrSearchable
   class ParseError < Error; end
 
   module Parser
-    def self.parse(str, model)
-      node = AttrSearchableGrammarParser.new.parse(str) || raise(ParseError)
+    def self.parse(arg, model)
+      arg.is_a?(Hash) ? parse_hash(arg, model) : parse_string(arg, model)
+    end
+
+    def self.parse_hash(hash, model)
+      AttrSearchableHashParser.new(model).parse(hash) || raise(ParseError)
+    end
+
+    def self.parse_string(string, model)
+      node = AttrSearchableGrammarParser.new.parse(string) || raise(ParseError)
       node.model = model
-      node
+      node.to_arel
     end
   end
 
@@ -52,13 +61,13 @@ module AttrSearchable
       self.searchable_attribute_options[key.to_s] = (self.searchable_attribute_options[key.to_s] || {}).merge(options)
     end
 
-    def search(str)
-      return respond_to?(:scoped) ? scoped : all if str.blank?
+    def search(arg)
+      return respond_to?(:scoped) ? scoped : all if arg.blank?
 
       scope = respond_to?(:search_scope) ? search_scope : nil
       scope ||= eager_load(searchable_attributes.values.flatten.uniq.collect { |column| column.split(".").first.to_sym } - [name.tableize.to_sym])
 
-      scope.where AttrSearchable::Parser.parse(str, self).to_arel.optimize!
+      scope.where AttrSearchable::Parser.parse(arg, self).optimize!
     rescue AttrSearchable::Error
       respond_to?(:none) ? none : where("1 = 0")
     end
