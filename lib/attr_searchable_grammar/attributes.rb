@@ -123,7 +123,7 @@ module AttrSearchableGrammar
 
     class Float < WithoutMatches
       def compatible?(value)
-        return true if value =~ /^[0-9]+(\.[0-9]+)?$/
+        return true if value.to_s =~ /^[0-9]+(\.[0-9]+)?$/
 
         false
       end
@@ -183,8 +183,8 @@ module AttrSearchableGrammar
 
     class Boolean < WithoutMatches
       def map(value)
-        return true if value =~ /^(1|true|yes)$/i
-        return false if value =~ /^(0|false|no)$/i
+        return true if value.to_s =~ /^(1|true|yes)$/i
+        return false if value.to_s =~ /^(0|false|no)$/i
 
         raise AttrSearchable::IncompatibleDatatype
       end 

@@ -4,9 +4,10 @@
 [![Code Climate](https://codeclimate.com/github/mrkamel/attr_searchable.png)](https://codeclimate.com/github/mrkamel/attr_searchable)
 [![Dependency Status](https://gemnasium.com/mrkamel/attr_searchable.png?travis)](https://gemnasium.com/mrkamel/attr_searchable)
 
-AttrSearchable extends your ActiveRecord models to support fulltext search engine like queries
-via simple query strings. Assume you have a `Book` model having various attributes like
-`title`, `author`, `stock`, `price`, `available`. Using AttrSearchable you can perform:
+AttrSearchable extends your ActiveRecord models to support fulltext search
+engine like queries via simple query strings and hash-based queries. Assume you
+have a `Book` model having various attributes like `title`, `author`, `stock`,
+`price`, `available`. Using AttrSearchable you can perform:
 
 ```ruby
 Book.search("Joanne Rowling Harry Potter")
@@ -15,21 +16,22 @@ Book.search("price > 10 AND price < 20 -stock:0 (Potter OR Rowling)")
 # ...
 ```
 
-Thus, you can hand out a search query string to your models, such that your
-app's admins and/or users will get powerful query features without the need for
-building complex forms, because all you need is a simple text field:
+Thus, you can hand out a search query string to your models and you, your app's
+admins and/or users will get powerful query features without the need for
+integrating additional third party search servers, since AttrSearchable can use
+fulltext index capabilities of your favorite RDBMS in a database agnostic way
+(currently MySQL and PostgreSQL fulltext indices are supported) and optimizes
+the queries to make optimal use of it. Read more below.
+
+Complex hash-based queries are supported as well:
 
 ```ruby
-class BooksController < ApplicationController
-  def index
-    @books = Book.search(params[:q])...
-  end
-end
+Book.search(:author => "Rowling", :title => "Harry Potter")
+Book.search(:or => [{:author => "Rowling"}, {:author => "Tolkien"}])
+Book.search(:and => [{:price => {:gt => 10}}, {:not => {:stock => 0}}, :or => [{:title => "Potter"}, {:author => "Rowling"}]])
+Book.search(:or => [{:query => "Rowling -Potter"}, {:query => "Tolkien -Rings"}])
+# ...
 ```
-
-AttrSearchable can even use fulltext index capabilities of your favorite RDBMS
-(currently MySQL and PostgreSQL fulltext indices are supported) in a database
-agnostic way.
 
 ## Installation
 
@@ -91,49 +93,21 @@ As `Book.search(...)` returns an `ActiveRecord::Relation`, you are free to pre-
 or post-process the search results in every possible way:
 
 ```ruby
-Book.where(:availabble => true).search("Harry Potter").order("books.id desc").paginate(:page => params[:page])
+Book.where(:available => true).search("Harry Potter").order("books.id desc").paginate(:page => params[:page])
 ```
-
-## Associations
-
-If you specify searchable attributes from another model, like
-
-```ruby
-class Book < ActiveRecord::Base
-  # ...
-
-  attr_searchable :author => "author.name"
-
-  # ...
-end
-```
-
-AttrSearchable will by default `eager_load` these associations, when you
-perform `Book.search(...)`. If you don't want that or need to perform special
-operations, define a `search_scope` within your model:
-
-```ruby
-class Book < ActiveRecord::Base
-  # ...
-
-  scope :search_scope, lambda { joins(:author).eager_load(:comments) } # etc.
-
-  # ...
-end
-```
-
-AttrSearchable will then skip any association auto loading and will use
-the `search_scope` instead.
 
 ## Fulltext index capabilities
 
-By default, AttrSearchable will use `LIKE '%...%'` queries. Unfortunately,
-unless you create a [trigram index](http://www.postgresql.org/docs/9.1/static/pgtrgm.html) (postgres only),
-theses queries can not use SQL indices, such that every row needs to be scanned
-by your RDBMS when you search for `Book.search("Harry Potter")` or similar.
-Contrary, when you search for `Book.search("title=Potter")` indices can and
-will be used. Moreover, other indices (on price, stock, etc) will of course be
-used by your RDBMS when you search for `Book.search("stock > 0")`, etc.
+By default, i.e. if you don't tell AttrSearchable about your fulltext indices,
+AttrSearchable will use `LIKE '%...%'` queries. Unfortunately, unless you
+create a [trigram index](http://www.postgresql.org/docs/9.1/static/pgtrgm.html)
+(postgres only), theses queries can not use SQL indices, such that every row
+needs to be scanned by your RDBMS when you search for `Book.search("Harry
+Potter")` or similar, which is btw. usually ok for small data sets and a small
+amount of regular queries. Contrary, when you search for
+`Book.search("title=Potter")` indices can and will be used. Moreover, other
+indices (on price, stock, etc) will of course be used by your RDBMS when you
+search for `Book.search("stock > 0")`, etc.
 
 Regarding the `LIKE` penalty, the easiest way to make them use indices is
 to remove the left wildcard. AttrSearchble supports this via:
@@ -174,13 +148,13 @@ Book.search("Harry Potter")
 
 Obviously, theses queries won't always return the same results as wildcard
 `LIKE` queries, because we search for words instead of substrings. However,
-fulltext indices will provide better performance for most cases.
+fulltext indices will usually of course provide better performance.
 
 Moreover, the query above is not yet perfect. To improve it even more,
 AttrSearchable tries to optimize the queries to make optimal use of fulltext
 indices while still allowing to mix them with non-fulltext attributes. To
 improve queries, the first thing you want to do is to specify a default field
-to search in:
+to search in, such that AttrSearchable must no longer search within all fields:
 
 ```ruby
 attr_searchable :all => [:author, :title]
@@ -205,8 +179,15 @@ BookSearch("Rowling OR Tolkien stock > 1")
 
 Other queries will be optimized in a similar way, such that AttrSearchable
 tries to minimize the fultext constraints within a query, namely `MATCH()
-AGAINST()` for MySQL and `to_tsvector() @@ to_tsquery()` for PostgreSQL. To
-create a fulltext index on `books.title` in MySQL, simply use:
+AGAINST()` for MySQL and `to_tsvector() @@ to_tsquery()` for PostgreSQL.
+
+```ruby
+BookSearch("(Rowling -Potter) OR Tolkien")
+# MySQL: ... WHERE MATCH(books.author, books.title) AGAINST('(+Rowling -Potter) Tolkien' IN BOOLEAN MODE)
+# PostgreSQL: ... WHERE to_tsvector('simple', books.author || ' ' || books.title) @@ to_tsquery('simple', '(Rowling & !Potter) | Tolkien')
+```
+
+To create a fulltext index on `books.title` in MySQL, simply use:
 
 ```ruby
 add_index :books, :title, :type => :fulltext
@@ -247,16 +228,49 @@ attr_searchable_options :title, :dictionary => "english"
 For more details about PostgreSQL fulltext indices visit
 [http://www.postgresql.org/docs/9.3/static/textsearch.html](http://www.postgresql.org/docs/9.3/static/textsearch.html)
 
-## Security
+## Associations
 
-Exposing complex SQL query capabilities should always be done with caution.
-Besides its fulltext extensions, AttrSearchable does not generate or manipulate
-any SQL itself. Instead, it uses Arel. Using Arel does not by definition mean
-that you're safe against SQL injection, but Arel sanitizes strings, converts
-between datatypes, quotes table and column names, etc before sending the query
-to your RDBMS. Moreover, you are of course very welcome to review the code,
-send pull requests for additional features and database fulltext support, open
-issues, etc.
+If you specify searchable attributes from another model, like
+
+```ruby
+class Book < ActiveRecord::Base
+  # ...
+
+  attr_searchable :author => "author.name"
+
+  # ...
+end
+```
+
+AttrSearchable will by default `eager_load` these associations, when you
+perform `Book.search(...)`. If you don't want that or need to perform special
+operations, define a `search_scope` within your model:
+
+```ruby
+class Book < ActiveRecord::Base
+  # ...
+
+  scope :search_scope, lambda { joins(:author).eager_load(:comments) } # etc.
+
+  # ...
+end
+```
+
+AttrSearchable will then skip any association auto loading and will use
+the `search_scope` instead.
+
+## Supported operators
+
+Query string queries support `AND/and`, `OR/or`, `:`, `=`, `!=`, `<`, `<=`,
+`>`, `>=`, `NOT/not/-`, `()`, `"..."` and `'...'`. Default operators are `AND`
+and `matches`, `OR` has precedence over `AND`. `NOT` can only be used as infix
+operator regarding a single attribute.
+
+Hash based queries support `:and => [...]` and `:or => [...]`, which take an array
+of `:not => {...}`, `:matches => {...}`, `:eq => {...}`, `:not_eq => {...}`,
+`:lt => {...}`, `:lteq => {...}`, `gt => {...}`, `:gteq => {...}` and `:query => "..."`
+arguments. Moreover, `:query => "..."` makes it possible to create sub-queries.
+The other rules for query string queries apply for hash based queries as well.
 
 ## Contributing
 

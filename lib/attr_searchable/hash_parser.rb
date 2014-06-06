@@ -13,6 +13,8 @@ class AttrSearchable::HashParser
           value.collect { |val| parse val }.inject(:or)
         when :not
           parse(value).not
+        when :query
+          AttrSearchable::Parser.parse value, @model
         else
           parse_attribute key, value
       end
@@ -27,11 +29,11 @@ class AttrSearchable::HashParser
     collection = AttrSearchableGrammar::Attributes::Collection.new(@model, key.to_s)
 
     if value.is_a?(Hash)
-      raise AttrSearchable::ParseError unless collection.respond_to?(value.keys.first)
+      raise AttrSearchable::ParseError unless [:matches, :eq, :not_eq, :gt, :gteq, :lt, :lteq].include?(value.keys.first)
 
-      collection.send value.keys.first, value.values.first
+      collection.send value.keys.first, value.values.first.to_s
     else
-      collection.send :matches, value
+      collection.send :matches, value.to_s
     end
   end
 end
