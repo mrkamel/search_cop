@@ -272,6 +272,39 @@ of `:not => {...}`, `:matches => {...}`, `:eq => {...}`, `:not_eq => {...}`,
 arguments. Moreover, `:query => "..."` makes it possible to create sub-queries.
 The other rules for query string queries apply to hash based queries as well.
 
+## Mapping
+
+When searching in boolean, datetime, timestamp, etc. fields, AttrSearchable
+performs some mapping. The following queries are equivalent:
+
+```ruby
+Book.search("available:true")
+Book.search("available:1")
+Book.search("available:yes")
+```
+
+as well as
+
+```ruby
+Book.search("available:false")
+Book.search("available:0")
+Book.search("available:no")
+```
+
+For datetime and timestamp fields, AttrSearchable expands certain values to
+ranges:
+
+```ruby
+Book.search("created_at:2014")
+# ... WHERE created_at >= '2014-01-01 00:00:00' AND created_at <= '2014-12-31 23:59:59'
+
+Book.search("created_at:2014-06")
+# ... WHERE created_at >= '2014-06-01 00:00:00' AND created_at <= '2014-06-30 23:59:59'
+
+Book.search("created_at:2014-06-15")
+# ... WHERE created_at >= '2014-06-15 00:00:00' AND created_at <= '2014-06-15 23:59:59'
+```
+
 ## Contributing
 
 1. Fork it

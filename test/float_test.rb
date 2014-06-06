@@ -1,7 +1,6 @@
 
 require File.expand_path("../test_helper", __FILE__)
 
-require "irb"
 class FloatTest < AttrSearchable::TestCase
   def test_anywhere
     product = FactoryGirl.create(:product, :price => 10.5, :created_at => Time.now - 1.day)
