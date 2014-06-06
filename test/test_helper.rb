@@ -79,6 +79,11 @@ if DATABASE == "mysql"
 end
 
 class AttrSearchable::TestCase
+  def teardown
+    Product.delete_all
+    Comment.delete_all
+  end
+
   def with_attr_searchable_options(model, key, options = {})
     opts = model.searchable_attribute_options[key.to_s] || {}
 

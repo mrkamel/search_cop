@@ -2,7 +2,7 @@
 require File.expand_path("../test_helper", __FILE__)
 
 class AndTest < AttrSearchable::TestCase
-  def test_and
+  def test_and_string
     expected = FactoryGirl.create(:product, :title => "Expected title", :description => "Description")
     rejected = FactoryGirl.create(:product, :title => "Rejected title", :description => "Description")
 
@@ -12,6 +12,16 @@ class AndTest < AttrSearchable::TestCase
     refute_includes results, rejected
 
     assert_equal results, Product.search("title: 'Expected title' AND description: Description")
+  end
+
+  def test_and_hash
+    expected = FactoryGirl.create(:product, :title => "Expected title", :description => "Description")
+    rejected = FactoryGirl.create(:product, :title => "Rejected title", :description => "Description")
+
+    results = Product.search(:and => [{:title => "Expected title"}, {:description => "Description"}])
+
+    assert_includes results, expected
+    refute_includes results, rejected
   end
 end
 

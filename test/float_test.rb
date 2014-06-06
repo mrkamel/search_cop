@@ -1,9 +1,10 @@
 
 require File.expand_path("../test_helper", __FILE__)
 
-class IntegerTest < AttrSearchable::TestCase
+require "irb"
+class FloatTest < AttrSearchable::TestCase
   def test_anywhere
-    product = FactoryGirl.create(:product, :price => 10.5)
+    product = FactoryGirl.create(:product, :price => 10.5, :created_at => Time.now - 1.day)
 
     assert_includes Product.search("10.5"), product
     refute_includes Product.search("11.5"), product
@@ -19,15 +20,15 @@ class IntegerTest < AttrSearchable::TestCase
   def test_equals
     product = FactoryGirl.create(:product, :price => 10.5)
 
-    assert_includes Product.search("stock = 10.5"), product
-    refute_includes Product.search("stock = 11.5"), product
+    assert_includes Product.search("price = 10.5"), product
+    refute_includes Product.search("price = 11.5"), product
   end
 
   def test_equals_not
     product = FactoryGirl.create(:product, :price => 10.5)
 
     assert_includes Product.search("price != 11.5"), product
-    refute_incldues Product.search("price != 10.5"), product
+    refute_includes Product.search("price != 10.5"), product
   end
 
   def test_greater

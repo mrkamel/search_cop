@@ -2,17 +2,28 @@
 require File.expand_path("../test_helper", __FILE__)
 
 class OrTest < AttrSearchable::TestCase
-  def test_or
-    expected1 = FactoryGirl.create(:product, :title => "Expected1")
-    expected2 = FactoryGirl.create(:product, :title => "Expected2")
-    rejected = FactoryGirl.create(:product, :title => "Rejected")
+  def test_or_string
+    product1 = FactoryGirl.create(:product, :title => "Title1")
+    product2 = FactoryGirl.create(:product, :title => "Title2")
+    product3 = FactoryGirl.create(:product, :title => "Title3")
 
-    results = Product.search("title: Expected1 OR title: Expected2")
+    results = Product.search("title: Title1 OR title: Title2")
 
-    assert_includes results, expected1
-    assert_includes results, expected2
+    assert_includes results, product1
+    assert_includes results, product2
+    refute_includes results, product3
+  end
 
-    refute_includes results, rejected
+  def test_or_hash
+    product1 = FactoryGirl.create(:product, :title => "Title1")
+    product2 = FactoryGirl.create(:product, :title => "Title2")
+    product3 = FactoryGirl.create(:product, :title => "Title3")
+
+    results = Product.search(:or => [{:title => "Title1"}, {:title => "Title2"}])
+
+    assert_includes results, product1
+    assert_includes results, product2
+    refute_includes results, product3
   end
 end
 

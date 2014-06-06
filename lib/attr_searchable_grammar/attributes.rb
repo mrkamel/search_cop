@@ -76,6 +76,8 @@ module AttrSearchableGrammar
 
       def compatible?(value)
         map value
+
+        true
       rescue AttrSearchable::IncompatibleDatatype
         false
       end
@@ -86,9 +88,9 @@ module AttrSearchableGrammar
 
       { :eq => "Equality", :not_eq => "NotEqual", :lt => "LessThan", :lteq => "LessThanOrEqual", :gt => "GreaterThan", :gteq => "GreaterThanOrEqual", :matches => "Matches" }.each do |method, class_name|
         define_method method do |value|
-          return AttrSearchable::IncompatibleDatatype unless compatible?(value)
+          raise AttrSearchable::IncompatibleDatatype unless compatible?(value)
 
-          AttrSearchableGrammar::Nodes.const_get(class_name).new(@attribute, value)
+          AttrSearchableGrammar::Nodes.const_get(class_name).new(@attribute, map(value))
         end
       end
 

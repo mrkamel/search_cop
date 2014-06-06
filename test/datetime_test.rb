@@ -1,7 +1,7 @@
 
 require File.expand_path("../test_helper", __FILE__)
 
-class IntegerTest < AttrSearchable::TestCase
+class DatetimeTest < AttrSearchable::TestCase
   def test_mapping
     product = FactoryGirl.create(:product, :created_at => Time.parse("2014-05-01 12:30:30"))
 
@@ -57,7 +57,7 @@ class IntegerTest < AttrSearchable::TestCase
     product = FactoryGirl.create(:product, :created_at => Time.parse("2014-05-01"))
 
     assert_includes Product.search("created_at < 2014-05-02"), product
-    refute_includes Product.search("created_at < 2014-05-02"), product
+    refute_includes Product.search("created_at < 2014-05-01"), product
   end
 
   def test_less_equals

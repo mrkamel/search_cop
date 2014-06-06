@@ -270,7 +270,7 @@ Hash based queries support `:and => [...]` and `:or => [...]`, which take an arr
 of `:not => {...}`, `:matches => {...}`, `:eq => {...}`, `:not_eq => {...}`,
 `:lt => {...}`, `:lteq => {...}`, `gt => {...}`, `:gteq => {...}` and `:query => "..."`
 arguments. Moreover, `:query => "..."` makes it possible to create sub-queries.
-The other rules for query string queries apply for hash based queries as well.
+The other rules for query string queries apply to hash based queries as well.
 
 ## Contributing
 
