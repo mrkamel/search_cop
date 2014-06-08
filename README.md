@@ -19,9 +19,9 @@ Book.search("price > 10 AND price < 20 -stock:0 (Potter OR Rowling)")
 Thus, you can hand out a search query string to your models and you, your app's
 admins and/or users will get powerful query features without the need for
 integrating additional third party search servers, since AttrSearchable can use
-fulltext index capabilities of your favorite RDBMS in a database agnostic way
-(currently MySQL and PostgreSQL fulltext indices are supported) and optimizes
-the queries to make optimal use of it. Read more below.
+fulltext index capabilities of your RDBMS in a database agnostic way (currently
+MySQL and PostgreSQL fulltext indices are supported) and optimizes the queries
+to make optimal use of them. Read more below.
 
 Complex hash-based queries are supported as well:
 
@@ -161,7 +161,7 @@ attr_searchable :all => [:author, :title]
 attr_searchable_options :all, :type => :fulltext, :default => true
 ```
 
-Now AttrSearchable can optimize the following query:
+Now AttrSearchable can optimize the following, not yet optimal query:
 
 ```ruby
 BookSearch("Rowling OR Tolkien stock > 1")
@@ -304,6 +304,31 @@ Book.search("created_at:2014-06")
 Book.search("created_at:2014-06-15")
 # ... WHERE created_at >= '2014-06-15 00:00:00' AND created_at <= '2014-06-15 23:59:59'
 ```
+
+## Chaining
+
+Chaining of searches is possible. However, chaining does currently not allow
+AttrSearchable to optimize the individual queries for fulltext indices.
+
+```ruby
+Book.search("Harry").search("Potter")
+```
+
+will generate
+
+```ruby
+# MySQL: ... WHERE MATCH(...) AGAINST('+Harry' IN BOOLEAN MODE) AND MATCH(...) AGAINST('+Potter' IN BOOLEAN MODE)
+# PostgreSQL: ... WHERE to_tsvector(...) @@ to_tsquery('simple', 'Harry') AND to_tsvector(...) @@ to_tsquery('simple', 'Potter')
+```
+
+instead of
+
+```ruby
+# MySQL: ... WHERE MATCH(...) AGAINST('+Harry +Potter' IN BOOLEAN MODE)
+# PostgreSQL: ... WHERE to_tsvector(...) @@ to_tsquery('simple', 'Harry & Potter')
+```
+
+Thus, if you use fulltext indices, you better avoid chaining.
 
 ## Contributing
 
