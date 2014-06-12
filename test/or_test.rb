@@ -3,9 +3,9 @@ require File.expand_path("../test_helper", __FILE__)
 
 class OrTest < AttrSearchable::TestCase
   def test_or_string
-    product1 = FactoryGirl.create(:product, :title => "Title1")
-    product2 = FactoryGirl.create(:product, :title => "Title2")
-    product3 = FactoryGirl.create(:product, :title => "Title3")
+    product1 = create(:product, :title => "Title1")
+    product2 = create(:product, :title => "Title2")
+    product3 = create(:product, :title => "Title3")
 
     results = Product.search("title: Title1 OR title: Title2")
 
@@ -15,9 +15,9 @@ class OrTest < AttrSearchable::TestCase
   end
 
   def test_or_hash
-    product1 = FactoryGirl.create(:product, :title => "Title1")
-    product2 = FactoryGirl.create(:product, :title => "Title2")
-    product3 = FactoryGirl.create(:product, :title => "Title3")
+    product1 = create(:product, :title => "Title1")
+    product2 = create(:product, :title => "Title2")
+    product3 = create(:product, :title => "Title3")
 
     results = Product.search(:or => [{:title => "Title1"}, {:title => "Title2"}])
 

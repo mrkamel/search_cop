@@ -3,8 +3,8 @@ require File.expand_path("../test_helper", __FILE__)
 
 class NotTest < AttrSearchable::TestCase
   def test_not_string
-    expected = FactoryGirl.create(:product, :title => "Expected title")
-    rejected = FactoryGirl.create(:product, :title => "Rejected title")
+    expected = create(:product, :title => "Expected title")
+    rejected = create(:product, :title => "Rejected title")
 
     results = Product.search("title: Title NOT title: Rejected")
 
@@ -15,8 +15,8 @@ class NotTest < AttrSearchable::TestCase
   end
 
   def test_not_hash
-    expected = FactoryGirl.create(:product, :title => "Expected title")
-    rejected = FactoryGirl.create(:product, :title => "Rejected title")
+    expected = create(:product, :title => "Expected title")
+    rejected = create(:product, :title => "Rejected title")
 
     results = Product.search(:and => [{:title => "Title"}, {:not => {:title => "Rejected"}}])
 

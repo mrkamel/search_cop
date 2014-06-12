@@ -79,6 +79,8 @@ if DATABASE == "mysql"
 end
 
 class AttrSearchable::TestCase
+  include FactoryGirl::Syntax::Methods
+
   def teardown
     Product.delete_all
     Comment.delete_all

@@ -3,9 +3,9 @@ require File.expand_path("../test_helper", __FILE__)
 
 class FulltextTest < AttrSearchable::TestCase
   def test_complex
-    product1 = FactoryGirl.create(:product, :title => "word1")
-    product2 = FactoryGirl.create(:product, :title => "word2 word3")
-    product3 = FactoryGirl.create(:product, :title => "word2")
+    product1 = create(:product, :title => "word1")
+    product2 = create(:product, :title => "word2 word3")
+    product3 = create(:product, :title => "word2")
 
     results = Product.search("title:word1 OR (title:word2 -title:word3)")
 
@@ -15,8 +15,8 @@ class FulltextTest < AttrSearchable::TestCase
   end
 
   def test_mixed
-    expected = FactoryGirl.create(:product, :title => "Expected title", :stock => 1)
-    rejected = FactoryGirl.create(:product, :title => "Expected title", :stock => 0)
+    expected = create(:product, :title => "Expected title", :stock => 1)
+    rejected = create(:product, :title => "Expected title", :stock => 0)
 
     results = Product.search("title:Expected title:Title stock > 0")
 

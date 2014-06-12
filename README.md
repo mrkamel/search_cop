@@ -35,7 +35,7 @@ Book.search(:or => [{:query => "Rowling -Potter"}, {:query => "Tolkien -Rings"}]
 
 ## Installation
 
-Add this line to your application's Gemfile:
+For Rails/ActiveRecord 3 (or 4), add this line to your application's Gemfile:
 
     gem 'attr_searchable'
 
