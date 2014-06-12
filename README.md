@@ -142,8 +142,8 @@ attributes having fulltext indices to:
 
 ```ruby
 Book.search("Harry Potter")
-# MySQL: ... WHERE MATCH(books.title) AGAINST('+Harry +Potter' IN BOOLEAN MODE) OR MATCH(books.author) AGAINST('+Harry +Potter' IN BOOLEAN MODE)
-# PostgreSQL: ... WHERE to_tsvector('simple', books.title) @@ to_tsquery('simple', 'Harry & Potter') OR to_tsvector('simple', books.author) @@ to_tsquery('simple', 'Harry & Potter')
+# MySQL: ... WHERE (MATCH(books.title) AGAINST('+Harry' IN BOOLEAN MODE) OR MATCH(books.author) AGAINST('+Harry' IN BOOLEAN MODE)) AND (MATCH(books.title) AGAINST ('+Potter' IN BOOLEAN MODE) OR MATCH(books.author) AGAINST('+Potter' IN BOOLEAN MODE))
+# PostgreSQL: ... WHERE (to_tsvector('simple', books.title) @@ to_tsquery('simple', 'Harry') OR to_tsvector('simple', books.author) @@ to_tsquery('simple', 'Harry')) AND (to_tsvector('simple', books.title) @@ to_tsquery('simple', 'Potter') OR to_tsvector('simple', books.author) @@ to_tsquery('simple', 'Potter'))
 ```
 
 Obviously, theses queries won't always return the same results as wildcard
@@ -165,8 +165,8 @@ Now AttrSearchable can optimize the following, not yet optimal query:
 
 ```ruby
 BookSearch("Rowling OR Tolkien stock > 1")
-# MySQL: ... WHERE (MATCH(books.author) AGAINST('+Rowling' IN BOOLEAN MODE) OR MATCH(books.title) AGAINST('+Tolkien' IN BOOLEAN MODE)) AND books.stock > 1
-# PostgreSQL: ... WHERE (to_tsvector('simple', books.author) @@ to_tsquery('simple', 'Rowling') OR to_tsvector('simple', books.title) @@ to_tsquery('simple', 'Tolkien')) AND books.stock > 1
+# MySQL: ... WHERE ((MATCH(books.author) AGAINST('+Rowling' IN BOOLEAN MODE) OR MATCH(books.title) AGAINST('+Rowling' IN BOOLEAN MODE)) OR (MATCH(books.author) AGAINST('+Tolkien' IN BOOLEAN MODE) OR MATCH(books.title) AGAINST('+Tolkien' IN BOOLEAN MODE))) AND books.stock > 1
+# PostgreSQL: ... WHERE ((to_tsvector('simple', books.author) @@ to_tsquery('simple', 'Rowling') OR to_tsvector('simple', books.title) @@ to_tsquery('simple', 'Rowling')) OR (to_tsvector('simple', books.author) @@ to_tsquery('simple', 'Tolkien') OR to_tsvector('simple', books.title) @@ to_tsquery('simple', 'Tolkien'))) AND books.stock > 1
 ```
 
 to the following, more performant query:
