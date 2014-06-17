@@ -55,9 +55,33 @@ module AttrSearchableGrammar
       end
     end
 
-    ["Equality", "NotEqual", "GreaterThan", "LessThan", "GreaterThanOrEqual", "LessThanOrEqual", "Matches", "Not"].each do |name|
-      const_set name, Class.new(Arel::Nodes.const_get(name))
-      const_get(name).send :include, Base
+    class Binary
+      include Base
+
+      attr_accessor :left, :right
+
+      def initialize(left, right)
+        @left = left
+        @right = right
+      end
+    end
+
+    class Equality < Binary; end
+    class NotEqual < Binary; end
+    class GreaterThan < Binary; end
+    class GreaterThanOrEqual < Binary; end
+    class LessThan < Binary; end
+    class LessThanOrEqual < Binary; end
+    class Matches < Binary; end
+
+    class Not
+      include Base
+
+      attr_accessor :object
+
+      def initialize(object)
+        @object = object
+      end
     end
 
     class MatchesFulltext < Arel::Nodes::Binary

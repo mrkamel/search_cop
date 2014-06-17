@@ -11,6 +11,38 @@ module AttrSearchable
           def visit_AttrSearchableGrammar_Nodes_Or(o, a)
             visit ::Arel::Nodes::Grouping.new(o.to_arel), a
           end
+
+          def visit_AttrSearchableGrammar_Nodes_Equality(o, a)
+            visit ::Arel::Nodes::Equality.new(o.left, o.right), a
+          end
+
+          def visit_AttrSearchableGrammar_Nodes_NotEqual(o, a)
+            visit ::Arel::Nodes::NotEqual.new(o.left, o.right), a
+          end
+
+          def visit_AttrSearchableGrammar_Nodes_LessThan(o, a)
+            visit ::Arel::Nodes::LessThan.new(o.left, o.right), a
+          end
+
+          def visit_AttrSearchableGrammar_Nodes_LessThanOrEqual(o, a)
+            visit ::Arel::Nodes::LessThanOrEqual.new(o.left, o.right), a
+          end
+
+          def visit_AttrSearchableGrammar_Nodes_GreaterThan(o, a)
+            visit ::Arel::Nodes::GreaterThan.new(o.left, o.right), a
+          end
+
+          def visit_AttrSearchableGrammar_Nodes_GreaterThanOrEqual(o, a)
+            visit ::Arel::Nodes::GreaterThanOrEqual.new(o.left, o.right), a
+          end
+
+          def visit_AttrSearchableGrammar_Nodes_Not(o, a)
+            visit ::Arel::Nodes::Not.new(o.object), a
+          end
+
+          def visit_AttrSearchableGrammar_Nodes_Matches(o, a)
+            visit ::Arel::Nodes::Matches.new(o.left, o.right), a
+          end
         else
           def visit_AttrSearchableGrammar_Nodes_And(o)
             visit ::Arel::Nodes::Grouping.new(o.to_arel)
@@ -18,6 +50,38 @@ module AttrSearchable
 
           def visit_AttrSearchableGrammar_Nodes_Or(o)
             visit ::Arel::Nodes::Grouping.new(o.to_arel)
+          end
+
+          def visit_AttrSearchableGrammar_Nodes_Equality(o)
+            visit ::Arel::Nodes::Equality.new(o.left, o.right)
+          end
+
+          def visit_AttrSearchableGrammar_Nodes_NotEqual(o)
+            visit ::Arel::Nodes::NotEqual.new(o.left, o.right)
+          end
+
+          def visit_AttrSearchableGrammar_Nodes_LessThan(o)
+            visit ::Arel::Nodes::LessThan.new(o.left, o.right)
+          end
+
+          def visit_AttrSearchableGrammar_Nodes_LessThanOrEqual(o)
+            visit ::Arel::Nodes::LessThanOrEqual.new(o.left, o.right)
+          end
+
+          def visit_AttrSearchableGrammar_Nodes_GreaterThan(o)
+            visit ::Arel::Nodes::GreaterThan.new(o.left, o.right)
+          end
+
+          def visit_AttrSearchableGrammar_Nodes_GreaterThanOrEqual(o)
+            visit ::Arel::Nodes::GreaterThanOrEqual.new(o.left, o.right)
+          end
+
+          def visit_AttrSearchableGrammar_Nodes_Not(o)
+            visit ::Arel::Nodes::Not.new(o.object)
+          end
+
+          def visit_AttrSearchableGrammar_Nodes_Matches(o)
+            visit ::Arel::Nodes::Matches.new(o.left, o.right)
           end
         end
       end
