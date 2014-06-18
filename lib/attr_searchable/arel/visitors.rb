@@ -5,11 +5,11 @@ module AttrSearchable
       module ToSql
         if ::Arel::VERSION >= "4.0.1"
           def visit_AttrSearchableGrammar_Nodes_And(o, a)
-            visit ::Arel::Nodes::Grouping.new(o.to_arel), a
+            visit ::Arel::Nodes::Grouping.new(o.nodes.inject { |res, cur| ::Arel::Nodes::And.new [res, cur] }), a
           end
 
           def visit_AttrSearchableGrammar_Nodes_Or(o, a)
-            visit ::Arel::Nodes::Grouping.new(o.to_arel), a
+            visit ::Arel::Nodes::Grouping.new(o.nodes.inject { |res, cur| ::Arel::Nodes::Or.new res, cur }), a
           end
 
           def visit_AttrSearchableGrammar_Nodes_Equality(o, a)
@@ -45,11 +45,11 @@ module AttrSearchable
           end
         else
           def visit_AttrSearchableGrammar_Nodes_And(o)
-            visit ::Arel::Nodes::Grouping.new(o.to_arel)
+            visit ::Arel::Nodes::Grouping.new(o.nodes.inject { |res, cur| ::Arel::Nodes::And.new [res, cur] })
           end
 
           def visit_AttrSearchableGrammar_Nodes_Or(o)
-            visit ::Arel::Nodes::Grouping.new(o.to_arel)
+            visit ::Arel::Nodes::Grouping.new(o.nodes.inject { |res, cur| ::Arel::Nodes::Or.new res, cur })
           end
 
           def visit_AttrSearchableGrammar_Nodes_Equality(o)

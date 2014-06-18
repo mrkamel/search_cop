@@ -84,7 +84,7 @@ module AttrSearchableGrammar
       end
     end
 
-    class MatchesFulltext < Arel::Nodes::Binary
+    class MatchesFulltext < Binary
       include Base
 
       def not
@@ -106,7 +106,7 @@ module AttrSearchableGrammar
 
     class MatchesFulltextNot < MatchesFulltext; end
 
-    class FulltextExpression < Arel::Nodes::Node
+    class FulltextExpression
       include Base
 
       attr_reader :collection, :node
@@ -117,7 +117,7 @@ module AttrSearchableGrammar
       end
     end
 
-    class Collection < Arel::Nodes::Node
+    class Collection
       include Base
 
       attr_reader :nodes
@@ -173,18 +173,10 @@ module AttrSearchableGrammar
 
     class And < Collection
       class Fulltext < FulltextCollection; end
-
-      def to_arel
-        nodes.inject { |res, cur| Arel::Nodes::And.new [res, cur] }
-      end
     end
 
     class Or < Collection
       class Fulltext < FulltextCollection; end
-
-      def to_arel
-        nodes.inject { |res, cur| Arel::Nodes::Or.new res, cur }
-      end
     end
   end
 end
