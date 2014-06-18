@@ -3,6 +3,7 @@
 [![Build Status](https://secure.travis-ci.org/mrkamel/attr_searchable.png?branch=master)](http://travis-ci.org/mrkamel/attr_searchable)
 [![Code Climate](https://codeclimate.com/github/mrkamel/attr_searchable.png)](https://codeclimate.com/github/mrkamel/attr_searchable)
 [![Dependency Status](https://gemnasium.com/mrkamel/attr_searchable.png?travis)](https://gemnasium.com/mrkamel/attr_searchable)
+[![Gem Version](https://badge.fury.io/rb/attr_searchable.svg)](http://badge.fury.io/rb/attr_searchable)
 
 AttrSearchable extends your ActiveRecord models to support fulltext search
 engine like queries via simple query strings and hash-based queries. Assume you
