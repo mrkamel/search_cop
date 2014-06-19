@@ -10,15 +10,15 @@ module AttrSearchableGrammar
       @model || parent.model
     end
 
-    def to_arel
-      elements.collect(&:to_arel).inject(:and)
+    def evaluate
+      elements.collect(&:evaluate).inject(:and)
     end
 
     def elements
       super.select { |element| element.class != Treetop::Runtime::SyntaxNode }
     end
 
-    def arel_collection_for(key)
+    def collection_for(key)
       raise AttrSearchable::UnknownColumn, "Unknown key: #{key}" if model.searchable_attributes[key].nil?
 
       Attributes::Collection.new model, key
@@ -26,7 +26,7 @@ module AttrSearchableGrammar
   end
 
   class OperatorNode < Treetop::Runtime::SyntaxNode
-    def to_arel
+    def evaluate
       text_value
     end
   end
@@ -35,59 +35,59 @@ module AttrSearchableGrammar
   class ParenthesesExpression < BaseNode; end
 
   class ComparativeExpression < BaseNode
-    def to_arel
-      elements[0].arel_collection.send elements[1].to_arel_method, elements[2].text_value
+    def evaluate
+      elements[0].collection.send elements[1].method_name, elements[2].text_value
     end
   end
 
   class IncludesOperator < OperatorNode
-    def to_arel_method
+    def method_name
       :matches
     end
   end
 
   class EqualOperator < OperatorNode
-    def to_arel_method
+    def method_name
       :eq
     end
   end
 
   class UnequalOperator < OperatorNode
-    def to_arel_method
+    def method_name
       :not_eq
     end
   end
 
   class GreaterEqualOperator < OperatorNode
-    def to_arel_method
+    def method_name
       :gteq
     end
   end
 
   class GreaterOperator < OperatorNode
-    def to_arel_method
+    def method_name
       :gt
     end
   end
 
   class LessEqualOperator < OperatorNode
-    def to_arel_method
+    def method_name
       :lteq
     end
   end
 
   class LessOperator < OperatorNode
-    def to_arel_method
+    def method_name
       :lt
     end
   end
 
   class AnywhereExpression < BaseNode
-    def to_arel
+    def evaluate
       keys = model.searchable_attribute_options.select { |key, value| value[:default] == true }.keys
       keys = model.searchable_attributes.keys if keys.empty?
 
-      queries = keys.collect { |key| arel_collection_for key }.select { |attribute| attribute.compatible? text_value }.collect { |attribute| attribute.matches text_value }
+      queries = keys.collect { |key| collection_for key }.select { |attribute| attribute.compatible? text_value }.collect { |attribute| attribute.matches text_value }
 
       raise AttrSearchable::NoSearchableAttributes unless model.searchable_attributes
 
@@ -96,26 +96,26 @@ module AttrSearchableGrammar
   end
 
   class AndExpression < BaseNode
-    def to_arel
-      [elements.first.to_arel, elements.last.to_arel].inject(:and)
+    def evaluate
+      [elements.first.evaluate, elements.last.evaluate].inject(:and)
     end
   end
 
   class OrExpression < BaseNode
-    def to_arel
-      [elements.first.to_arel, elements.last.to_arel].inject(:or)
+    def evaluate
+      [elements.first.evaluate, elements.last.evaluate].inject(:or)
     end
   end
 
   class NotExpression < BaseNode
-    def to_arel
-      elements.first.to_arel.not
+    def evaluate
+      elements.first.evaluate.not
     end
   end
 
   class Column < BaseNode
-    def arel_collection
-      arel_collection_for text_value
+    def collection
+      collection_for text_value
     end
   end
 

@@ -26,7 +26,7 @@ module AttrSearchable
     def self.parse_string(string, model)
       node = AttrSearchableGrammarParser.new.parse(string) || raise(ParseError)
       node.model = model
-      node.to_arel
+      node.evaluate
     end
   end
 
