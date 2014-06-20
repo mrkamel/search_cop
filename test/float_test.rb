@@ -57,5 +57,11 @@ class FloatTest < AttrSearchable::TestCase
     assert_includes Product.search("price <= 10.5"), product
     refute_includes Product.search("price <= 10.4"), product
   end
+
+  def test_incompatible_datatype
+    assert_raises AttrSearchable::IncompatibleDatatype do
+      Product.unsafe_search "price: Value"
+    end
+  end
 end
 

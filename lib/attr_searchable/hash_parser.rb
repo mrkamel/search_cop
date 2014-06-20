@@ -29,7 +29,7 @@ class AttrSearchable::HashParser
     collection = AttrSearchableGrammar::Attributes::Collection.new(@model, key.to_s)
 
     if value.is_a?(Hash)
-      raise AttrSearchable::ParseError unless [:matches, :eq, :not_eq, :gt, :gteq, :lt, :lteq].include?(value.keys.first)
+      raise(AttrSearchable::ParseError, "Unknown operator #{value.keys.first}") unless [:matches, :eq, :not_eq, :gt, :gteq, :lt, :lteq].include?(value.keys.first)
 
       collection.send value.keys.first, value.values.first.to_s
     else

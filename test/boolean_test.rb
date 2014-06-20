@@ -43,5 +43,11 @@ class BooleanTest < AttrSearchable::TestCase
     assert_includes Product.search("available != true"), product
     refute_includes Product.search("available != false"), product
   end
+
+  def test_incompatible_datatype
+    assert_raises AttrSearchable::IncompatibleDatatype do
+      Product.unsafe_search "available: Value"
+    end
+  end
 end
 

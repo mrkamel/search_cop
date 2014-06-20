@@ -57,5 +57,11 @@ class IntegerTest < AttrSearchable::TestCase
     assert_includes Product.search("stock <= 1"), product
     refute_includes Product.search("stock <= 0"), product
   end
+
+  def test_incompatible_datatype
+    assert_raises AttrSearchable::IncompatibleDatatype do
+      Product.unsafe_search "stock: Value"
+    end
+  end
 end
 

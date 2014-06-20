@@ -66,5 +66,11 @@ class DatetimeTest < AttrSearchable::TestCase
     assert_includes Product.search("created_at <= 2014-05-02"), product
     refute_includes Product.search("created_at <= 2014-05-01"), product
   end
+
+  def test_incompatible_datatype
+    assert_raises AttrSearchable::IncompatibleDatatype do
+      Product.unsafe_search "created_at: Value"
+    end
+  end
 end
 

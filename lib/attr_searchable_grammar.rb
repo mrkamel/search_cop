@@ -19,7 +19,7 @@ module AttrSearchableGrammar
     end
 
     def collection_for(key)
-      raise AttrSearchable::UnknownColumn, "Unknown key: #{key}" if model.searchable_attributes[key].nil?
+      raise(AttrSearchable::UnknownColumn, "Unknown column #{key}") if model.searchable_attributes[key].nil?
 
       Attributes::Collection.new model, key
     end

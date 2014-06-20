@@ -8,11 +8,14 @@ require "treetop"
 Treetop.load File.expand_path("../attr_searchable_grammar.treetop", __FILE__)
 
 module AttrSearchable
-  class Error < StandardError; end
-  class UnknownColumn < Error; end
-  class NoSearchableAttributes < Error; end
-  class IncompatibleDatatype < Error; end
-  class ParseError < Error; end
+  class SpecificationError < StandardError; end
+  class UnknownAttribute < SpecificationError; end
+
+  class RuntimeError < StandardError; end
+  class UnknownColumn < RuntimeError; end
+  class NoSearchableAttributes < RuntimeError; end
+  class IncompatibleDatatype < RuntimeError; end
+  class ParseError < RuntimeError; end
 
   module Parser
     def self.parse(arg, model)
@@ -61,15 +64,19 @@ module AttrSearchable
       self.searchable_attribute_options[key.to_s] = (self.searchable_attribute_options[key.to_s] || {}).merge(options)
     end
 
-    def search(arg)
+    def search(*args)
+      unsafe_search *args
+    rescue AttrSearchable::RuntimeError
+      respond_to?(:none) ? none : where("1 = 0")
+    end
+
+    def unsafe_search(arg)
       return respond_to?(:scoped) ? scoped : all if arg.blank?
 
       scope = respond_to?(:search_scope) ? search_scope : nil
       scope ||= eager_load(searchable_attributes.values.flatten.uniq.collect { |column| column.split(".").first.to_sym } - [name.tableize.to_sym])
 
       scope.where AttrSearchable::Parser.parse(arg, self).optimize!
-    rescue AttrSearchable::Error
-      respond_to?(:none) ? none : where("1 = 0")
     end
   end
 end

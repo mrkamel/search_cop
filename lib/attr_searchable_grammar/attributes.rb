@@ -7,7 +7,7 @@ module AttrSearchableGrammar
       attr_reader :model, :key
 
       def initialize(model, key)
-        raise AttrSearchable::IncompatibleDatatype unless model.searchable_attributes[key]
+        raise(AttrSearchable::UnknownColumn, "Unknown column #{key}") unless model.searchable_attributes[key]
 
         @model = model
         @key = key
@@ -52,12 +52,16 @@ module AttrSearchableGrammar
       end
 
       def attributes
-        @attributes ||= model.searchable_attributes[key].collect do |attribute|
-          table, column = attribute.split(".")
-          klass = table.classify.constantize
+        @attributes ||= model.searchable_attributes[key].collect { |attribute_definition| attribute_for attribute_definition }
+      end
 
-          Attributes.const_get(klass.columns_hash[column].type.to_s.classify).new(klass.arel_table.alias(klass.table_name)[column], klass, options)
-        end
+      def attribute_for(attribute_definition)
+        table, column = attribute_definition.split(".")
+        klass = table.classify.constantize
+
+        raise(AttrSearchable::UnknownAttribute, "Unknown attribute #{attribute_definition}") unless klass.columns_hash[column]
+
+        Attributes.const_get(klass.columns_hash[column].type.to_s.classify).new(klass.arel_table.alias(klass.table_name)[column], klass, options)
       end
     end
 
@@ -88,7 +92,7 @@ module AttrSearchableGrammar
 
       { :eq => "Equality", :not_eq => "NotEqual", :lt => "LessThan", :lteq => "LessThanOrEqual", :gt => "GreaterThan", :gteq => "GreaterThanOrEqual", :matches => "Matches" }.each do |method, class_name|
         define_method method do |value|
-          raise AttrSearchable::IncompatibleDatatype unless compatible?(value)
+          raise(AttrSearchable::IncompatibleDatatype, "Incompatible datatype for #{value}") unless compatible?(value)
 
           AttrSearchableGrammar::Nodes.const_get(class_name).new(@attribute, map(value))
         end
@@ -152,7 +156,7 @@ module AttrSearchableGrammar
           time .. time
         end 
       rescue ArgumentError
-        raise AttrSearchable::IncompatibleDatatype
+        raise AttrSearchable::IncompatibleDatatype, "Incompatible datatype for #{value}"
       end 
 
       def map(value)
@@ -188,7 +192,7 @@ module AttrSearchableGrammar
         return true if value.to_s =~ /^(1|true|yes)$/i
         return false if value.to_s =~ /^(0|false|no)$/i
 
-        raise AttrSearchable::IncompatibleDatatype
+        raise AttrSearchable::IncompatibleDatatype, "Incompatible datatype for #{value}"
       end 
     end
   end
