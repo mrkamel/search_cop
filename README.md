@@ -337,8 +337,8 @@ AttrSearchable conveniently hides certain errors, like parse errors, and
 instead returns an empty relation. However, if you need to debug certain
 cases, use `Model#unsafe_search`, which will raise them.
 
-```
-Book.search("stock: None") # => raise AttrSearchable::IncompatibleDatatype
+```ruby
+Book.unsafe_search("stock: None") # => raise AttrSearchable::IncompatibleDatatype
 ```
 
 ## Contributing
