@@ -76,7 +76,7 @@ module AttrSearchable
       scope = respond_to?(:search_scope) ? search_scope : nil
       scope ||= eager_load(searchable_attributes.values.flatten.uniq.collect { |column| column.split(".").first.to_sym } - [name.tableize.to_sym])
 
-      scope.where AttrSearchable::Parser.parse(arg, self).optimize!
+      scope.where AttrSearchable::Parser.parse(arg, self).optimize!.to_sql(self)
     end
   end
 end

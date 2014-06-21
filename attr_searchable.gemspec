@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = AttrSearchable::VERSION
   spec.authors       = ["Benjamin Vetter"]
   spec.email         = ["vetter@flakks.com"]
-  spec.description   = %q{Complex search-engine like query support for activerecord}
-  spec.summary       = %q{Easily perform complex search-engine like queries on your activerecord models}
+  spec.description   = %q{Search-engine like fulltext query support for ActiveRecord}
+  spec.summary       = %q{Easily perform complex search-engine like fulltext queries on your ActiveRecord models}
   spec.homepage      = "https://github.com/mrkamel/attr_searchable"
   spec.license       = "MIT"
 

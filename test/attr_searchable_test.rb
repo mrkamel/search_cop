@@ -40,5 +40,11 @@ class AttrSearchableTest < AttrSearchable::TestCase
     assert_includes results, product2
     refute_includes results, product3
   end
+
+  def test_count
+    create_list :product, 2, :title => "Expected"
+
+    assert_equal 2, Product.search("Expected").count
+  end
 end
 
