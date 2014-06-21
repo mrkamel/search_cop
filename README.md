@@ -348,3 +348,13 @@ Book.unsafe_search("stock: None") # => raise AttrSearchable::IncompatibleDatatyp
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
+## Changelog
+
+Version 0.0.2:
+
+* Arel abstraction layer added
+* count() queries resulting in "Cannot visit AttrSearchableGrammar::Nodes..." fixed
+* Better error messages
+* Model#unsafe_search added
+
