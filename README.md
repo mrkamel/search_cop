@@ -104,28 +104,9 @@ AttrSearchable will use `LIKE '%...%'` queries. Unfortunately, unless you
 create a [trigram index](http://www.postgresql.org/docs/9.1/static/pgtrgm.html)
 (postgres only), theses queries can not use SQL indices, such that every row
 needs to be scanned by your RDBMS when you search for `Book.search("Harry
-Potter")` or similar, which is btw. usually ok for small data sets and a small
-amount of regular queries. Contrary, when you search for
-`Book.search("title=Potter")` indices can and will be used. Moreover, other
-indices (on price, stock, etc) will of course be used by your RDBMS when you
-search for `Book.search("stock > 0")`, etc.
-
-Regarding the `LIKE` penalty, the easiest way to make them use indices is
-to remove the left wildcard. AttrSearchble supports this via:
-
-```ruby
-class Book < ActiveRecord::Base
-  # ...
-
-  attr_searchable_options, :title, :left_wildcard => false
-
-  # ...
-end
-```
-
-However, this is often not desirable. Therefore, AttrSearchable can exploit the
-fulltext index capabilities of MySQL and PostgreSQL. To use already existing
-fulltext indices, simply tell AttrSearchable to use them via:
+Potter")` or similar. Therefore, AttrSearchable can exploit the fulltext index
+capabilities of MySQL and PostgreSQL. To use already existing fulltext indices,
+simply tell AttrSearchable to use them via:
 
 ```ruby
 class Book < ActiveRecord::Base
@@ -148,7 +129,7 @@ Book.search("Harry Potter")
 ```
 
 Obviously, theses queries won't always return the same results as wildcard
-`LIKE` queries, because we search for words instead of substrings. However,
+`LIKE` queries, because we search for words instead of sub-strings. However,
 fulltext indices will usually of course provide better performance.
 
 Moreover, the query above is not yet perfect. To improve it even more,
@@ -229,6 +210,14 @@ attr_searchable_options :title, :dictionary => "english"
 For more details about PostgreSQL fulltext indices visit
 [http://www.postgresql.org/docs/9.3/static/textsearch.html](http://www.postgresql.org/docs/9.3/static/textsearch.html)
 
+## Other indices
+
+In case you expose non-fulltext attributes to search queries (price, stock,
+etc.), the respective queries, like `Book.search("stock > 0")`, will profit
+from from the usual non-fulltext indices. Thus, you should add a usual index on
+every column you expose to search queries plus a fulltext index for every
+fulltext attribute.
+
 ## Associations
 
 If you specify searchable attributes from another model, like
@@ -246,8 +235,8 @@ end
 ```
 
 AttrSearchable will by default `eager_load` the referenced associations, when
-you perform `Book.search(...)`. such that assocations of associations can as
-well be referenced:
+you perform `Book.search(...)`. Assocations of associations can thus as well be
+referenced and used:
 
 ```ruby
 class Book < ActiveRecord::Base
@@ -259,6 +248,7 @@ class Book < ActiveRecord::Base
   attr_searchable :user => "users.username"
 
   # ...
+end
 ```
 
 If you don't want the automatic `eager_load` or need to perform special
