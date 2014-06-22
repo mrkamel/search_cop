@@ -20,13 +20,17 @@ DATABASE = ENV["DATABASE"] || "sqlite"
 
 ActiveRecord::Base.establish_connection YAML.load_file(File.expand_path("../database.yml", __FILE__))[DATABASE]
 
-class Comment < ActiveRecord::Base; end
+class User < ActiveRecord::Base; end
+
+class Comment < ActiveRecord::Base
+  belongs_to :user
+end
 
 class Product < ActiveRecord::Base
   include AttrSearchable
 
   attr_searchable :title, :description, :brand, :stock, :price, :created_at, :available
-  attr_searchable :comment => ["comments.title", "comments.message"]
+  attr_searchable :comment => ["comments.title", "comments.message"], :user => "users.username"
 
   attr_searchable :primary => [:title, :description]
 
@@ -41,6 +45,7 @@ class Product < ActiveRecord::Base
   end
 
   has_many :comments
+  has_many :users, :through => :comments
 end
 
 FactoryGirl.define do
@@ -49,10 +54,14 @@ FactoryGirl.define do
 
   factory :comment do
   end
+
+  factory :user do
+  end
 end
 
 ActiveRecord::Base.connection.execute "DROP TABLE IF EXISTS products"
 ActiveRecord::Base.connection.execute "DROP TABLE IF EXISTS comments"
+ActiveRecord::Base.connection.execute "DROP TABLE IF EXISTS users"
 
 ActiveRecord::Base.connection.create_table :products do |t|
   t.string :title
@@ -66,8 +75,13 @@ end
 
 ActiveRecord::Base.connection.create_table :comments do |t|
   t.references :product
+  t.references :user
   t.string :title
   t.text :message
+end
+
+ActiveRecord::Base.connection.create_table :users do |t|
+  t.string :username
 end
 
 if DATABASE == "mysql"

@@ -12,6 +12,16 @@ class AttrSearchableTest < AttrSearchable::TestCase
     assert_includes Product.search("comment: Title2 comment: Message2"), product
   end
 
+  def test_deep_associations
+    expected = create(:product, :comments => [create(:comment, :user => create(:user, :username => "Expected"))])
+    rejected = create(:product, :comments => [create(:comment, :user => create(:user, :username => "Rejected"))])
+
+    results = Product.search("user: Expected")
+
+    assert_includes results, expected
+    refute_includes results, rejected
+  end
+
   def test_multiple
     product = create(:product, :comments => [create(:comment, :title => "Title", :message => "Message")])
 

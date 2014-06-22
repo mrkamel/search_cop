@@ -237,14 +237,31 @@ If you specify searchable attributes from another model, like
 class Book < ActiveRecord::Base
   # ...
 
+  belongs_to :author
+
   attr_searchable :author => "author.name"
 
   # ...
 end
 ```
 
-AttrSearchable will by default `eager_load` these associations, when you
-perform `Book.search(...)`. If you don't want that or need to perform special
+AttrSearchable will by default `eager_load` the referenced associations, when
+you perform `Book.search(...)`. such that assocations of associations can as
+well be referenced:
+
+```ruby
+class Book < ActiveRecord::Base
+  # ...
+
+  has_many :comments
+  has_many :users, :through => :comments
+
+  attr_searchable :user => "users.username"
+
+  # ...
+```
+
+If you don't want the automatic `eager_load` or need to perform special
 operations, define a `search_scope` within your model:
 
 ```ruby
@@ -333,9 +350,11 @@ Thus, if you use fulltext indices, you better avoid chaining.
 
 ## Debugging
 
-AttrSearchable conveniently hides certain errors, like parse errors, and
-instead returns an empty relation. However, if you need to debug certain
-cases, use `Model#unsafe_search`, which will raise them.
+When using `Model#search`, AttrSearchable conveniently prevents certain
+exceptions from being raised in case the query string passed to it is invalid
+(parse errors, incompatible datatype errors, etc). Instead, `Model#search`
+returns an empty relation. However, if you need to debug certain cases, use
+`Model#unsafe_search`, which will raise them.
 
 ```ruby
 Book.unsafe_search("stock: None") # => raise AttrSearchable::IncompatibleDatatype
