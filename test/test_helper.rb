@@ -23,7 +23,12 @@ ActiveRecord::Base.establish_connection YAML.load_file(File.expand_path("../data
 class User < ActiveRecord::Base; end
 
 class Comment < ActiveRecord::Base
+  include AttrSearchable
+
   belongs_to :user
+
+  attr_searchable :user => "user.username"
+  attr_searchable :title, :message
 end
 
 class Product < ActiveRecord::Base

@@ -2,7 +2,7 @@
 require File.expand_path("../test_helper", __FILE__)
 
 class AttrSearchableTest < AttrSearchable::TestCase
-  def test_associations
+  def test_multi_associations
     product = create(:product, :comments => [
       create(:comment, :title => "Title1", :message => "Message1"),
       create(:comment, :title => "Title2", :message => "Message2")
@@ -10,6 +10,16 @@ class AttrSearchableTest < AttrSearchable::TestCase
 
     assert_includes Product.search("comment: Title1 comment: Message1"), product
     assert_includes Product.search("comment: Title2 comment: Message2"), product
+  end
+
+  def test_single_association
+    expected = create(:comment, :user => create(:user, :username => "Expected"))
+    rejected = create(:comment, :user => create(:user, :username => "Rejected"))
+
+    results = Comment.search("user: Expected")
+
+    assert_includes results, expected
+    refute_includes results, rejected
   end
 
   def test_deep_associations
