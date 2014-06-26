@@ -360,6 +360,10 @@ Book.unsafe_search("stock: None") # => raise AttrSearchable::IncompatibleDatatyp
 
 ## Changelog
 
+Version 0.0.3:
+
+* belongs_to association fixes
+
 Version 0.0.2:
 
 * Arel abstraction layer added
