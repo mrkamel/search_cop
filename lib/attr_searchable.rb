@@ -18,8 +18,8 @@ module AttrSearchable
   class ParseError < RuntimeError; end
 
   module Parser
-    def self.parse(arg, model)
-      arg.is_a?(Hash) ? parse_hash(arg, model) : parse_string(arg, model)
+    def self.parse(query, model)
+      query.is_a?(Hash) ? parse_hash(query, model) : parse_string(query, model)
     end
 
     def self.parse_hash(hash, model)
@@ -64,19 +64,19 @@ module AttrSearchable
       self.searchable_attribute_options[key.to_s] = (self.searchable_attribute_options[key.to_s] || {}).merge(options)
     end
 
-    def search(*args)
-      unsafe_search *args
+    def search(query)
+      unsafe_search query
     rescue AttrSearchable::RuntimeError
       respond_to?(:none) ? none : where("1 = 0")
     end
 
-    def unsafe_search(arg)
-      return respond_to?(:scoped) ? scoped : all if arg.blank?
+    def unsafe_search(query)
+      return respond_to?(:scoped) ? scoped : all if query.blank?
 
       scope = respond_to?(:search_scope) ? search_scope : nil
       scope ||= eager_load(searchable_attributes.values.flatten.uniq.collect { |column| column.split(".").first.to_sym } - [name.tableize.to_sym])
 
-      scope.where AttrSearchable::Parser.parse(arg, self).optimize!.to_sql(self)
+      scope.where AttrSearchable::Parser.parse(query, self).optimize!.to_sql(self)
     end
   end
 end
