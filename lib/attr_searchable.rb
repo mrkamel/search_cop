@@ -40,6 +40,9 @@ module AttrSearchable
     base.class_attribute :searchable_attribute_options
     base.searchable_attribute_options = {}
 
+    base.class_attribute :searchable_attribute_aliases
+    base.searchable_attribute_aliases = {}
+
     base.extend ClassMethods
   end
 
@@ -61,7 +64,13 @@ module AttrSearchable
     end
 
     def attr_searchable_options(key, options = {})
-      self.searchable_attribute_options[key.to_s] = (self.searchable_attribute_options[key.to_s] || {}).merge(options)
+      self.searchable_attribute_options[key.to_s] = (searchable_attribute_options[key.to_s] || {}).merge(options)
+    end
+
+    def attr_searchable_alias(hash)
+      hash.each do |key, value|
+        self.searchable_attribute_aliases[key.to_s] = value.respond_to?(:table_name) ? value.table_name : value.to_s
+      end
     end
 
     def search(query)
@@ -73,8 +82,10 @@ module AttrSearchable
     def unsafe_search(query)
       return respond_to?(:scoped) ? scoped : all if query.blank?
 
+      associations = searchable_attributes.values.flatten.uniq.collect { |column| column.split(".").first }.collect { |column| searchable_attribute_aliases[column] || column.to_sym }
+
       scope = respond_to?(:search_scope) ? search_scope : nil
-      scope ||= eager_load(searchable_attributes.values.flatten.uniq.collect { |column| column.split(".").first.to_sym } - [name.tableize.to_sym])
+      scope ||= eager_load(associations - [name.tableize.to_sym])
 
       scope.where AttrSearchable::Parser.parse(query, self).optimize!.to_sql(self)
     end

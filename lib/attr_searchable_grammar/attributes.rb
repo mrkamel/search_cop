@@ -55,13 +55,24 @@ module AttrSearchableGrammar
         @attributes ||= model.searchable_attributes[key].collect { |attribute_definition| attribute_for attribute_definition }
       end
 
+      def klass_for(table)
+        klass = model.searchable_attribute_aliases[table]
+        klass ||= table
+
+        klass.classify.constantize
+      end
+
+      def alias_for(table)
+        (model.searchable_attribute_aliases[table] && table) || klass_for(table).table_name
+      end
+
       def attribute_for(attribute_definition)
         table, column = attribute_definition.split(".")
-        klass = table.classify.constantize
+        klass = klass_for(table)
 
         raise(AttrSearchable::UnknownAttribute, "Unknown attribute #{attribute_definition}") unless klass.columns_hash[column]
 
-        Attributes.const_get(klass.columns_hash[column].type.to_s.classify).new(klass.arel_table.alias(klass.table_name)[column], klass, options)
+        Attributes.const_get(klass.columns_hash[column].type.to_s.classify).new(klass.arel_table.alias(alias_for(table))[column], klass, options)
       end
     end
 

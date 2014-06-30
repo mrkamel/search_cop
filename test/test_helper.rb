@@ -35,9 +35,10 @@ class Product < ActiveRecord::Base
   include AttrSearchable
 
   attr_searchable :title, :description, :brand, :stock, :price, :created_at, :available
-  attr_searchable :comment => ["comments.title", "comments.message"], :user => "users.username"
-
+  attr_searchable :comment => ["comments.title", "comments.message"], :user => ["users.username", "users_products.username"]
   attr_searchable :primary => [:title, :description]
+
+  attr_searchable_alias "users_products" => "user"
 
   if DATABASE != "sqlite"
     attr_searchable_options :title, :type => :fulltext
@@ -51,6 +52,8 @@ class Product < ActiveRecord::Base
 
   has_many :comments
   has_many :users, :through => :comments
+
+  belongs_to :user
 end
 
 FactoryGirl.define do
@@ -69,6 +72,7 @@ ActiveRecord::Base.connection.execute "DROP TABLE IF EXISTS comments"
 ActiveRecord::Base.connection.execute "DROP TABLE IF EXISTS users"
 
 ActiveRecord::Base.connection.create_table :products do |t|
+  t.references :user
   t.string :title
   t.text :description
   t.integer :stock
