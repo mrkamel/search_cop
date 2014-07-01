@@ -267,6 +267,43 @@ end
 AttrSearchable will then skip any association auto loading and will use
 the `search_scope` instead.
 
+Moreover, AttrSearchable tries to infer a model's class name and SQL alias from
+the specified attributes to autodetect datatype definitions, etc. This works
+quite fine most of the time, such that AttrSearchable keeps it simple for
+simple things and manageable for complex things. In case you're using custom
+table names via `self.table_name = ...` or if a model is associated multiple
+times, AttrSearchable however can't infer the class and alias names, e.g.
+
+```ruby
+class Book < ActiveRecord::Base
+  # ...
+
+  has_many :users, :through => :comments
+  belongs_to :user
+
+  attr_searchable :user => ["users.username", "users_books.username"]
+
+  # ...
+end
+```
+
+Here, ActiveRecord assigns a different SQL alias for users within its SQL
+queries, because the user model is associated multiple times. Therefore, you
+have to reference it approprietly. However, as AttrSearchable now can't
+infer the `User` model from `users_books`, you have to add:
+
+```ruby
+class Book < ActiveRecord::Base
+  # ...
+
+  attr_searchable_alias :users_books => :user
+
+  # ...
+end
+```
+
+to tell AttrSearchable about the SQL alias and mapping.
+
 ## Supported operators
 
 Query string queries support `AND/and`, `OR/or`, `:`, `=`, `!=`, `<`, `<=`,

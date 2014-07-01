@@ -38,7 +38,7 @@ class Product < ActiveRecord::Base
   attr_searchable :comment => ["comments.title", "comments.message"], :user => ["users.username", "users_products.username"]
   attr_searchable :primary => [:title, :description]
 
-  attr_searchable_alias "users_products" => "user"
+  attr_searchable_alias :users_products => :user
 
   if DATABASE != "sqlite"
     attr_searchable_options :title, :type => :fulltext
