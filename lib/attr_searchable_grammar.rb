@@ -87,9 +87,9 @@ module AttrSearchableGrammar
       keys = model.searchable_attribute_options.select { |key, value| value[:default] == true }.keys
       keys = model.searchable_attributes.keys if keys.empty?
 
-      queries = keys.collect { |key| collection_for key }.select { |attribute| attribute.compatible? text_value }.collect { |attribute| attribute.matches text_value }
+      queries = keys.collect { |key| collection_for key }.select { |collection| collection.compatible? text_value }.collect { |collection| collection.matches text_value }
 
-      raise AttrSearchable::NoSearchableAttributes unless model.searchable_attributes
+      raise AttrSearchable::NoSearchableAttributes if queries.empty?
 
       queries.flatten.inject(:or)
     end
