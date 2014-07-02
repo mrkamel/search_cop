@@ -5,6 +5,8 @@
 [![Dependency Status](https://gemnasium.com/mrkamel/attr_searchable.png?travis)](https://gemnasium.com/mrkamel/attr_searchable)
 [![Gem Version](https://badge.fury.io/rb/attr_searchable.svg)](http://badge.fury.io/rb/attr_searchable)
 
+![attr_searchable](https://raw.githubusercontent.com/mrkamel/attr_searchable_logo/master/attr_searchable.png)
+
 AttrSearchable extends your ActiveRecord models to support fulltext search
 engine like queries via simple query strings and hash-based queries. Assume you
 have a `Book` model having various attributes like `title`, `author`, `stock`,
@@ -218,6 +220,28 @@ from from the usual non-fulltext indices. Thus, you should add a usual index on
 every column you expose to search queries plus a fulltext index for every
 fulltext attribute.
 
+In case you can't use fulltext indices, because you're e.g. still on MySQL 5.5
+while using InnoDB or another RDBMS without fulltext support, you can make your
+RDBMS use usual non-fulltext indices for string columns if you don't need the
+left wildcard within `LIKE` queries. Simply supply the following option:
+
+```ruby
+class User < ActiveRecord::Base
+  include AttrSearchable
+
+  attr_searchable :username
+  attr_searchable_options :username, :left_wildcard => false
+
+  # ...
+```
+
+such that AttrSearchable will omit the left most wildcard.
+
+```ruby
+User.search("admin")
+# ... WHERE users.username LIKE 'admin%'
+```
+
 ## Associations
 
 If you specify searchable attributes from another model, like
@@ -267,12 +291,13 @@ end
 AttrSearchable will then skip any association auto loading and will use
 the `search_scope` instead.
 
-Moreover, AttrSearchable tries to infer a model's class name and SQL alias from
-the specified attributes to autodetect datatype definitions, etc. This works
-quite fine most of the time, such that AttrSearchable keeps it simple for
-simple things and manageable for complex things. In case you're using custom
-table names via `self.table_name = ...` or if a model is associated multiple
-times, AttrSearchable however can't infer the class and alias names, e.g.
+## Custom table names and associations
+
+AttrSearchable tries to infer a model's class name and SQL alias from the
+specified attributes to autodetect datatype definitions, etc. This usually
+works quite fine. In case you're using custom table names via `self.table_name
+= ...` or if a model is associated multiple times, AttrSearchable however can't
+infer the class and alias names, e.g.
 
 ```ruby
 class Book < ActiveRecord::Base
@@ -287,10 +312,10 @@ class Book < ActiveRecord::Base
 end
 ```
 
-Here, ActiveRecord assigns a different SQL alias for users within its SQL
-queries, because the user model is associated multiple times. Therefore, you
-have to reference it approprietly. However, as AttrSearchable now can't
-infer the `User` model from `users_books`, you have to add:
+Here, for queries to work you have to use `users_books.username`, because
+ActiveRecord assigns a different SQL alias for users within its SQL queries,
+because the user model is associated multiple times. However, as AttrSearchable
+now can't infer the `User` model from `users_books`, you have to add:
 
 ```ruby
 class Book < ActiveRecord::Base
@@ -302,7 +327,7 @@ class Book < ActiveRecord::Base
 end
 ```
 
-to tell AttrSearchable about the SQL alias and mapping.
+to tell AttrSearchable about the custom SQL alias and mapping.
 
 ## Supported operators
 
