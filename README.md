@@ -422,6 +422,12 @@ Book.unsafe_search("stock: None") # => raise AttrSearchable::IncompatibleDatatyp
 
 ## Changelog
 
+Version 0.0.4:
+
+* Fixed date attributes
+* Fail softly for mixed datatype attributes
+* Support custom table, class and alias names via attr_searchable_alias
+
 Version 0.0.3:
 
 * belongs_to association fixes
