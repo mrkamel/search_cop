@@ -159,16 +159,16 @@ module AttrSearchableGrammar
           ::Time.new($1, $3, 15).beginning_of_month .. ::Time.new($1, $3, 15).end_of_month
         elsif value =~ /^([0-9]{1,2})(\.|-|\/)([0-9]{4,})$/
           ::Time.new($3, $1, 15).beginning_of_month .. ::Time.new($3, $1, 15).end_of_month
-        elsif value !~ /:/ 
+        elsif value !~ /:/
           time = ::Time.parse(value)
           time.beginning_of_day .. time.end_of_day
         else
           time = ::Time.parse(value)
           time .. time
-        end 
+        end
       rescue ArgumentError
         raise AttrSearchable::IncompatibleDatatype, "Incompatible datatype for #{value}"
-      end 
+      end
 
       def map(value)
         parse(value).first
@@ -191,8 +191,20 @@ module AttrSearchableGrammar
 
     class Date < Datetime
       def parse(value)
-        dates = super(value).collect { |time| ::Time.parse(time).to_date }
-        dates.first .. dates.last
+        return value .. value unless value.is_a?(::String)
+
+        if value =~ /^[0-9]{4,}$/
+          ::Date.new(value.to_i).beginning_of_year .. ::Date.new(value.to_i).end_of_year
+        elsif value =~ /^([0-9]{4,})(\.|-|\/)([0-9]{1,2})$/
+          ::Date.new($1.to_i, $3.to_i, 15).beginning_of_month .. ::Date.new($1.to_i, $3.to_i, 15).end_of_month
+        elsif value =~ /^([0-9]{1,2})(\.|-|\/)([0-9]{4,})$/
+          ::Date.new($3.to_i, $1.to_i, 15).beginning_of_month .. ::Date.new($3.to_i, $1.to_i, 15).end_of_month
+        else
+          date = ::Date.parse(value)
+          date .. date
+        end
+      rescue ArgumentError
+        raise AttrSearchable::IncompatibleDatatype, "Incompatible datatype for #{value}"
       end
     end
 
@@ -204,7 +216,7 @@ module AttrSearchableGrammar
         return false if value.to_s =~ /^(0|false|no)$/i
 
         raise AttrSearchable::IncompatibleDatatype, "Incompatible datatype for #{value}"
-      end 
+      end
     end
   end
 end
