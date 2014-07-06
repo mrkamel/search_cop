@@ -34,7 +34,7 @@ end
 class Product < ActiveRecord::Base
   include AttrSearchable
 
-  attr_searchable :title, :description, :brand, :stock, :price, :created_at, :created_on, :available
+  attr_searchable :title, :description, :brand, :notice, :stock, :price, :created_at, :created_on, :available
   attr_searchable :comment => ["comments.title", "comments.message"], :user => ["users.username", "users_products.username"]
   attr_searchable :primary => [:title, :description]
 
@@ -81,6 +81,7 @@ ActiveRecord::Base.connection.create_table :products do |t|
   t.date :created_on
   t.boolean :available
   t.string :brand
+  t.string :notice
 end
 
 ActiveRecord::Base.connection.create_table :comments do |t|

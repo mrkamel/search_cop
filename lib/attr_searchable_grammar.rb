@@ -85,7 +85,7 @@ module AttrSearchableGrammar
   class AnywhereExpression < BaseNode
     def evaluate
       keys = model.searchable_attribute_options.select { |key, value| value[:default] == true }.keys
-      keys = model.searchable_attributes.keys if keys.empty?
+      keys = model.searchable_attributes.keys.reject { |key| model.searchable_attribute_options[key] && model.searchable_attribute_options[key][:default] == false } if keys.empty?
 
       queries = keys.collect { |key| collection_for key }.select { |collection| collection.compatible? text_value }.collect { |collection| collection.matches text_value }
 

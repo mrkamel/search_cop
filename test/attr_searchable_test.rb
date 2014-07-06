@@ -49,7 +49,7 @@ class AttrSearchableTest < AttrSearchable::TestCase
     assert_includes results, product2
   end
 
-  def test_custom_default
+  def test_custom_default_enabled
     product1 = create(:product, :title => "Expected")
     product2 = create(:product, :description => "Expected")
     product3 = create(:product, :brand => "Expected")
@@ -59,6 +59,16 @@ class AttrSearchableTest < AttrSearchable::TestCase
     assert_includes results, product1
     assert_includes results, product2
     refute_includes results, product3
+  end
+
+  def test_custom_default_disabled
+    product1 = create(:product, :brand => "Expected")
+    product2 = create(:product, :notice => "Expected")
+
+    results = with_attr_searchable_options(Product, :notice, :default => false) { Product.search "Expected" }
+
+    assert_includes results, product1
+    refute_includes results, product2
   end
 
   def test_count
