@@ -41,8 +41,8 @@ class DateTest < AttrSearchable::TestCase
   def test_greater
     product = create(:product, :created_on => Date.parse("2014-05-01"))
 
-    assert_includes Product.search("created_on < 2014-05-02"), product
-    refute_includes Product.search("created_on < 2014-05-01"), product
+    assert_includes Product.search("created_on > 2014-04-01"), product
+    refute_includes Product.search("created_on > 2014-05-01"), product
   end
 
   def test_greater_equals
