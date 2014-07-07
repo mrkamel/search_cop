@@ -106,9 +106,9 @@ AttrSearchable will use `LIKE '%...%'` queries. Unfortunately, unless you
 create a [trigram index](http://www.postgresql.org/docs/9.1/static/pgtrgm.html)
 (postgres only), theses queries can not use SQL indices, such that every row
 needs to be scanned by your RDBMS when you search for `Book.search("Harry
-Potter")` or similar. Therefore, AttrSearchable can exploit the fulltext index
-capabilities of MySQL and PostgreSQL. To use already existing fulltext indices,
-simply tell AttrSearchable to use them via:
+Potter")` or similar. To avoid the penalty of `LIKE` queries, AttrSearchable
+can exploit the fulltext index capabilities of MySQL and PostgreSQL. To use
+already existing fulltext indices, simply tell AttrSearchable to use them via:
 
 ```ruby
 class Book < ActiveRecord::Base
@@ -142,7 +142,11 @@ to search in, such that AttrSearchable must no longer search within all fields:
 
 ```ruby
 attr_searchable :all => [:author, :title]
+
 attr_searchable_options :all, :type => :fulltext, :default => true
+
+# Use :default => true to explicitly enable fields as default fields (whitelist approach)
+# Use :default => false to explicitly disable fields as default fields (blacklist approach)
 ```
 
 Now AttrSearchable can optimize the following, not yet optimal query:
