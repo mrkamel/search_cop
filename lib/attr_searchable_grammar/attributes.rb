@@ -59,7 +59,7 @@ module AttrSearchableGrammar
         klass = model.searchable_attribute_aliases[table]
         klass ||= table
 
-        klass.classify.constantize
+        model.reflections[klass.to_sym] ? model.reflections[klass.to_sym].klass : klass.classify.constantize
       end
 
       def alias_for(table)
