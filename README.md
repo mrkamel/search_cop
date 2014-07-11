@@ -418,8 +418,9 @@ Book.unsafe_search("stock: None") # => raise AttrSearchable::IncompatibleDatatyp
 
 ## Reflection
 
-AttrSearchable provides reflective methods, namely `#searchable_attributes` and
-`#default_searchable_attributes`. You can use these methods to e.g. provide an
+AttrSearchable provides reflective methods, namely `#searchable_attributes`,
+`#default_searchable_attributes`, `#searchable_attribute_options` and
+`#searchable_attribute_aliases`. You can use these methods to e.g. provide an
 individual search help widget for your models, that lists the attributes to
 search in as well as the default ones, etc.
 
@@ -436,6 +437,8 @@ Product.searchable_attributes
 
 Product.default_searchable_attributes
 # {"title" => ["products.title"]}
+
+# ...
 ```
 
 ## Contributing
