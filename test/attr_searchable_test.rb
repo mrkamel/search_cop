@@ -76,5 +76,21 @@ class AttrSearchableTest < AttrSearchable::TestCase
 
     assert_equal 2, Product.search("Expected").count
   end
+
+  def test_default_searchable_attributes_true
+    with_attr_searchable_options(Product, :title, :default => true) do
+      with_attr_searchable_options(Product, :description, :default => true) do
+        assert_equal ["title", "description"], Product.default_searchable_attributes.keys
+      end
+    end
+  end
+
+  def test_default_searchable_attributes_false
+    with_attr_searchable_options(Product, :title, :default => false) do
+      with_attr_searchable_options(Product, :description, :default => false) do
+        assert_equal Product.searchable_attributes.keys - ["title", "description"], Product.default_searchable_attributes.keys
+      end
+    end
+  end
 end
 

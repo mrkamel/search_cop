@@ -73,6 +73,14 @@ module AttrSearchable
       end
     end
 
+    def default_searchable_attributes
+      keys = searchable_attribute_options.select { |key, value| value[:default] == true }.keys
+      keys = searchable_attributes.keys.reject { |key| searchable_attribute_options[key] && searchable_attribute_options[key][:default] == false } if keys.empty?
+      keys = keys.to_set
+
+      searchable_attributes.select { |key, value| keys.include? key }
+    end
+
     def search(query)
       unsafe_search query
     rescue AttrSearchable::RuntimeError

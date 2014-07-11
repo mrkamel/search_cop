@@ -416,6 +416,28 @@ returns an empty relation. However, if you need to debug certain cases, use
 Book.unsafe_search("stock: None") # => raise AttrSearchable::IncompatibleDatatype
 ```
 
+## Reflection
+
+AttrSearchable provides reflective methods, namely `#searchable_attributes` and
+`#default_searchable_attributes`. You can use these methods to e.g. provide an
+individual search help widget for your models, that lists the attributes to
+search in as well as the default ones, etc.
+
+```ruby
+class Product < ActiveRecord::Base
+  include AttrSearchable
+
+  attr_searchable :title, :description
+  attr_searchable_options :title, :default => true
+end
+
+Product.searchable_attributes
+# {"title" => ["products.title"], "description" => ["products.description"]}
+
+Product.default_searchable_attributes
+# {"title" => ["products.title"]}
+```
+
 ## Contributing
 
 1. Fork it
