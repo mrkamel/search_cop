@@ -152,7 +152,7 @@ attr_searchable_options :all, :type => :fulltext, :default => true
 Now AttrSearchable can optimize the following, not yet optimal query:
 
 ```ruby
-BookSearch("Rowling OR Tolkien stock > 1")
+Book.search("Rowling OR Tolkien stock > 1")
 # MySQL: ... WHERE ((MATCH(books.author) AGAINST('+Rowling' IN BOOLEAN MODE) OR MATCH(books.title) AGAINST('+Rowling' IN BOOLEAN MODE)) OR (MATCH(books.author) AGAINST('+Tolkien' IN BOOLEAN MODE) OR MATCH(books.title) AGAINST('+Tolkien' IN BOOLEAN MODE))) AND books.stock > 1
 # PostgreSQL: ... WHERE ((to_tsvector('simple', books.author) @@ to_tsquery('simple', 'Rowling') OR to_tsvector('simple', books.title) @@ to_tsquery('simple', 'Rowling')) OR (to_tsvector('simple', books.author) @@ to_tsquery('simple', 'Tolkien') OR to_tsvector('simple', books.title) @@ to_tsquery('simple', 'Tolkien'))) AND books.stock > 1
 ```
@@ -160,7 +160,7 @@ BookSearch("Rowling OR Tolkien stock > 1")
 to the following, more performant query:
 
 ```ruby
-BookSearch("Rowling OR Tolkien stock > 1")
+Book.search("Rowling OR Tolkien stock > 1")
 # MySQL: ... WHERE MATCH(books.author, books.title) AGAINST('Rowling Tolkien' IN BOOLEAN MODE) AND books.stock > 1
 # PostgreSQL: ... WHERE to_tsvector('simple', books.author || ' ' || books.title) @@ to_tsquery('simple', 'Rowling | Tokien') and books.stock > 1
 ```
@@ -170,7 +170,7 @@ tries to minimize the fultext constraints within a query, namely `MATCH()
 AGAINST()` for MySQL and `to_tsvector() @@ to_tsquery()` for PostgreSQL.
 
 ```ruby
-BookSearch("(Rowling -Potter) OR Tolkien")
+Book.search("(Rowling -Potter) OR Tolkien")
 # MySQL: ... WHERE MATCH(books.author, books.title) AGAINST('(+Rowling -Potter) Tolkien' IN BOOLEAN MODE)
 # PostgreSQL: ... WHERE to_tsvector('simple', books.author || ' ' || books.title) @@ to_tsquery('simple', '(Rowling & !Potter) | Tolkien')
 ```
