@@ -451,6 +451,13 @@ Product.default_searchable_attributes
 
 ## Changelog
 
+Version 0.0.5:
+
+* Supporting :default => false
+* Datetime/Date greater operator fix
+* Use reflection to find associated models
+* Providing reflection
+
 Version 0.0.4:
 
 * Fixed date attributes
