@@ -159,11 +159,17 @@ Book.search("Rowling OR Tolkien stock > 1")
 
 to the following, more performant query:
 
+
 ```ruby
 Book.search("Rowling OR Tolkien stock > 1")
 # MySQL: ... WHERE MATCH(books.author, books.title) AGAINST('Rowling Tolkien' IN BOOLEAN MODE) AND books.stock > 1
 # PostgreSQL: ... WHERE to_tsvector('simple', books.author || ' ' || books.title) @@ to_tsquery('simple', 'Rowling | Tokien') and books.stock > 1
 ```
+
+What is happening here? Well, we specified `all` as an alias that consists of
+the columns `author` and `title`. As we, in addition, specified `all` to be a
+fulltext attribute, AttrSearchable assumes there is a compound fulltext index
+present on `author` and `title`, such that the query is optimized accordingly.
 
 Other queries will be optimized in a similar way, such that AttrSearchable
 tries to minimize the fultext constraints within a query, namely `MATCH()
