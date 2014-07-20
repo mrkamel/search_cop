@@ -16,15 +16,11 @@ module AttrSearchable
 
   module Parser
     def self.parse(query, model)
-      query.is_a?(Hash) ? parse_hash(query, model) : parse_string(query, model)
-    end
-
-    def self.parse_hash(hash, model)
-      AttrSearchable::HashParser.new(model).parse(hash) || raise(ParseError)
-    end
-
-    def self.parse_string(string, model)
-      AttrSearchable::GrammarParser.new(model).parse(string) || raise(ParseError)
+      if query.is_a?(Hash)
+        AttrSearchable::HashParser.new(model).parse(query)
+      else
+        AttrSearchable::GrammarParser.new(model).parse(query)
+      end
     end
   end
 
