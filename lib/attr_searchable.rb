@@ -1,11 +1,8 @@
 
 require "attr_searchable/version"
 require "attr_searchable/arel"
-require "attr_searchable_grammar"
+require "attr_searchable/grammar_parser"
 require "attr_searchable/hash_parser"
-require "treetop"
-
-Treetop.load File.expand_path("../attr_searchable_grammar.treetop", __FILE__)
 
 module AttrSearchable
   class SpecificationError < StandardError; end
@@ -27,9 +24,7 @@ module AttrSearchable
     end
 
     def self.parse_string(string, model)
-      node = AttrSearchableGrammarParser.new.parse(string) || raise(ParseError)
-      node.model = model
-      node.evaluate
+      AttrSearchable::GrammarParser.new(model).parse(string) || raise(ParseError)
     end
   end
 
