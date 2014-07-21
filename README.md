@@ -137,8 +137,9 @@ fulltext indices will usually of course provide better performance.
 Moreover, the query above is not yet perfect. To improve it even more,
 AttrSearchable tries to optimize the queries to make optimal use of fulltext
 indices while still allowing to mix them with non-fulltext attributes. To
-improve queries, the first thing you want to do is to specify a default field
-to search in, such that AttrSearchable must no longer search within all fields:
+improve queries even more, you can group attributes via aliases and specify a
+default field to search in, such that AttrSearchable must no longer search
+within all fields:
 
 ```ruby
 attr_searchable :all => [:author, :title]
@@ -167,9 +168,12 @@ Book.search("Rowling OR Tolkien stock > 1")
 ```
 
 What is happening here? Well, we specified `all` as an alias that consists of
-the columns `author` and `title`. As we, in addition, specified `all` to be a
-fulltext attribute, AttrSearchable assumes there is a compound fulltext index
-present on `author` and `title`, such that the query is optimized accordingly.
+`author` and `title`. As we, in addition, specified `all` to be a fulltext
+attribute, AttrSearchable assumes there is a compound fulltext index present on
+`author` and `title`, such that the query is optimized accordingly. Finally, we
+specified `all` to be the default attribute to search in, such that
+AttrSearchable can ignore other attributes, like e.g. `stock`, as long as they
+are not specified within queries directly (like for `stock > 0`).
 
 Other queries will be optimized in a similar way, such that AttrSearchable
 tries to minimize the fultext constraints within a query, namely `MATCH()
