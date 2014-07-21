@@ -1,6 +1,7 @@
 
 require "attr_searchable/version"
 require "attr_searchable/arel"
+require "attr_searchable/query_object"
 require "attr_searchable/grammar_parser"
 require "attr_searchable/hash_parser"
 
@@ -13,16 +14,6 @@ module AttrSearchable
   class NoSearchableAttributes < RuntimeError; end
   class IncompatibleDatatype < RuntimeError; end
   class ParseError < RuntimeError; end
-
-  module Parser
-    def self.parse(query, model)
-      if query.is_a?(Hash)
-        AttrSearchable::HashParser.new(model).parse(query)
-      else
-        AttrSearchable::GrammarParser.new(model).parse(query)
-      end
-    end
-  end
 
   def self.included(base)
     base.class_attribute :searchable_attributes
@@ -86,7 +77,7 @@ module AttrSearchable
       scope = respond_to?(:search_scope) ? search_scope : nil
       scope ||= eager_load(associations - [name.tableize.to_sym])
 
-      scope.where AttrSearchable::Parser.parse(query, self).optimize!.to_sql(self)
+      scope.where QueryObject.new(self).parse(query).to_sql
     end
   end
 end
