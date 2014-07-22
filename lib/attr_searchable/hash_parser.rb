@@ -1,9 +1,9 @@
 
 class AttrSearchable::HashParser
-  attr_reader :query_object
+  attr_reader :query_info
 
-  def initialize(query_object)
-    @query_object = query_object
+  def initialize(query_info)
+    @query_info = query_info
   end
 
   def parse(hash)
@@ -16,7 +16,7 @@ class AttrSearchable::HashParser
         when :not
           parse(value).not
         when :query
-          AttrSearchable::QueryObject.new(query_object.model).parse(value).ast
+          AttrSearchable::Parser.parse value, query_info
         else
           parse_attribute key, value
       end
@@ -28,7 +28,7 @@ class AttrSearchable::HashParser
   private
 
   def parse_attribute(key, value)
-    collection = AttrSearchableGrammar::Attributes::Collection.new(query_object.model, key.to_s)
+    collection = AttrSearchableGrammar::Attributes::Collection.new(query_info.model, key.to_s)
 
     if value.is_a?(Hash)
       raise(AttrSearchable::ParseError, "Unknown operator #{value.keys.first}") unless [:matches, :eq, :not_eq, :gt, :gteq, :lt, :lteq].include?(value.keys.first)
