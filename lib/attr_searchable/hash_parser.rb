@@ -28,7 +28,7 @@ class AttrSearchable::HashParser
   private
 
   def parse_attribute(key, value)
-    collection = AttrSearchableGrammar::Attributes::Collection.new(query_info.model, key.to_s)
+    collection = AttrSearchableGrammar::Attributes::Collection.new(query_info, key.to_s)
 
     if value.is_a?(Hash)
       raise(AttrSearchable::ParseError, "Unknown operator #{value.keys.first}") unless [:matches, :eq, :not_eq, :gt, :gteq, :lt, :lteq].include?(value.keys.first)

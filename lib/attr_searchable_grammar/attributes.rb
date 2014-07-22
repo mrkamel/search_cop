@@ -4,12 +4,12 @@ require "treetop"
 module AttrSearchableGrammar
   module Attributes
     class Collection
-      attr_reader :model, :key
+      attr_reader :query_info, :key
 
-      def initialize(model, key)
-        raise(AttrSearchable::UnknownColumn, "Unknown column #{key}") unless model.searchable_attributes[key]
+      def initialize(query_info, key)
+        raise(AttrSearchable::UnknownColumn, "Unknown column #{key}") unless query_info.model.searchable_attributes[key]
 
-        @model = model
+        @query_info = query_info
         @key = key
       end
 
@@ -18,11 +18,11 @@ module AttrSearchableGrammar
       end
 
       def ==(other)
-        other.is_a?(self.class) && [model, key] == [other.model, other.key]
+        other.is_a?(self.class) && [query_info.model, key] == [query_info.model, other.key]
       end
 
       def hash
-        [model, key].hash
+        [query_info.model, key].hash
       end
 
       [:eq, :not_eq, :lt, :lteq, :gt, :gteq].each do |method|
@@ -40,7 +40,7 @@ module AttrSearchableGrammar
       end
 
       def fulltext?
-        (model.searchable_attribute_options[key] || {})[:type] == :fulltext
+        (query_info.model.searchable_attribute_options[key] || {})[:type] == :fulltext
       end
 
       def compatible?(value)
@@ -48,25 +48,27 @@ module AttrSearchableGrammar
       end
 
       def options
-        model.searchable_attribute_options[key]
+        query_info.model.searchable_attribute_options[key]
       end
 
       def attributes
-        @attributes ||= model.searchable_attributes[key].collect { |attribute_definition| attribute_for attribute_definition }
+        @attributes ||= query_info.model.searchable_attributes[key].collect { |attribute_definition| attribute_for attribute_definition }
       end
 
       def klass_for(table)
-        klass = model.searchable_attribute_aliases[table]
+        klass = query_info.model.searchable_attribute_aliases[table]
         klass ||= table
 
-        model.reflections[klass.to_sym] ? model.reflections[klass.to_sym].klass : klass.classify.constantize
+        query_info.model.reflections[klass.to_sym] ? query_info.model.reflections[klass.to_sym].klass : klass.classify.constantize
       end
 
       def alias_for(table)
-        (model.searchable_attribute_aliases[table] && table) || klass_for(table).table_name
+        (query_info.model.searchable_attribute_aliases[table] && table) || klass_for(table).table_name
       end
 
       def attribute_for(attribute_definition)
+        query_info.references.push attribute_definition
+
         table, column = attribute_definition.split(".")
         klass = klass_for(table)
 

@@ -4,10 +4,10 @@ require "attr_searchable_grammar/nodes"
 
 module AttrSearchableGrammar
   class BaseNode < Treetop::Runtime::SyntaxNode
-    attr_writer :model
+    attr_accessor :query_info
 
-    def model
-      @model || parent.model
+    def query_info
+      @query_info || parent.query_info
     end
 
     def evaluate
@@ -19,9 +19,9 @@ module AttrSearchableGrammar
     end
 
     def collection_for(key)
-      raise(AttrSearchable::UnknownColumn, "Unknown column #{key}") if model.searchable_attributes[key].nil?
+      raise(AttrSearchable::UnknownColumn, "Unknown column #{key}") if query_info.model.searchable_attributes[key].nil?
 
-      Attributes::Collection.new model, key
+      Attributes::Collection.new query_info, key
     end
   end
 
@@ -84,7 +84,7 @@ module AttrSearchableGrammar
 
   class AnywhereExpression < BaseNode
     def evaluate
-      queries = model.default_searchable_attributes.keys.collect { |key| collection_for key }.select { |collection| collection.compatible? text_value }.collect { |collection| collection.matches text_value }
+      queries = query_info.model.default_searchable_attributes.keys.collect { |key| collection_for key }.select { |collection| collection.compatible? text_value }.collect { |collection| collection.matches text_value }
 
       raise AttrSearchable::NoSearchableAttributes if queries.empty?
 

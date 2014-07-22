@@ -46,10 +46,6 @@ module AttrSearchableGrammar
         finalize!
       end
 
-      def to_sql(model)
-        model.connection.visitor.accept self
-      end
-
       def finalize!
         self
       end

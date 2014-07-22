@@ -14,7 +14,7 @@ module AttrSearchable
 
     def parse(string)
       node = AttrSearchableGrammarParser.new.parse(string) || raise(ParseError)
-      node.model = query_info.model
+      node.query_info = query_info
       node.evaluate
     end
   end

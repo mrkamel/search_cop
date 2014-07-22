@@ -2,6 +2,7 @@
 require "attr_searchable/version"
 require "attr_searchable/arel"
 require "attr_searchable/query_info"
+require "attr_searchable/query_builder"
 require "attr_searchable/grammar_parser"
 require "attr_searchable/hash_parser"
 
@@ -82,12 +83,11 @@ module AttrSearchable
     def unsafe_search(query)
       return respond_to?(:scoped) ? scoped : all if query.blank?
 
-      associations = searchable_attributes.values.flatten.uniq.collect { |column| column.split(".").first }.collect { |column| searchable_attribute_aliases[column] || column.to_sym }
+      query_builder = QueryBuilder.new(self, query)
 
-      scope = respond_to?(:search_scope) ? search_scope : nil
-      scope ||= eager_load(associations - [name.tableize.to_sym])
+      scope = respond_to?(:search_scope) ? search_scope : eager_load(query_builder.associations)
 
-      scope.where AttrSearchable::Parser.parse(query, QueryInfo.new(self)).optimize!.to_sql(self)
+      scope.where query_builder.sql
     end
   end
 end
