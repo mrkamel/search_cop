@@ -272,9 +272,24 @@ class Book < ActiveRecord::Base
 end
 ```
 
-AttrSearchable will by default `eager_load` the referenced associations, when
-you perform `Book.search(...)`. Assocations of associations can thus as well be
-referenced and used:
+AttrSearchable will by default lazily `eager_load` the associations referenced
+within the query (and only the ones referenced), when you perform
+`Book.search(...)`.  If you don't want the automatic `eager_load` or need to
+perform special operations, define a `search_scope` within your model:
+
+```ruby
+class Book < ActiveRecord::Base
+  # ...
+
+  scope :search_scope, lambda { joins(:author).eager_load(:comments) } # etc.
+
+  # ...
+end
+```
+
+AttrSearchable will then skip any association auto loading and will use the
+`search_scope` instead. Assocations of associations can as well be referenced
+and used:
 
 ```ruby
 class Book < ActiveRecord::Base
@@ -288,22 +303,6 @@ class Book < ActiveRecord::Base
   # ...
 end
 ```
-
-If you don't want the automatic `eager_load` or need to perform special
-operations, define a `search_scope` within your model:
-
-```ruby
-class Book < ActiveRecord::Base
-  # ...
-
-  scope :search_scope, lambda { joins(:author).eager_load(:comments) } # etc.
-
-  # ...
-end
-```
-
-AttrSearchable will then skip any association auto loading and will use
-the `search_scope` instead.
 
 ## Custom table names and associations
 
