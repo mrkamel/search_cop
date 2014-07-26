@@ -28,13 +28,13 @@ module AttrSearchable
 
   def self.included(base)
     base.class_attribute :searchable_attributes
-    base.searchable_attributes = {}
+    base.searchable_attributes = { :default => {} }
 
     base.class_attribute :searchable_attribute_options
-    base.searchable_attribute_options = {}
+    base.searchable_attribute_options = { :default => {} }
 
     base.class_attribute :searchable_attribute_aliases
-    base.searchable_attribute_aliases = {}
+    base.searchable_attribute_aliases = { :default => {} }
 
     base.extend ClassMethods
   end
@@ -48,7 +48,7 @@ module AttrSearchable
 
     def attr_searchable_hash(hash)
       hash.each do |key, value|
-        self.searchable_attributes[key.to_s] = Array(value).collect do |column|
+        self.searchable_attributes[:default][key.to_s] = Array(value).collect do |column|
           table, attribute = column.to_s =~ /\./ ? column.to_s.split(".") : [name.tableize, column]
 
           "#{table}.#{attribute}"
@@ -57,21 +57,21 @@ module AttrSearchable
     end
 
     def attr_searchable_options(key, options = {})
-      self.searchable_attribute_options[key.to_s] = (searchable_attribute_options[key.to_s] || {}).merge(options)
+      self.searchable_attribute_options[:default][key.to_s] = (searchable_attribute_options[:default][key.to_s] || {}).merge(options)
     end
 
     def attr_searchable_alias(hash)
       hash.each do |key, value|
-        self.searchable_attribute_aliases[key.to_s] = value.respond_to?(:table_name) ? value.table_name : value.to_s
+        self.searchable_attribute_aliases[:default][key.to_s] = value.respond_to?(:table_name) ? value.table_name : value.to_s
       end
     end
 
-    def default_searchable_attributes
-      keys = searchable_attribute_options.select { |key, value| value[:default] == true }.keys
-      keys = searchable_attributes.keys.reject { |key| searchable_attribute_options[key] && searchable_attribute_options[key][:default] == false } if keys.empty?
+    def default_searchable_attributes(scope)
+      keys = searchable_attribute_options[scope].select { |key, value| value[:default] == true }.keys
+      keys = searchable_attributes[scope].keys.reject { |key| searchable_attribute_options[scope][key] && searchable_attribute_options[scope][key][:default] == false } if keys.empty?
       keys = keys.to_set
 
-      searchable_attributes.select { |key, value| keys.include? key }
+      searchable_attributes[scope].select { |key, value| keys.include? key }
     end
 
     def search(query)

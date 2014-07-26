@@ -111,14 +111,16 @@ class AttrSearchable::TestCase
     Comment.delete_all
   end
 
-  def with_attr_searchable_options(model, key, options = {})
-    opts = model.searchable_attribute_options[key.to_s] || {}
+  def with_attr_searchable_options(model, scope, key, options = {})
+    model.searchable_attribute_options[scope] ||= {}
 
-    model.searchable_attribute_options[key.to_s] = opts.merge(options)
+    opts = model.searchable_attribute_options[scope][key.to_s] || {}
+
+    model.searchable_attribute_options[scope][key.to_s] = opts.merge(options)
 
     yield
   ensure
-    model.searchable_attribute_options[key.to_s] = opts
+    model.searchable_attribute_options[scope][key.to_s] = opts
   end
 end
 

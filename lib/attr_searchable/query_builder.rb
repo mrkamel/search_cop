@@ -18,7 +18,7 @@ module AttrSearchable
     private
 
     def all_associations
-      query_info.model.searchable_attributes.values.flatten.uniq.collect { |column| column.split(".").first }.collect { |column| query_info.model.searchable_attribute_aliases[column] || column.to_sym }
+      query_info.model.searchable_attributes[:default].values.flatten.uniq.collect { |column| column.split(".").first }.collect { |column| query_info.model.searchable_attribute_aliases[:default][column] || column.to_sym }
     end
   end
 end

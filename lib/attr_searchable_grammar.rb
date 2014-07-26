@@ -19,7 +19,7 @@ module AttrSearchableGrammar
     end
 
     def collection_for(key)
-      raise(AttrSearchable::UnknownColumn, "Unknown column #{key}") if query_info.model.searchable_attributes[key].nil?
+      raise(AttrSearchable::UnknownColumn, "Unknown column #{key}") if query_info.model.searchable_attributes[:default][key].nil?
 
       Attributes::Collection.new query_info, key
     end
@@ -84,7 +84,7 @@ module AttrSearchableGrammar
 
   class AnywhereExpression < BaseNode
     def evaluate
-      queries = query_info.model.default_searchable_attributes.keys.collect { |key| collection_for key }.select { |collection| collection.compatible? text_value }.collect { |collection| collection.matches text_value }
+      queries = query_info.model.default_searchable_attributes(:default).keys.collect { |key| collection_for key }.select { |collection| collection.compatible? text_value }.collect { |collection| collection.matches text_value }
 
       raise AttrSearchable::NoSearchableAttributes if queries.empty?
 

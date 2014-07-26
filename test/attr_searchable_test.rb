@@ -74,7 +74,7 @@ class AttrSearchableTest < AttrSearchable::TestCase
     product2 = create(:product, :description => "Expected")
     product3 = create(:product, :brand => "Expected")
 
-    results = with_attr_searchable_options(Product, :primary, :default => true) { Product.search "Expected" }
+    results = with_attr_searchable_options(Product, :default, :primary, :default => true) { Product.search "Expected" }
 
     assert_includes results, product1
     assert_includes results, product2
@@ -85,7 +85,7 @@ class AttrSearchableTest < AttrSearchable::TestCase
     product1 = create(:product, :brand => "Expected")
     product2 = create(:product, :notice => "Expected")
 
-    results = with_attr_searchable_options(Product, :notice, :default => false) { Product.search "Expected" }
+    results = with_attr_searchable_options(Product, :default, :notice, :default => false) { Product.search "Expected" }
 
     assert_includes results, product1
     refute_includes results, product2
@@ -98,17 +98,17 @@ class AttrSearchableTest < AttrSearchable::TestCase
   end
 
   def test_default_searchable_attributes_true
-    with_attr_searchable_options(Product, :title, :default => true) do
-      with_attr_searchable_options(Product, :description, :default => true) do
-        assert_equal ["title", "description"], Product.default_searchable_attributes.keys
+    with_attr_searchable_options(Product, :default, :title, :default => true) do
+      with_attr_searchable_options(Product, :default, :description, :default => true) do
+        assert_equal ["title", "description"], Product.default_searchable_attributes(:default).keys
       end
     end
   end
 
   def test_default_searchable_attributes_false
-    with_attr_searchable_options(Product, :title, :default => false) do
-      with_attr_searchable_options(Product, :description, :default => false) do
-        assert_equal Product.searchable_attributes.keys - ["title", "description"], Product.default_searchable_attributes.keys
+    with_attr_searchable_options(Product, :default, :title, :default => false) do
+      with_attr_searchable_options(Product, :default, :description, :default => false) do
+        assert_equal Product.searchable_attributes[:default].keys - ["title", "description"], Product.default_searchable_attributes(:default).keys
       end
     end
   end

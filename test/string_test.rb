@@ -33,7 +33,7 @@ class StringTest < AttrSearchable::TestCase
     expected = create(:product, :brand => "Brand")
     rejected = create(:product, :brand => "Rejected brand")
 
-    results = with_attr_searchable_options(Product, :brand, :left_wildcard => false) { Product.search "brand: Brand" }
+    results = with_attr_searchable_options(Product, :default, :brand, :left_wildcard => false) { Product.search "brand: Brand" }
 
     assert_includes results, expected
     refute_includes results, rejected
