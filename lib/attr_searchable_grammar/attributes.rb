@@ -7,7 +7,7 @@ module AttrSearchableGrammar
       attr_reader :query_info, :key
 
       def initialize(query_info, key)
-        raise(AttrSearchable::UnknownColumn, "Unknown column #{key}") unless query_info.model.searchable_attributes[:default][key]
+        raise(AttrSearchable::UnknownColumn, "Unknown column #{key}") unless query_info.model.searchable_attributes[query_info.scope][key]
 
         @query_info = query_info
         @key = key
@@ -40,7 +40,7 @@ module AttrSearchableGrammar
       end
 
       def fulltext?
-        (query_info.model.searchable_attribute_options[:default][key] || {})[:type] == :fulltext
+        (query_info.model.searchable_attribute_options[query_info.scope][key] || {})[:type] == :fulltext
       end
 
       def compatible?(value)
@@ -48,22 +48,22 @@ module AttrSearchableGrammar
       end
 
       def options
-        query_info.model.searchable_attribute_options[:default][key]
+        query_info.model.searchable_attribute_options[query_info.scope][key]
       end
 
       def attributes
-        @attributes ||= query_info.model.searchable_attributes[:default][key].collect { |attribute_definition| attribute_for attribute_definition }
+        @attributes ||= query_info.model.searchable_attributes[query_info.scope][key].collect { |attribute_definition| attribute_for attribute_definition }
       end
 
       def klass_for(table)
-        klass = query_info.model.searchable_attribute_aliases[:default][table]
+        klass = query_info.model.searchable_attribute_aliases[query_info.scope][table]
         klass ||= table
 
         query_info.model.reflections[klass.to_sym] ? query_info.model.reflections[klass.to_sym].klass : klass.classify.constantize
       end
 
       def alias_for(table)
-        (query_info.model.searchable_attribute_aliases[:default][table] && table) || klass_for(table).table_name
+        (query_info.model.searchable_attribute_aliases[query_info.scope][table] && table) || klass_for(table).table_name
       end
 
       def attribute_for(attribute_definition)

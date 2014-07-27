@@ -28,15 +28,19 @@ module AttrSearchable
 
   def self.included(base)
     base.class_attribute :searchable_attributes
-    base.searchable_attributes = { :default => {} }
+    base.searchable_attributes = {}
 
     base.class_attribute :searchable_attribute_options
-    base.searchable_attribute_options = { :default => {} }
+    base.searchable_attribute_options = {}
 
     base.class_attribute :searchable_attribute_aliases
-    base.searchable_attribute_aliases = { :default => {} }
+    base.searchable_attribute_aliases = {}
+
+    base.class_attribute :searchable_attribute_scope
 
     base.extend ClassMethods
+
+    base.attr_searchable_scope :default
   end
 
   module ClassMethods
@@ -48,7 +52,7 @@ module AttrSearchable
 
     def attr_searchable_hash(hash)
       hash.each do |key, value|
-        self.searchable_attributes[:default][key.to_s] = Array(value).collect do |column|
+        self.searchable_attributes[searchable_attribute_scope][key.to_s] = Array(value).collect do |column|
           table, attribute = column.to_s =~ /\./ ? column.to_s.split(".") : [name.tableize, column]
 
           "#{table}.#{attribute}"
@@ -57,13 +61,30 @@ module AttrSearchable
     end
 
     def attr_searchable_options(key, options = {})
-      self.searchable_attribute_options[:default][key.to_s] = (searchable_attribute_options[:default][key.to_s] || {}).merge(options)
+      self.searchable_attribute_options[searchable_attribute_scope][key.to_s] = (searchable_attribute_options[searchable_attribute_scope][key.to_s] || {}).merge(options)
     end
 
     def attr_searchable_alias(hash)
       hash.each do |key, value|
-        self.searchable_attribute_aliases[:default][key.to_s] = value.respond_to?(:table_name) ? value.table_name : value.to_s
+        self.searchable_attribute_aliases[searchable_attribute_scope][key.to_s] = value.respond_to?(:table_name) ? value.table_name : value.to_s
       end
+    end
+
+    def attr_searchable_scope(name)
+      self.searchable_attribute_scope = name
+
+      self.searchable_attributes[name] = {}
+      self.searchable_attribute_options[name] = {}
+      self.searchable_attribute_aliases[name] = {}
+
+      return unless block_given?
+
+      yield
+
+      self.class.send(:define_method, name) { |query| search query, name }
+      self.class.send(:define_method, "unsafe_#{name}") { |query| unsafe_search query, name }
+    ensure
+      self.searchable_attribute_scope = :default
     end
 
     def default_searchable_attributes(scope)
@@ -74,16 +95,16 @@ module AttrSearchable
       searchable_attributes[scope].select { |key, value| keys.include? key }
     end
 
-    def search(query)
-      unsafe_search query
+    def search(query, scope = :default)
+      unsafe_search query, scope
     rescue AttrSearchable::RuntimeError
       respond_to?(:none) ? none : where("1 = 0")
     end
 
-    def unsafe_search(query)
+    def unsafe_search(query, scope = :default)
       return respond_to?(:scoped) ? scoped : all if query.blank?
 
-      query_builder = QueryBuilder.new(self, query)
+      query_builder = QueryBuilder.new(self, query, scope)
 
       scope = respond_to?(:search_scope) ? search_scope : eager_load(query_builder.associations)
 

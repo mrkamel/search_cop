@@ -50,6 +50,14 @@ class Product < ActiveRecord::Base
     attr_searchable_options :title, :dictionary => "english"
   end
 
+  attr_searchable_scope :user_search do
+    attr_searchable :title, :description
+    attr_searchable :user => "users_products.username"
+
+    attr_searchable_options :title, :default => true
+    attr_searchable_alias :users_products => :user
+  end
+
   has_many :comments
   has_many :users, :through => :comments
 
