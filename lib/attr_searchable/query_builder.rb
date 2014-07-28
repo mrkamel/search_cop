@@ -12,7 +12,13 @@ module AttrSearchable
     end
 
     def associations
-      query_info.references.collect { |column| column.split(".").first }.uniq.collect { |column| (query_info.model.searchable_attribute_aliases[column] || column).to_sym } - [query_info.model.name.tableize.to_sym]
+      all_associations - [query_info.model.name.tableize.to_sym]
+    end
+
+    private
+
+    def all_associations
+      query_info.references.collect { |column| column.split(".").first }.uniq.collect { |column| (query_info.model.searchable_attribute_aliases[column] || column).to_sym }
     end
   end
 end

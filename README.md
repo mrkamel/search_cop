@@ -272,10 +272,10 @@ class Book < ActiveRecord::Base
 end
 ```
 
-AttrSearchable will by default lazily `eager_load` the associations referenced
-within the query (and only the ones referenced), when you perform
-`Book.search(...)`.  If you don't want the automatic `eager_load` or need to
-perform special operations, define a `search_scope` within your model:
+AttrSearchable will by default `eager_load` the referenced associations, when
+you perform `Book.search(...)`.  If you don't want the automatic `eager_load`
+or need to perform special operations, define a `search_scope` within your
+model:
 
 ```ruby
 class Book < ActiveRecord::Base
