@@ -36,8 +36,6 @@ module AttrSearchable
     base.class_attribute :searchable_attribute_aliases
     base.searchable_attribute_aliases = {}
 
-    base.class_attribute :searchable_attribute_scope
-
     base.extend ClassMethods
 
     base.attr_searchable_scope :default
@@ -71,7 +69,7 @@ module AttrSearchable
     end
 
     def attr_searchable_scope(name)
-      self.searchable_attribute_scope = name
+      @searchable_attribute_scope = name
 
       self.searchable_attributes[name] = {}
       self.searchable_attribute_options[name] = {}
@@ -84,7 +82,11 @@ module AttrSearchable
       self.class.send(:define_method, name) { |query| search query, name }
       self.class.send(:define_method, "unsafe_#{name}") { |query| unsafe_search query, name }
     ensure
-      self.searchable_attribute_scope = :default
+      @searchable_attribute_scope = :default
+    end
+
+    def searchable_attribute_scope
+      @searchable_attribute_scope || :default
     end
 
     def default_searchable_attributes(scope)
