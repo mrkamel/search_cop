@@ -12,6 +12,8 @@ AttrSearchable:
 class Book < ActiveRecord::Base
   include AttrSearchable
 
+  scope :search_scope, lambda { eager_load :comments, :users, :user }
+
   attr_searchable :title, :description
   attr_searchable :comment => ["comments.title", "comments.message"]
   attr_searchable :user => ["users.username", "users_books.username"]
@@ -36,6 +38,8 @@ class Book < ActiveRecord::Base
     options :title, :type => :fulltext, :default => true
 
     aliases :users_books => :user
+
+    scope { eager_load :comments, :users, :user }
   end
 end
 ```
