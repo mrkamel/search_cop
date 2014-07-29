@@ -1,7 +1,12 @@
 
 # General
 
-Before:
+As the set of features of AttrSearchable grew and grew, it has been neccessary
+to change its DSL and name, as no `attr_searchable` method is present anymore.
+The new DSL is cleaner and more concise. Morever, the migration process is
+simple.
+
+AttrSearchable:
 
 ```ruby
 class Book < ActiveRecord::Base
@@ -17,7 +22,7 @@ class Book < ActiveRecord::Base
 end
 ```
 
-After:
+SearchCop:
 
 ```ruby
 class Book < ActiveRecord::Base
@@ -33,11 +38,11 @@ class Book < ActiveRecord::Base
     aliases :users_books => :user
   end
 end
-```ruby
+```
 
 # Reflection
 
-Before:
+AttrSearchable:
 
 ```
 Book.searchable_attributes
@@ -45,7 +50,7 @@ Book.default_searchable_attributes
 Book.searchable_aliases
 ```
 
-After:
+SearchCop:
 
 ```
 Book.search_reflection(:search).attributes
