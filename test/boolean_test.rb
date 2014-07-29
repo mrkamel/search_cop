@@ -1,7 +1,7 @@
 
 require File.expand_path("../test_helper", __FILE__)
 
-class BooleanTest < AttrSearchable::TestCase
+class BooleanTest < SearchCop::TestCase
   def test_mapping
     product = create(:product, :available => true)
 
@@ -45,7 +45,7 @@ class BooleanTest < AttrSearchable::TestCase
   end
 
   def test_incompatible_datatype
-    assert_raises AttrSearchable::IncompatibleDatatype do
+    assert_raises SearchCop::IncompatibleDatatype do
       Product.unsafe_search "available: Value"
     end
   end

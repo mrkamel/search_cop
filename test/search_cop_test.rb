@@ -1,7 +1,7 @@
 
 require File.expand_path("../test_helper", __FILE__)
 
-class AttrSearchableTest < AttrSearchable::TestCase
+class SearchCopTest < SearchCop::TestCase
   def test_scope_before
     expected = create(:product, :stock => 1, :title => "Title")
     rejected = create(:product, :stock => 0, :title => "Title")
@@ -74,7 +74,7 @@ class AttrSearchableTest < AttrSearchable::TestCase
     product2 = create(:product, :description => "Expected")
     product3 = create(:product, :brand => "Expected")
 
-    results = with_attr_searchable_options(Product, :default, :primary, :default => true) { Product.search "Expected" }
+    results = with_options(Product.search_scopes[:search], :primary, :default => true) { Product.search "Expected" }
 
     assert_includes results, product1
     assert_includes results, product2
@@ -85,7 +85,7 @@ class AttrSearchableTest < AttrSearchable::TestCase
     product1 = create(:product, :brand => "Expected")
     product2 = create(:product, :notice => "Expected")
 
-    results = with_attr_searchable_options(Product, :default, :notice, :default => false) { Product.search "Expected" }
+    results = with_options(Product.search_scopes[:search], :notice, :default => false) { Product.search "Expected" }
 
     assert_includes results, product1
     refute_includes results, product2
@@ -97,20 +97,25 @@ class AttrSearchableTest < AttrSearchable::TestCase
     assert_equal 2, Product.search("Expected").count
   end
 
-  def test_default_searchable_attributes_true
-    with_attr_searchable_options(Product, :default, :title, :default => true) do
-      with_attr_searchable_options(Product, :default, :description, :default => true) do
-        assert_equal ["title", "description"], Product.default_searchable_attributes(:default).keys
+  def test_default_attributes_true
+    with_options(Product.search_scopes[:search], :title, :default => true) do
+      with_options(Product.search_scopes[:search], :description, :default => true) do
+        assert_equal ["title", "description"], Product.search_scopes[:search].reflection.default_attributes.keys
       end
     end
   end
 
-  def test_default_searchable_attributes_false
-    with_attr_searchable_options(Product, :default, :title, :default => false) do
-      with_attr_searchable_options(Product, :default, :description, :default => false) do
-        assert_equal Product.searchable_attributes[:default].keys - ["title", "description"], Product.default_searchable_attributes(:default).keys
+  def test_default_attributes_fales
+    with_options(Product.search_scopes[:search], :title, :default => false) do
+      with_options(Product.search_scopes[:search], :description, :default => false) do
+        assert_equal Product.search_scopes[:search].reflection.attributes.keys - ["title", "description"], Product.search_scopes[:search].reflection.default_attributes.keys
       end
     end
+  end
+
+  def test_search_reflection
+    assert_not_nil Product.search_reflection(:search)
+    assert_not_nil Product.search_reflection(:user_search)
   end
 end
 

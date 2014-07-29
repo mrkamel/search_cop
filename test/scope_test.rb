@@ -1,7 +1,7 @@
 
 require File.expand_path("../test_helper", __FILE__)
 
-class ScopeTest < AttrSearchable::TestCase
+class ScopeTest < SearchCop::TestCase
   def test_user_search
     expected = create(:product, :title => "Expected")
     rejected = create(:product, :notice => "Expected")

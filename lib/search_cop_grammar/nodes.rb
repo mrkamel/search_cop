@@ -1,7 +1,7 @@
 
 require "treetop"
 
-module AttrSearchableGrammar
+module SearchCopGrammar
   module Nodes
     module Base
       def and(node)

@@ -1,7 +1,7 @@
 
 require File.expand_path("../test_helper", __FILE__)
 
-class NotTest < AttrSearchable::TestCase
+class NotTest < SearchCop::TestCase
   def test_not_string
     expected = create(:product, :title => "Expected title")
     rejected = create(:product, :title => "Rejected title")

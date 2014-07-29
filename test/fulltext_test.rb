@@ -1,7 +1,7 @@
 
 require File.expand_path("../test_helper", __FILE__)
 
-class FulltextTest < AttrSearchable::TestCase
+class FulltextTest < SearchCop::TestCase
   def test_complex
     product1 = create(:product, :title => "word1")
     product2 = create(:product, :title => "word2 word3")

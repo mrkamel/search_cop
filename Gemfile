@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-# Specify your gem's dependencies in attr_searchable.gemspec
+# Specify your gem's dependencies in search_cop.gemspec
 gemspec
 
 platforms :jruby do

@@ -1,16 +1,16 @@
-# AttrSearchable
+# SearchCop
 
-[![Build Status](https://secure.travis-ci.org/mrkamel/attr_searchable.png?branch=master)](http://travis-ci.org/mrkamel/attr_searchable)
-[![Code Climate](https://codeclimate.com/github/mrkamel/attr_searchable.png)](https://codeclimate.com/github/mrkamel/attr_searchable)
-[![Dependency Status](https://gemnasium.com/mrkamel/attr_searchable.png?travis)](https://gemnasium.com/mrkamel/attr_searchable)
-[![Gem Version](https://badge.fury.io/rb/attr_searchable.svg)](http://badge.fury.io/rb/attr_searchable)
+[![Build Status](https://secure.travis-ci.org/mrkamel/search_cop.png?branch=master)](http://travis-ci.org/mrkamel/search_cop)
+[![Code Climate](https://codeclimate.com/github/mrkamel/search_cop.png)](https://codeclimate.com/github/mrkamel/search_cop)
+[![Dependency Status](https://gemnasium.com/mrkamel/search_cop.png?travis)](https://gemnasium.com/mrkamel/search_cop)
+[![Gem Version](https://badge.fury.io/rb/search_cop.svg)](http://badge.fury.io/rb/search_cop)
 
-![attr_searchable](https://raw.githubusercontent.com/mrkamel/attr_searchable_logo/master/attr_searchable.png)
+![search_cop](https://raw.githubusercontent.com/mrkamel/search_cop_logo/master/search_cop.png)
 
-AttrSearchable extends your ActiveRecord models to support fulltext search
+SearchCop extends your ActiveRecord models to support fulltext search
 engine like queries via simple query strings and hash-based queries. Assume you
 have a `Book` model having various attributes like `title`, `author`, `stock`,
-`price`, `available`. Using AttrSearchable you can perform:
+`price`, `available`. Using SearchCop you can perform:
 
 ```ruby
 Book.search("Joanne Rowling Harry Potter")
@@ -21,7 +21,7 @@ Book.search("price > 10 AND price < 20 -stock:0 (Potter OR Rowling)")
 
 Thus, you can hand out a search query string to your models and you, your app's
 admins and/or users will get powerful query features without the need for
-integrating additional third party search servers, since AttrSearchable can use
+integrating additional third party search servers, since SearchCop can use
 fulltext index capabilities of your RDBMS in a database agnostic way (currently
 MySQL and PostgreSQL fulltext indices are supported) and optimizes the queries
 to make optimal use of them. Read more below.
@@ -36,11 +36,19 @@ Book.search(:or => [{:query => "Rowling -Potter"}, {:query => "Tolkien -Rings"}]
 # ...
 ```
 
+## AttrSearchable is now SearchCop
+
+As the set of features of AttrSearchable grew and grew, it has been neccessary
+to change its DSL and name, as no `attr_searchable` method is present anymore.
+The new DSL is cleaner and more concise. Morever, the migration process is
+simple. Please take a look into the migration guide
+[MIGRATION.md](https://github.com/mrkamel/search_cop/MIGRATION.md)
+
 ## Installation
 
 For Rails/ActiveRecord 3 (or 4), add this line to your application's Gemfile:
 
-    gem 'attr_searchable'
+    gem 'search_cop'
 
 And then execute:
 
@@ -48,21 +56,23 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install attr_searchable
+    $ gem install search_cop
 
 ## Usage
 
-To enable AttrSearchable for a model, `include AttrSearchable` and specify the
-attributes you want to expose to search queries:
+To enable SearchCop for a model, `include SearchCop` and specify the
+attributes you want to expose to search queries within a `search_scope`:
 
 ```ruby
 class Book < ActiveRecord::Base
-  include AttrSearchable
+  include SearchCop
 
-  attr_searchable :title, :description, :stock, :price, :created_at, :available
-  attr_searchable :comment => ["comments.title", "comments.message"]
-  attr_searchable :author => "author.name"
-  # ...
+  search_scope :search do
+    attributes :title, :description, :stock, :price, :created_at, :available
+    attributes :comment => ["comments.title", "comments.message"]
+    attributes :author => "author.name"
+    # ...
+  end
 
   has_many :comments
   belongs_to :author
@@ -71,8 +81,8 @@ end
 
 ## How does it work
 
-AttrSearchable parses the query and maps it to an SQL Query using Arel.
-Thus, AttrSearchable is not bound to a specific RDBMS.
+SearchCop parses the query and maps it to an SQL Query using Arel.
+Thus, SearchCop is not bound to a specific RDBMS.
 
 ```ruby
 Book.search("stock > 0")
@@ -89,7 +99,7 @@ Book.search("available:yes OR created_at:2014")
 ```
 
 Of course, these `LIKE '%...%'` queries won't achieve optimal performance, but
-check out the section below on AttrSearchable's fulltext capabilities to
+check out the section below on SearchCop's fulltext capabilities to
 understand how the resulting queries can be optimized.
 
 As `Book.search(...)` returns an `ActiveRecord::Relation`, you are free to pre-
@@ -101,27 +111,31 @@ Book.where(:available => true).search("Harry Potter").order("books.id desc").pag
 
 ## Fulltext index capabilities
 
-By default, i.e. if you don't tell AttrSearchable about your fulltext indices,
-AttrSearchable will use `LIKE '%...%'` queries. Unfortunately, unless you
+By default, i.e. if you don't tell SearchCop about your fulltext indices,
+SearchCop will use `LIKE '%...%'` queries. Unfortunately, unless you
 create a [trigram index](http://www.postgresql.org/docs/9.1/static/pgtrgm.html)
 (postgres only), theses queries can not use SQL indices, such that every row
 needs to be scanned by your RDBMS when you search for `Book.search("Harry
-Potter")` or similar. To avoid the penalty of `LIKE` queries, AttrSearchable
+Potter")` or similar. To avoid the penalty of `LIKE` queries, SearchCop
 can exploit the fulltext index capabilities of MySQL and PostgreSQL. To use
-already existing fulltext indices, simply tell AttrSearchable to use them via:
+already existing fulltext indices, simply tell SearchCop to use them via:
 
 ```ruby
 class Book < ActiveRecord::Base
   # ...
 
-  attr_searchable_options :title, :type => :fulltext
-  attr_searchable_options :author, :type => :fulltext
+  search_scope :search do
+    attributes :title, :author
+
+    options :title, :type => :fulltext
+    options :author, :type => :fulltext
+  end
 
   # ...
 end
 ```
 
-AttrSearchable will then transparently change its SQL queries for the
+SearchCop will then transparently change its SQL queries for the
 attributes having fulltext indices to:
 
 ```ruby
@@ -135,22 +149,24 @@ Obviously, theses queries won't always return the same results as wildcard
 fulltext indices will usually of course provide better performance.
 
 Moreover, the query above is not yet perfect. To improve it even more,
-AttrSearchable tries to optimize the queries to make optimal use of fulltext
+SearchCop tries to optimize the queries to make optimal use of fulltext
 indices while still allowing to mix them with non-fulltext attributes. To
 improve queries even more, you can group attributes via aliases and specify a
-default field to search in, such that AttrSearchable must no longer search
+default field to search in, such that SearchCop must no longer search
 within all fields:
 
 ```ruby
-attr_searchable :all => [:author, :title]
+search_scope :search do
+  attributes :all => [:author, :title]
 
-attr_searchable_options :all, :type => :fulltext, :default => true
+  options :all, :type => :fulltext, :default => true
 
-# Use :default => true to explicitly enable fields as default fields (whitelist approach)
-# Use :default => false to explicitly disable fields as default fields (blacklist approach)
+  # Use :default => true to explicitly enable fields as default fields (whitelist approach)
+  # Use :default => false to explicitly disable fields as default fields (blacklist approach)
+end
 ```
 
-Now AttrSearchable can optimize the following, not yet optimal query:
+Now SearchCop can optimize the following, not yet optimal query:
 
 ```ruby
 Book.search("Rowling OR Tolkien stock > 1")
@@ -169,13 +185,13 @@ Book.search("Rowling OR Tolkien stock > 1")
 
 What is happening here? Well, we specified `all` as an alias that consists of
 `author` and `title`. As we, in addition, specified `all` to be a fulltext
-attribute, AttrSearchable assumes there is a compound fulltext index present on
+attribute, SearchCop assumes there is a compound fulltext index present on
 `author` and `title`, such that the query is optimized accordingly. Finally, we
 specified `all` to be the default attribute to search in, such that
-AttrSearchable can ignore other attributes, like e.g. `stock`, as long as they
+SearchCop can ignore other attributes, like e.g. `stock`, as long as they
 are not specified within queries directly (like for `stock > 0`).
 
-Other queries will be optimized in a similar way, such that AttrSearchable
+Other queries will be optimized in a similar way, such that SearchCop
 tries to minimize the fultext constraints within a query, namely `MATCH()
 AGAINST()` for MySQL and `to_tsvector() @@ to_tsquery()` for PostgreSQL.
 
@@ -217,10 +233,14 @@ ActiveRecord::Base.connection.execute "CREATE INDEX fulltext_index_books_on_titl
 ```
 
 To use another PostgreSQL dictionary than `simple`, you have to create the
-index accordingly and you need tell AttrSearchable about it, e.g.:
+index accordingly and you need tell SearchCop about it, e.g.:
 
 ```ruby
-attr_searchable_options :title, :dictionary => "english"
+search_scope :search do
+  attributes :title
+
+  options :title, :type => :fulltext, :dictionary => "english"
+end
 ```
 
 For more details about PostgreSQL fulltext indices visit
@@ -241,15 +261,18 @@ left wildcard within `LIKE` queries. Simply supply the following option:
 
 ```ruby
 class User < ActiveRecord::Base
-  include AttrSearchable
+  include SearchCop
 
-  attr_searchable :username
-  attr_searchable_options :username, :left_wildcard => false
+  search_scope :search do
+    attributes :username
+
+    options :username, :left_wildcard => false
+  end
 
   # ...
 ```
 
-such that AttrSearchable will omit the left most wildcard.
+such that SearchCop will omit the left most wildcard.
 
 ```ruby
 User.search("admin")
@@ -266,29 +289,34 @@ class Book < ActiveRecord::Base
 
   belongs_to :author
 
-  attr_searchable :author => "author.name"
+  search_scope :search do
+    attributes :author => "author.name"
+  end
 
   # ...
 end
 ```
 
-AttrSearchable will by default `eager_load` the referenced associations, when
+SearchCop will by default `eager_load` the referenced associations, when
 you perform `Book.search(...)`.  If you don't want the automatic `eager_load`
-or need to perform special operations, define a `search_scope` within your
-model:
+or need to perform special operations, specify a `scope`:
 
 ```ruby
 class Book < ActiveRecord::Base
   # ...
 
-  scope :search_scope, lambda { joins(:author).eager_load(:comments) } # etc.
+  search_scope :search do
+    # ...
+
+    scope { joins(:author).eager_load(:comments) } # etc.
+  end
 
   # ...
 end
 ```
 
-AttrSearchable will then skip any association auto loading and will use the
-`search_scope` instead. Assocations of associations can as well be referenced
+SearchCop will then skip any association auto loading and will use the
+scope instead. Assocations of associations can as well be referenced
 and used:
 
 ```ruby
@@ -298,7 +326,9 @@ class Book < ActiveRecord::Base
   has_many :comments
   has_many :users, :through => :comments
 
-  attr_searchable :user => "users.username"
+  search_scope :search do
+    attributes :user => "users.username"
+  end
 
   # ...
 end
@@ -306,10 +336,10 @@ end
 
 ## Custom table names and associations
 
-AttrSearchable tries to infer a model's class name and SQL alias from the
+SearchCop tries to infer a model's class name and SQL alias from the
 specified attributes to autodetect datatype definitions, etc. This usually
 works quite fine. In case you're using custom table names via `self.table_name
-= ...` or if a model is associated multiple times, AttrSearchable however can't
+= ...` or if a model is associated multiple times, SearchCop however can't
 infer the class and alias names, e.g.
 
 ```ruby
@@ -319,7 +349,9 @@ class Book < ActiveRecord::Base
   has_many :users, :through => :comments
   belongs_to :user
 
-  attr_searchable :user => ["users.username", "users_books.username"]
+  search_scope :search do
+    attributes :user => ["users.username", "users_books.username"]
+  end
 
   # ...
 end
@@ -327,20 +359,24 @@ end
 
 Here, for queries to work you have to use `users_books.username`, because
 ActiveRecord assigns a different SQL alias for users within its SQL queries,
-because the user model is associated multiple times. However, as AttrSearchable
+because the user model is associated multiple times. However, as SearchCop
 now can't infer the `User` model from `users_books`, you have to add:
 
 ```ruby
 class Book < ActiveRecord::Base
   # ...
 
-  attr_searchable_alias :users_books => :user
+  search_scope :search do
+    # ...
+
+    aliases :users_books => :user
+  end
 
   # ...
 end
 ```
 
-to tell AttrSearchable about the custom SQL alias and mapping.
+to tell SearchCop about the custom SQL alias and mapping.
 
 ## Supported operators
 
@@ -357,7 +393,7 @@ The other rules for query string queries apply to hash based queries as well.
 
 ## Mapping
 
-When searching in boolean, datetime, timestamp, etc. fields, AttrSearchable
+When searching in boolean, datetime, timestamp, etc. fields, SearchCop
 performs some mapping. The following queries are equivalent:
 
 ```ruby
@@ -374,7 +410,7 @@ Book.search("available:0")
 Book.search("available:no")
 ```
 
-For datetime and timestamp fields, AttrSearchable expands certain values to
+For datetime and timestamp fields, SearchCop expands certain values to
 ranges:
 
 ```ruby
@@ -391,7 +427,7 @@ Book.search("created_at:2014-06-15")
 ## Chaining
 
 Chaining of searches is possible. However, chaining does currently not allow
-AttrSearchable to optimize the individual queries for fulltext indices.
+SearchCop to optimize the individual queries for fulltext indices.
 
 ```ruby
 Book.search("Harry").search("Potter")
@@ -415,36 +451,38 @@ Thus, if you use fulltext indices, you better avoid chaining.
 
 ## Debugging
 
-When using `Model#search`, AttrSearchable conveniently prevents certain
+When using `Model#search`, SearchCop conveniently prevents certain
 exceptions from being raised in case the query string passed to it is invalid
 (parse errors, incompatible datatype errors, etc). Instead, `Model#search`
 returns an empty relation. However, if you need to debug certain cases, use
 `Model#unsafe_search`, which will raise them.
 
 ```ruby
-Book.unsafe_search("stock: None") # => raise AttrSearchable::IncompatibleDatatype
+Book.unsafe_search("stock: None") # => raise SearchCop::IncompatibleDatatype
 ```
 
 ## Reflection
 
-AttrSearchable provides reflective methods, namely `#searchable_attributes`,
-`#default_searchable_attributes`, `#searchable_attribute_options` and
-`#searchable_attribute_aliases`. You can use these methods to e.g. provide an
-individual search help widget for your models, that lists the attributes to
-search in as well as the default ones, etc.
+SearchCop provides reflective methods, namely `#attributes`,
+`#default_attributes`, `#options` and `#aliases`. You can use these methods to
+e.g. provide an individual search help widget for your models, that lists the
+attributes to search in as well as the default ones, etc.
 
 ```ruby
 class Product < ActiveRecord::Base
-  include AttrSearchable
+  include SearchCop
 
-  attr_searchable :title, :description
-  attr_searchable_options :title, :default => true
+  search_scope :search do
+    attributes :title, :description
+
+    options :title, :default => true
+  end
 end
 
-Product.searchable_attributes
+Product.search_reflection(:search).attributes
 # {"title" => ["products.title"], "description" => ["products.description"]}
 
-Product.default_searchable_attributes
+Product.search_reflection(:search).default_attributes
 # {"title" => ["products.title"]}
 
 # ...

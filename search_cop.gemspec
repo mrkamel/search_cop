@@ -1,16 +1,16 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'attr_searchable/version'
+require 'search_cop/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "attr_searchable"
-  spec.version       = AttrSearchable::VERSION
+  spec.name          = "search_cop"
+  spec.version       = SearchCop::VERSION
   spec.authors       = ["Benjamin Vetter"]
   spec.email         = ["vetter@flakks.com"]
   spec.description   = %q{Search engine like fulltext query support for ActiveRecord}
   spec.summary       = %q{Easily perform complex search engine like fulltext queries on your ActiveRecord models}
-  spec.homepage      = "https://github.com/mrkamel/attr_searchable"
+  spec.homepage      = "https://github.com/mrkamel/search_cop"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)

@@ -3,8 +3,8 @@ addons:
   postgresql: "9.3"
 
 before_script:
-  - mysql -e 'create database attr_searchable;'
-  - psql -c 'create database attr_searchable;' -U postgres
+  - mysql -e 'create database search_cop;'
+  - psql -c 'create database search_cop;' -U postgres
 
 rvm:
   - 1.9.3

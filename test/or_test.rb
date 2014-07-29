@@ -1,7 +1,7 @@
 
 require File.expand_path("../test_helper", __FILE__)
 
-class OrTest < AttrSearchable::TestCase
+class OrTest < SearchCop::TestCase
   def test_or_string
     product1 = create(:product, :title => "Title1")
     product2 = create(:product, :title => "Title2")

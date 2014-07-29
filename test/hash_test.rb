@@ -1,7 +1,7 @@
 
 require File.expand_path("../test_helper", __FILE__)
 
-class HashTest < AttrSearchable::TestCase
+class HashTest < SearchCop::TestCase
   def test_subquery
     product1 = create(:product, :title => "Title1", :description => "Description")
     product2 = create(:product, :title => "Title2", :description => "Description")

@@ -1,8 +1,8 @@
 
-require "attr_searchable_grammar/attributes"
-require "attr_searchable_grammar/nodes"
+require "search_cop_grammar/attributes"
+require "search_cop_grammar/nodes"
 
-module AttrSearchableGrammar
+module SearchCopGrammar
   class BaseNode < Treetop::Runtime::SyntaxNode
     attr_accessor :query_info
 
@@ -19,7 +19,7 @@ module AttrSearchableGrammar
     end
 
     def collection_for(key)
-      raise(AttrSearchable::UnknownColumn, "Unknown column #{key}") if query_info.model.searchable_attributes[query_info.scope][key].nil?
+      raise(SearchCop::UnknownColumn, "Unknown column #{key}") if query_info.scope.reflection.attributes[key].nil?
 
       Attributes::Collection.new query_info, key
     end
@@ -84,9 +84,9 @@ module AttrSearchableGrammar
 
   class AnywhereExpression < BaseNode
     def evaluate
-      queries = query_info.model.default_searchable_attributes(query_info.scope).keys.collect { |key| collection_for key }.select { |collection| collection.compatible? text_value }.collect { |collection| collection.matches text_value }
+      queries = query_info.scope.reflection.default_attributes.keys.collect { |key| collection_for key }.select { |collection| collection.compatible? text_value }.collect { |collection| collection.matches text_value }
 
-      raise AttrSearchable::NoSearchableAttributes if queries.empty?
+      raise SearchCop::NoSearchableAttributes if queries.empty?
 
       queries.flatten.inject(:or)
     end

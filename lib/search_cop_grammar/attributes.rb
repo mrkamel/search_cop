@@ -1,13 +1,13 @@
 
 require "treetop"
 
-module AttrSearchableGrammar
+module SearchCopGrammar
   module Attributes
     class Collection
       attr_reader :query_info, :key
 
       def initialize(query_info, key)
-        raise(AttrSearchable::UnknownColumn, "Unknown column #{key}") unless query_info.model.searchable_attributes[query_info.scope][key]
+        raise(SearchCop::UnknownColumn, "Unknown column #{key}") unless query_info.scope.reflection.attributes[key]
 
         @query_info = query_info
         @key = key
@@ -33,14 +33,14 @@ module AttrSearchableGrammar
 
       def matches(value)
         if fulltext?
-          AttrSearchableGrammar::Nodes::MatchesFulltext.new self, value.to_s
+          SearchCopGrammar::Nodes::MatchesFulltext.new self, value.to_s
         else
           attributes.collect! { |attribute| attribute.matches value }.inject(:or)
         end
       end
 
       def fulltext?
-        (query_info.model.searchable_attribute_options[query_info.scope][key] || {})[:type] == :fulltext
+        (query_info.scope.reflection.options[key] || {})[:type] == :fulltext
       end
 
       def compatible?(value)
@@ -48,22 +48,22 @@ module AttrSearchableGrammar
       end
 
       def options
-        query_info.model.searchable_attribute_options[query_info.scope][key]
+        query_info.scope.reflection.options[key]
       end
 
       def attributes
-        @attributes ||= query_info.model.searchable_attributes[query_info.scope][key].collect { |attribute_definition| attribute_for attribute_definition }
+        @attributes ||= query_info.scope.reflection.attributes[key].collect { |attribute_definition| attribute_for attribute_definition }
       end
 
       def klass_for(table)
-        klass = query_info.model.searchable_attribute_aliases[query_info.scope][table]
+        klass = query_info.scope.reflection.aliases[table]
         klass ||= table
 
         query_info.model.reflections[klass.to_sym] ? query_info.model.reflections[klass.to_sym].klass : klass.classify.constantize
       end
 
       def alias_for(table)
-        (query_info.model.searchable_attribute_aliases[query_info.scope][table] && table) || klass_for(table).table_name
+        (query_info.scope.reflection.aliases[table] && table) || klass_for(table).table_name
       end
 
       def attribute_for(attribute_definition)
@@ -72,7 +72,7 @@ module AttrSearchableGrammar
         table, column = attribute_definition.split(".")
         klass = klass_for(table)
 
-        raise(AttrSearchable::UnknownAttribute, "Unknown attribute #{attribute_definition}") unless klass.columns_hash[column]
+        raise(SearchCop::UnknownAttribute, "Unknown attribute #{attribute_definition}") unless klass.columns_hash[column]
 
         Attributes.const_get(klass.columns_hash[column].type.to_s.classify).new(klass.arel_table.alias(alias_for(table))[column], klass, options)
       end
@@ -95,7 +95,7 @@ module AttrSearchableGrammar
         map value
 
         true
-      rescue AttrSearchable::IncompatibleDatatype
+      rescue SearchCop::IncompatibleDatatype
         false
       end
 
@@ -105,9 +105,9 @@ module AttrSearchableGrammar
 
       { :eq => "Equality", :not_eq => "NotEqual", :lt => "LessThan", :lteq => "LessThanOrEqual", :gt => "GreaterThan", :gteq => "GreaterThanOrEqual", :matches => "Matches" }.each do |method, class_name|
         define_method method do |value|
-          raise(AttrSearchable::IncompatibleDatatype, "Incompatible datatype for #{value}") unless compatible?(value)
+          raise(SearchCop::IncompatibleDatatype, "Incompatible datatype for #{value}") unless compatible?(value)
 
-          AttrSearchableGrammar::Nodes.const_get(class_name).new(@attribute, map(value))
+          SearchCopGrammar::Nodes.const_get(class_name).new(@attribute, map(value))
         end
       end
 
@@ -169,7 +169,7 @@ module AttrSearchableGrammar
           time .. time
         end
       rescue ArgumentError
-        raise AttrSearchable::IncompatibleDatatype, "Incompatible datatype for #{value}"
+        raise SearchCop::IncompatibleDatatype, "Incompatible datatype for #{value}"
       end
 
       def map(value)
@@ -210,7 +210,7 @@ module AttrSearchableGrammar
           date .. date
         end
       rescue ArgumentError
-        raise AttrSearchable::IncompatibleDatatype, "Incompatible datatype for #{value}"
+        raise SearchCop::IncompatibleDatatype, "Incompatible datatype for #{value}"
       end
     end
 
@@ -221,7 +221,7 @@ module AttrSearchableGrammar
         return true if value.to_s =~ /^(1|true|yes)$/i
         return false if value.to_s =~ /^(0|false|no)$/i
 
-        raise AttrSearchable::IncompatibleDatatype, "Incompatible datatype for #{value}"
+        raise SearchCop::IncompatibleDatatype, "Incompatible datatype for #{value}"
       end
     end
   end

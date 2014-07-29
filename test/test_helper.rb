@@ -1,14 +1,14 @@
 
-require "attr_searchable"
+require "search_cop"
 
 begin
   require "minitest"
 
-  class AttrSearchable::TestCase < MiniTest::Test; end
+  class SearchCop::TestCase < MiniTest::Test; end
 rescue LoadError
   require "minitest/unit"
 
-  class AttrSearchable::TestCase < MiniTest::Unit::TestCase; end
+  class SearchCop::TestCase < MiniTest::Unit::TestCase; end
 end
 
 require "minitest/autorun"
@@ -23,39 +23,43 @@ ActiveRecord::Base.establish_connection YAML.load_file(File.expand_path("../data
 class User < ActiveRecord::Base; end
 
 class Comment < ActiveRecord::Base
-  include AttrSearchable
+  include SearchCop
 
   belongs_to :user
 
-  attr_searchable :user => "user.username"
-  attr_searchable :title, :message
+  search_scope :search do
+    attributes :user => "user.username"
+    attributes :title, :message
+  end
 end
 
 class Product < ActiveRecord::Base
-  include AttrSearchable
+  include SearchCop
 
-  attr_searchable :title, :description, :brand, :notice, :stock, :price, :created_at, :created_on, :available
-  attr_searchable :comment => ["comments.title", "comments.message"], :user => ["users.username", "users_products.username"]
-  attr_searchable :primary => [:title, :description]
+  search_scope :search do
+    attributes :title, :description, :brand, :notice, :stock, :price, :created_at, :created_on, :available
+    attributes :comment => ["comments.title", "comments.message"], :user => ["users.username", "users_products.username"]
+    attributes :primary => [:title, :description]
 
-  attr_searchable_alias :users_products => :user
+    aliases :users_products => :user
 
-  if DATABASE != "sqlite"
-    attr_searchable_options :title, :type => :fulltext
-    attr_searchable_options :description, :type => :fulltext
-    attr_searchable_options :comment, :type => :fulltext
+    if DATABASE != "sqlite"
+      options :title, :type => :fulltext
+      options :description, :type => :fulltext
+      options :comment, :type => :fulltext
+    end
+
+    if DATABASE == "postgres"
+      options :title, :dictionary => "english"
+    end
   end
 
-  if DATABASE == "postgres"
-    attr_searchable_options :title, :dictionary => "english"
-  end
+  search_scope :user_search do
+    attributes :title, :description
+    attributes :user => "users_products.username"
 
-  attr_searchable_scope :user_search do
-    attr_searchable :title, :description
-    attr_searchable :user => "users_products.username"
-
-    attr_searchable_options :title, :default => true
-    attr_searchable_alias :users_products => :user
+    options :title, :default => true
+    aliases :users_products => :user
   end
 
   has_many :comments
@@ -111,7 +115,7 @@ if DATABASE == "mysql"
   ActiveRecord::Base.connection.execute "ALTER TABLE comments ADD FULLTEXT INDEX(title, message)"
 end
 
-class AttrSearchable::TestCase
+class SearchCop::TestCase
   include FactoryGirl::Syntax::Methods
 
   def teardown
@@ -119,16 +123,18 @@ class AttrSearchable::TestCase
     Comment.delete_all
   end
 
-  def with_attr_searchable_options(model, scope, key, options = {})
-    model.searchable_attribute_options[scope] ||= {}
+  def with_options(scope, key, options = {})
+    opts = scope.reflection.options[key.to_s] || {}
 
-    opts = model.searchable_attribute_options[scope][key.to_s] || {}
-
-    model.searchable_attribute_options[scope][key.to_s] = opts.merge(options)
+    scope.reflection.options[key.to_s] = opts.merge(options)
 
     yield
   ensure
-    model.searchable_attribute_options[scope][key.to_s] = opts
+    scope.reflection.options[key.to_s] = opts
+  end
+
+  def assert_not_nil(value)
+    assert value
   end
 end
 

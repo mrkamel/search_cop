@@ -1,5 +1,5 @@
 
-module AttrSearchable
+module SearchCop
   class QueryInfo
     attr_accessor :model, :scope, :references
 

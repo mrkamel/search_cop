@@ -1,5 +1,5 @@
 
-grammar AttrSearchableGrammar
+grammar SearchCopGrammar
   rule complex_expression
     space? (boolean_expression / expression) space? <ComplexExpression>
   end

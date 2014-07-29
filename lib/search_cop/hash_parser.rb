@@ -1,5 +1,5 @@
 
-class AttrSearchable::HashParser
+class SearchCop::HashParser
   attr_reader :query_info
 
   def initialize(query_info)
@@ -16,7 +16,7 @@ class AttrSearchable::HashParser
         when :not
           parse(value).not
         when :query
-          AttrSearchable::Parser.parse value, query_info
+          SearchCop::Parser.parse value, query_info
         else
           parse_attribute key, value
       end
@@ -28,10 +28,10 @@ class AttrSearchable::HashParser
   private
 
   def parse_attribute(key, value)
-    collection = AttrSearchableGrammar::Attributes::Collection.new(query_info, key.to_s)
+    collection = SearchCopGrammar::Attributes::Collection.new(query_info, key.to_s)
 
     if value.is_a?(Hash)
-      raise(AttrSearchable::ParseError, "Unknown operator #{value.keys.first}") unless [:matches, :eq, :not_eq, :gt, :gteq, :lt, :lteq].include?(value.keys.first)
+      raise(SearchCop::ParseError, "Unknown operator #{value.keys.first}") unless [:matches, :eq, :not_eq, :gt, :gteq, :lt, :lteq].include?(value.keys.first)
 
       collection.send value.keys.first, value.values.first.to_s
     else

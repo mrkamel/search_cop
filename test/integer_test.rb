@@ -1,7 +1,7 @@
 
 require File.expand_path("../test_helper", __FILE__)
 
-class IntegerTest < AttrSearchable::TestCase
+class IntegerTest < SearchCop::TestCase
   def test_anywhere
     product = create(:product, :stock => 1)
 
@@ -59,7 +59,7 @@ class IntegerTest < AttrSearchable::TestCase
   end
 
   def test_incompatible_datatype
-    assert_raises AttrSearchable::IncompatibleDatatype do
+    assert_raises SearchCop::IncompatibleDatatype do
       Product.unsafe_search "stock: Value"
     end
   end

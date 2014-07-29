@@ -1,10 +1,10 @@
 
-require "attr_searchable_grammar"
+require "search_cop_grammar"
 require "treetop"
 
-Treetop.load File.expand_path("../../attr_searchable_grammar.treetop", __FILE__)
+Treetop.load File.expand_path("../../search_cop_grammar.treetop", __FILE__)
 
-module AttrSearchable
+module SearchCop
   class GrammarParser
     attr_reader :query_info
 
@@ -13,7 +13,7 @@ module AttrSearchable
     end
 
     def parse(string)
-      node = AttrSearchableGrammarParser.new.parse(string) || raise(ParseError)
+      node = SearchCopGrammarParser.new.parse(string) || raise(ParseError)
       node.query_info = query_info
       node.evaluate
     end

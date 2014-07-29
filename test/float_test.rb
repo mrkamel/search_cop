@@ -1,7 +1,7 @@
 
 require File.expand_path("../test_helper", __FILE__)
 
-class FloatTest < AttrSearchable::TestCase
+class FloatTest < SearchCop::TestCase
   def test_anywhere
     product = create(:product, :price => 10.5, :created_at => Time.now - 1.day)
 
@@ -59,7 +59,7 @@ class FloatTest < AttrSearchable::TestCase
   end
 
   def test_incompatible_datatype
-    assert_raises AttrSearchable::IncompatibleDatatype do
+    assert_raises SearchCop::IncompatibleDatatype do
       Product.unsafe_search "price: Value"
     end
   end

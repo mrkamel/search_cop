@@ -1,7 +1,7 @@
 
 require File.expand_path("../test_helper", __FILE__)
 
-class DateTest < AttrSearchable::TestCase
+class DateTest < SearchCop::TestCase
   def test_mapping
     product = create(:product, :created_on => Date.parse("2014-05-01"))
 
@@ -67,7 +67,7 @@ class DateTest < AttrSearchable::TestCase
   end
 
   def test_incompatible_datatype
-    assert_raises AttrSearchable::IncompatibleDatatype do
+    assert_raises SearchCop::IncompatibleDatatype do
       Product.unsafe_search "created_on: Value"
     end
   end
