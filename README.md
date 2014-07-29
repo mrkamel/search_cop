@@ -498,6 +498,12 @@ Product.search_reflection(:search).default_attributes
 
 ## Changelog
 
+Version 1.0.0:
+
+* Project name changed to SearchCop
+* Scope support added
+* Multiple DSL changes
+
 Version 0.0.5:
 
 * Supporting :default => false
