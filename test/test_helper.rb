@@ -133,6 +133,16 @@ class SearchCop::TestCase
     scope.reflection.options[key.to_s] = opts
   end
 
+  def with_scope(scope, blk)
+    orig = scope.reflection.scope
+
+    scope.reflection.scope = blk
+
+    yield
+  ensure
+    scope.reflection.scope = orig
+  end
+
   def assert_not_nil(value)
     assert value
   end

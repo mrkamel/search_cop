@@ -22,6 +22,16 @@ class SearchCopTest < SearchCop::TestCase
     refute_includes results, rejected
   end
 
+  def test_scope
+    expected = create(:product, :stock => 1, :title => "Title")
+    rejected = create(:product, :stock => 0, :title => "Title")
+
+    results = with_scope(Product.search_scopes[:search], lambda { where :stock => 1 }) { Product.search("title: Title") }
+
+    assert_includes results, expected
+    refute_includes results, rejected
+  end
+
   def test_multi_associations
     product = create(:product, :comments => [
       create(:comment, :title => "Title1", :message => "Message1"),
