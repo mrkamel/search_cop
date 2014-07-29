@@ -1,5 +1,5 @@
 
-# General
+# Migration: AttrSearchable to SearchCop
 
 As the set of features of AttrSearchable grew and grew, it has been neccessary
 to change its DSL and name, as no `attr_searchable` method is present anymore.
