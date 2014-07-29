@@ -44,16 +44,18 @@ end
 
 AttrSearchable:
 
-```
+```ruby
 Book.searchable_attributes
+Book.searchable_attribute_options
 Book.default_searchable_attributes
 Book.searchable_aliases
 ```
 
 SearchCop:
 
-```
+```ruby
 Book.search_reflection(:search).attributes
+Book.search_reflection(:search).options
 Book.search_reflection(:search).default_attributes
 Book.search_reflection(:search).aliases
 ```
