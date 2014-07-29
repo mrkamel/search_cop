@@ -2,6 +2,26 @@
 require File.expand_path("../test_helper", __FILE__)
 
 class AttrSearchableTest < AttrSearchable::TestCase
+  def test_scope_before
+    expected = create(:product, :stock => 1, :title => "Title")
+    rejected = create(:product, :stock => 0, :title => "Title")
+
+    results = Product.where(:stock => 1).search("Title")
+
+    assert_includes results, expected
+    refute_includes results, rejected
+  end
+
+  def test_scope_after
+    expected = create(:product, :stock => 1, :title => "Title")
+    rejected = create(:product, :stock => 0, :title => "Title")
+
+    results = Product.search("Title").where(:stock => 1)
+
+    assert_includes results, expected
+    refute_includes results, rejected
+  end
+
   def test_multi_associations
     product = create(:product, :comments => [
       create(:comment, :title => "Title1", :message => "Message1"),

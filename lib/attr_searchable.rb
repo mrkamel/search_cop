@@ -81,11 +81,13 @@ module AttrSearchable
     end
 
     def unsafe_search(query)
-      return respond_to?(:scoped) ? scoped : all if query.blank?
+      current_scope = respond_to?(:scoped) ? scoped : all
+
+      return current_scope if query.blank?
 
       query_builder = QueryBuilder.new(self, query)
 
-      scope = respond_to?(:search_scope) ? search_scope : eager_load(query_builder.associations)
+      scope = respond_to?(:search_scope) ? current_scope.search_scope : current_scope.eager_load(query_builder.associations)
 
       scope.where query_builder.sql
     end
