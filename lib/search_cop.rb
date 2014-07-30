@@ -32,16 +32,12 @@ module SearchCop
 
     base.class_attribute :search_scopes
     base.search_scopes = {}
-
-    base.search_scopes[:search] = SearchScope.new(:search, base)
   end
 
   module ClassMethods
     def search_scope(name, &block)
-      search_scope = search_scopes[name] || SearchScope.new(name, self)
-      search_scope.instance_exec(&block)
-
-      search_scopes[name] = search_scope
+      search_scopes[name] ||= SearchScope.new(name, self)
+      search_scopes[name].instance_exec(&block)
 
       self.class.send(:define_method, name) { |query| search_cop query, name }
       self.class.send(:define_method, "unsafe_#{name}") { |query| unsafe_search_cop query, name }
