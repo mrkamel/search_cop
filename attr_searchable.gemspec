@@ -8,9 +8,9 @@ Gem::Specification.new do |spec|
   spec.version       = AttrSearchable::VERSION
   spec.authors       = ["Benjamin Vetter"]
   spec.email         = ["vetter@flakks.com"]
-  spec.description   = %q{Search engine like fulltext query support for ActiveRecord}
-  spec.summary       = %q{Easily perform complex search engine like fulltext queries on your ActiveRecord models}
-  spec.homepage      = "https://github.com/mrkamel/attr_searchable"
+  spec.description   = %q{[DEPRECATION] 'attr_searchable' is deprecated. Migrate to 'search_cop' instead.}
+  spec.summary       = %q{[DEPRECATION] 'attr_searchable' is deprecated. Migrate to 'search_cop' instead.}
+  spec.homepage      = "https://github.com/mrkamel/search_cop#attrsearchable-is-now-searchcop"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
