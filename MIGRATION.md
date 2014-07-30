@@ -6,6 +6,26 @@ to change its DSL and name, as no `attr_searchable` method is present anymore.
 The new DSL is cleaner and more concise. Morever, the migration process is
 simple.
 
+## Installation
+
+Change
+
+    gem 'attr_searchable'
+
+to
+
+    gem 'search_cop'
+
+And then execute:
+
+    $ bundle
+
+Or install it yourself as:
+
+    $ gem install search_cop
+
+## General DSL
+
 AttrSearchable:
 
 ```ruby
@@ -44,7 +64,7 @@ class Book < ActiveRecord::Base
 end
 ```
 
-# Reflection
+## Reflection
 
 AttrSearchable:
 
