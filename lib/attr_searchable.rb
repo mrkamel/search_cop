@@ -34,6 +34,8 @@ module AttrSearchable
   end
 
   def self.included(base)
+    warn "[DEPRECATION] The 'attr_searchable' gem has been deprecated and replaced by 'search_cop'. See: https://github.com/mrkamel/search_cop#attrsearchable-is-now-searchcop"
+
     base.class_attribute :searchable_attributes
     base.searchable_attributes = {}
 

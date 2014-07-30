@@ -18,6 +18,19 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
+  spec.post_install_message =<<MESSAGE
+----------------------------------------------------------------------------
+                           DEPRECATION WARNING
+
+The 'attr_searchable' gem has been deprecated and replaced by 'search_cop',
+because the DSL has recently changed quite a bit to become even more simple,
+featureful and concise. Please migrate to 'search_cop' as soon as possible.
+
+search_cop: https://github.com/mrkamel/search_cop
+migration:  https://github.com/mrkamel/search_cop/blob/master/MIGRATION.md
+----------------------------------------------------------------------------
+MESSAGE
+
   spec.add_dependency "treetop"
 
   spec.add_development_dependency "bundler", "~> 1.3"
