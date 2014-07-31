@@ -79,6 +79,22 @@ class Book < ActiveRecord::Base
 end
 ```
 
+You can of course as well specify multiple `search_scope` blocks as you like:
+
+```ruby
+search_scope :admin_search do
+  attributes :title, :description, :stock, :price, :created_at, :available
+
+  # ...
+end
+
+search_scope :user_search do
+  attributes :title, :description
+
+  # ...
+end
+```
+
 ## How does it work
 
 SearchCop parses the query and maps it to an SQL Query using Arel.
