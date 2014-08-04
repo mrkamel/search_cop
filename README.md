@@ -504,6 +504,11 @@ Product.search_reflection(:search).default_attributes
 # ...
 ```
 
+## Semantic Versioning
+
+Starting with version 1.0.0, SearchCop uses Semantic Versioning:
+[SemVer](http://semver.org/)
+
 ## Contributing
 
 1. Fork it
