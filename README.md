@@ -242,6 +242,13 @@ one of the easiest ways is:
 ActiveRecord::Base.connection.execute "CREATE INDEX fulltext_index_books_on_title ON books USING GIN(to_tsvector('simple', title))"
 ```
 
+Moreover, for PostgreSQL you should change the schema format in
+`config/application.rb`:
+
+```ruby
+config.active_record.schema_format = :sql
+```
+
 Regarding compound indices for PostgreSQL, use:
 
 ```ruby
