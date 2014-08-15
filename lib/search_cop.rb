@@ -36,7 +36,9 @@ module SearchCop
 
   module ClassMethods
     def search_scope(name, &block)
-      search_scopes[name] ||= SearchScope.new(name, self)
+      self.search_scopes = search_scopes.dup
+
+      search_scopes[name] = SearchScope.new(name, self)
       search_scopes[name].instance_exec(&block)
 
       self.class.send(:define_method, name) { |query| search_cop query, name }
