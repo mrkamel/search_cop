@@ -1,6 +1,10 @@
 
 # Changelog
 
+Version 1.0.1:
+
+* Inheritance fix
+
 Version 1.0.0:
 
 * Project name changed to SearchCop
