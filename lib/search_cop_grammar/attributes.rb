@@ -55,15 +55,23 @@ module SearchCopGrammar
         @attributes ||= query_info.scope.reflection.attributes[key].collect { |attribute_definition| attribute_for attribute_definition }
       end
 
-      def klass_for(table)
-        klass = query_info.scope.reflection.aliases[table]
-        klass ||= table
+      def klass_for_association(name)
+        reflections = query_info.model.reflections
 
-        query_info.model.reflections[klass.to_sym] ? query_info.model.reflections[klass.to_sym].klass : klass.classify.constantize
+        return reflections[name.to_sym].klass if reflections[name.to_sym]
+
+        nil
       end
 
-      def alias_for(table)
-        (query_info.scope.reflection.aliases[table] && table) || klass_for(table).table_name
+      def klass_for(name)
+        mapped_name = query_info.scope.reflection.aliases[name]
+        mapped_name ||= name
+
+        klass_for_association(mapped_name) || mapped_name.classify.constantize
+      end
+
+      def alias_for(name)
+        (query_info.scope.reflection.aliases[name] && name) || klass_for(name).table_name
       end
 
       def attribute_for(attribute_definition)
