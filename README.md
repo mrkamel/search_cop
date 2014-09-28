@@ -165,11 +165,10 @@ Obviously, theses queries won't always return the same results as wildcard
 fulltext indices will usually of course provide better performance.
 
 Moreover, the query above is not yet perfect. To improve it even more,
-SearchCop tries to optimize the queries to make optimal use of fulltext
-indices while still allowing to mix them with non-fulltext attributes. To
-improve queries even more, you can group attributes via aliases and specify a
-default field to search in, such that SearchCop must no longer search
-within all fields:
+SearchCop tries to optimize the queries to make optimal use of fulltext indices
+while still allowing to mix them with non-fulltext attributes. To improve
+queries even more, you can group attributes and specify a default field to
+search in, such that SearchCop must no longer search within all fields:
 
 ```ruby
 search_scope :search do
@@ -199,13 +198,14 @@ Book.search("Rowling OR Tolkien stock > 1")
 # PostgreSQL: ... WHERE to_tsvector('simple', books.author || ' ' || books.title) @@ to_tsquery('simple', 'Rowling | Tokien') and books.stock > 1
 ```
 
-What is happening here? Well, we specified `all` as an alias that consists of
-`author` and `title`. As we, in addition, specified `all` to be a fulltext
-attribute, SearchCop assumes there is a compound fulltext index present on
-`author` and `title`, such that the query is optimized accordingly. Finally, we
-specified `all` to be the default attribute to search in, such that
-SearchCop can ignore other attributes, like e.g. `stock`, as long as they
-are not specified within queries directly (like for `stock > 0`).
+What is happening here? Well, we specified `all` as the name of an attribute
+group that consists of `author` and `title`. As we, in addition, specified
+`all` to be a fulltext attribute, SearchCop assumes there is a compound
+fulltext index present on `author` and `title`, such that the query is
+optimized accordingly. Finally, we specified `all` to be the default attribute
+to search in, such that SearchCop can ignore other attributes, like e.g.
+`stock`, as long as they are not specified within queries directly (like for
+`stock > 0`).
 
 Other queries will be optimized in a similar way, such that SearchCop
 tries to minimize the fultext constraints within a query, namely `MATCH()
@@ -363,7 +363,7 @@ SearchCop tries to infer a model's class name and SQL alias from the
 specified attributes to autodetect datatype definitions, etc. This usually
 works quite fine. In case you're using custom table names via `self.table_name
 = ...` or if a model is associated multiple times, SearchCop however can't
-infer the class and alias names, e.g.
+infer the class and SQL alias names, e.g.
 
 ```ruby
 class Book < ActiveRecord::Base
