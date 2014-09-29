@@ -338,9 +338,29 @@ class Book < ActiveRecord::Base
 end
 ```
 
-SearchCop will then skip any association auto loading and will use the
-scope instead. Assocations of associations can as well be referenced
-and used:
+SearchCop will then skip any association auto loading and will use the scope
+instead. You can as well use `scope` together with `aliases` to perform
+arbitrarily complex joins and search in the joined models/tables:
+
+```ruby
+class Book < ActiveRecord::Base
+  # ...
+
+  search_scope :search do
+    attributes :similar => ["similar_books.title", "similar_books.description"]
+
+    scope do
+      joins "left outer join books similar_books on ..."
+    end
+
+    aliases :similar_books => Book # Tell SearchCop how to map SQL aliases to models
+  end
+
+  # ...
+end
+```
+
+Assocations of associations can as well be referenced and used:
 
 ```ruby
 class Book < ActiveRecord::Base
