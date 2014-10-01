@@ -412,7 +412,7 @@ class Book < ActiveRecord::Base
   search_scope :search do
     # ...
 
-    aliases :users_books => :user
+    aliases :users_books => User
   end
 
   # ...
