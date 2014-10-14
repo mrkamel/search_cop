@@ -127,5 +127,9 @@ class SearchCopTest < SearchCop::TestCase
     assert_not_nil Product.search_reflection(:search)
     assert_not_nil Product.search_reflection(:user_search)
   end
+
+  def test_blank
+    assert_equal Product.all, Product.search("")
+  end
 end
 

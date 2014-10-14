@@ -56,11 +56,15 @@ module SearchCop
     end
 
     def unsafe_search_cop(query, scope_name)
-      return respond_to?(:scoped) ? scoped : all if query.blank?
+      anonymous_scope = respond_to?(:scoped) ? scoped : all
+
+      return anonymous_scope if query.blank?
 
       query_builder = QueryBuilder.new(self, query, search_scopes[scope_name])
 
-      scope = search_scopes[scope_name].reflection.scope ? instance_exec(&search_scopes[scope_name].reflection.scope) : eager_load(query_builder.associations)
+      scope = instance_exec(&search_scopes[scope_name].reflection.scope) if search_scopes[scope_name].reflection.scope
+      scope ||= eager_load(query_builder.associations) if query_builder.associations.any?
+      scope ||= anonymous_scope
 
       scope.where query_builder.sql
     end
