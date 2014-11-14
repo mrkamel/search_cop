@@ -12,3 +12,8 @@ appraise "4.1" do
   gem "activerecord", "~> 4.1.0.beta"
   gem "search_cop", :path => "../"
 end
+
+appraise "edge" do
+  gem "activerecord", :github => "rails/rails", :branch => "master"
+  gem "search_cop", :path => "../"
+end

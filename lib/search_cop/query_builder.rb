@@ -9,7 +9,7 @@ module SearchCop
 
       arel = SearchCop::Parser.parse(query, query_info).optimize!
 
-      self.sql = model.connection.visitor.accept(arel)
+      self.sql = SearchCop::Visitors::Visitor.new(model.connection).visit(arel)
     end
 
     def associations

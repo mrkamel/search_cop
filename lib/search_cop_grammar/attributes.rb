@@ -82,16 +82,18 @@ module SearchCopGrammar
 
         raise(SearchCop::UnknownAttribute, "Unknown attribute #{attribute_definition}") unless klass.columns_hash[column]
 
-        Attributes.const_get(klass.columns_hash[column].type.to_s.classify).new(klass.arel_table.alias(alias_for(table))[column], klass, options)
+        Attributes.const_get(klass.columns_hash[column].type.to_s.classify).new(klass, alias_for(table), column, options)
       end
     end
 
     class Base
-      attr_reader :attribute, :options
+      attr_reader :attribute, :table_alias, :column_name, :options
 
-      def initialize(attribute, klass, options = {})
-        @attribute = attribute
+      def initialize(klass, table_alias, column_name, options = {})
+        @attribute = klass.arel_table.alias(table_alias)[column_name]
         @klass = klass
+        @table_alias = table_alias
+        @column_name = column_name
         @options = (options || {})
       end
 
@@ -115,16 +117,16 @@ module SearchCopGrammar
         define_method method do |value|
           raise(SearchCop::IncompatibleDatatype, "Incompatible datatype for #{value}") unless compatible?(value)
 
-          SearchCopGrammar::Nodes.const_get(class_name).new(@attribute, map(value))
+          SearchCopGrammar::Nodes.const_get(class_name).new(self, map(value))
         end
       end
 
       def method_missing(name, *args, &block)
-        @attribute.send name, *args, &block
+        @attribute.send(name, *args, &block)
       end
 
       def respond_to?(*args)
-        @attribute.respond_to? *args
+        super(*args) || @attribute.respond_to?(*args)
       end
     end
 
@@ -154,9 +156,18 @@ module SearchCopGrammar
 
         false
       end
+
+      def map(value)
+        value.to_f
+      end
     end
 
-    class Integer < Float; end
+    class Integer < Float
+      def map(value)
+        value.to_i
+      end
+    end
+
     class Decimal < Float; end
 
     class Datetime < WithoutMatches

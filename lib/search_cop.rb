@@ -1,11 +1,11 @@
 
 require "search_cop/version"
-require "search_cop/arel"
 require "search_cop/search_scope"
 require "search_cop/query_info"
 require "search_cop/query_builder"
 require "search_cop/grammar_parser"
 require "search_cop/hash_parser"
+require "search_cop/visitors"
 
 module SearchCop
   class SpecificationError < StandardError; end

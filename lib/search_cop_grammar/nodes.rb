@@ -55,6 +55,15 @@ module SearchCopGrammar
       end
     end
 
+    class Alias
+      attr_accessor :name, :klass
+
+      def initialize(name, klass)
+        @name = name
+        @klass = klass
+      end
+    end
+
     class Binary
       include Base
 
