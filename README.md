@@ -97,7 +97,7 @@ end
 
 ## How does it work
 
-SearchCop parses the query and maps it to an SQL Query using Arel.
+SearchCop parses the query and maps it to an SQL Query in a database agnostic way.
 Thus, SearchCop is not bound to a specific RDBMS.
 
 ```ruby

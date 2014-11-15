@@ -29,7 +29,7 @@ module SearchCop
     def attributes(*args)
       args.each do |arg|
         attributes_hash arg.is_a?(Hash) ? arg : { arg => arg }
-      end 
+      end
     end
 
     def options(key, options = {})
@@ -54,8 +54,8 @@ module SearchCop
           table, attribute = column.to_s =~ /\./ ? column.to_s.split(".") : [model.name.tableize, column]
 
           "#{table}.#{attribute}"
-        end 
-      end 
+        end
+      end
     end
   end
 end

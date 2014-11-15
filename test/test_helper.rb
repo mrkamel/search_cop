@@ -146,5 +146,17 @@ class SearchCop::TestCase
   def assert_not_nil(value)
     assert value
   end
+
+  def quote_table_name(name)
+    ActiveRecord::Base.connection.quote_table_name name
+  end
+
+  def quote_column_name(name)
+    ActiveRecord::Base.connection.quote_column_name name
+  end
+
+  def quote(object)
+    ActiveRecord::Base.connection.quote object
+  end
 end
 

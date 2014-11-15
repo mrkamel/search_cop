@@ -7,13 +7,10 @@ module SearchCop
       def initialize(connection)
         @connection = connection
 
-        if @connection.class.name =~ /mysql/i
-          extend SearchCop::Visitors::Mysql
-        elsif @connection.class.name =~ /postgres/i
-          extend SearchCop::Visitors::Postgres
-        end
+        extend(SearchCop::Visitors::Mysql) if @connection.class.name =~ /mysql/i
+        extend(SearchCop::Visitors::Postgres) if @connection.class.name =~ /postgres/i
       end
-      
+
       def visit(visit_node = node)
         send "visit_#{visit_node.class.name.gsub /::/, "_"}", visit_node
       end

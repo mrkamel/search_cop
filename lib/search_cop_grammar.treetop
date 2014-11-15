@@ -21,7 +21,7 @@ grammar SearchCopGrammar
   end
 
   rule parentheses_expression
-    '(' complex_expression ')' <ParenthesesExpression> 
+    '(' complex_expression ')' <ParenthesesExpression>
   end
 
   rule not_expression
