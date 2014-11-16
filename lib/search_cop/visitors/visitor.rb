@@ -55,8 +55,16 @@ module SearchCop
         "NOT (#{visit node.object})"
       end
 
+      def quote_table_name(name)
+        connection.quote_table_name name
+      end
+
+      def quote_column_name(name)
+        connection.quote_column_name name
+      end
+
       def visit_attribute(attribute)
-        "#{connection.quote_table_name attribute.table_alias}.#{connection.quote_column_name attribute.column_name}"
+        "#{quote_table_name attribute.table_alias}.#{quote_column_name attribute.column_name}"
       end
 
       alias :visit_SearchCopGrammar_Attributes_String :visit_attribute
