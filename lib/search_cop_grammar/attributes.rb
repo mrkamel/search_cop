@@ -58,6 +58,7 @@ module SearchCopGrammar
       def klass_for_association(name)
         reflections = query_info.model.reflections
 
+        return reflections[name].klass if reflections[name]
         return reflections[name.to_sym].klass if reflections[name.to_sym]
 
         nil
