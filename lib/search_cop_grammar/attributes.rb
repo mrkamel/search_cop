@@ -65,10 +65,13 @@ module SearchCopGrammar
       end
 
       def klass_for(name)
-        mapped_name = query_info.scope.reflection.aliases[name]
-        mapped_name ||= name
+        alias_value = query_info.scope.reflection.aliases[name]
 
-        klass_for_association(mapped_name) || mapped_name.classify.constantize
+        return alias_value if alias_value.respond_to?(:table_name)
+
+        value = alias_value || name
+
+        klass_for_association(value) || value.classify.constantize
       end
 
       def alias_for(name)
