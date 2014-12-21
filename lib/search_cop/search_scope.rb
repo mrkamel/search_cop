@@ -38,7 +38,7 @@ module SearchCop
 
     def aliases(hash)
       hash.each do |key, value|
-        reflection.aliases[key.to_s] = value.respond_to?(:table_name) ? value : value.to_s
+        reflection.aliases[key.to_s] = value.is_a?(Class) ? value : value.to_s
       end
     end
 

@@ -67,7 +67,7 @@ module SearchCopGrammar
       def klass_for(name)
         alias_value = query_info.scope.reflection.aliases[name]
 
-        return alias_value if alias_value.respond_to?(:table_name)
+        return alias_value if alias_value.is_a?(Class)
 
         value = alias_value || name
 
