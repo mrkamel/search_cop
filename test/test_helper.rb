@@ -55,11 +55,13 @@ class Product < ActiveRecord::Base
   end
 
   search_scope :user_search do
+    scope { joins("LEFT OUTER JOIN users users_products ON users_products.id = products.user_id").group(:user_id) }
+
     attributes :title, :description
     attributes :user => "users_products.username"
 
     options :title, :default => true
-    aliases :users_products => :user
+    aliases :users_products => User
   end
 
   has_many :comments
