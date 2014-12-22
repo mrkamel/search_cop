@@ -393,7 +393,7 @@ class Book < ActiveRecord::Base
   belongs_to :user
 
   search_scope :search do
-    attributes :user => ["users.username", "users_books.username"]
+    attributes :user => ["user.username", "users_books.username"]
   end
 
   # ...
@@ -412,14 +412,17 @@ class Book < ActiveRecord::Base
   search_scope :search do
     # ...
 
-    aliases :users_books => User
+    aliases :users_books => :users
   end
 
   # ...
 end
 ```
 
-to tell SearchCop about the custom SQL alias and mapping.
+to tell SearchCop about the custom SQL alias and mapping. In addition, you can
+always do the joins yourself via a `scope {}` block plus `aliases` and use your
+own custom sql aliases to become independent of names auto-assigned by
+ActiveRecord.
 
 ## Supported operators
 
