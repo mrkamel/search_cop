@@ -55,7 +55,7 @@ class Product < ActiveRecord::Base
   end
 
   search_scope :user_search do
-    scope { joins("LEFT OUTER JOIN users users_products ON users_products.id = products.user_id").group(:user_id) }
+    scope { joins("LEFT OUTER JOIN users users_products ON users_products.id = products.user_id").group(:id) }
 
     attributes :title, :description
     attributes :user => "users_products.username"
