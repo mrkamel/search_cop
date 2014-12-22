@@ -1,6 +1,21 @@
 
 # Changelog
 
+Version 1.0.4:
+
+* Fix for Rails 4.2 regression regarding reflection access
+
+Version 1.0.3:
+
+* Supporting Rails 4.2
+* Dropped Arel dependencies
+
+Version 1.0.2:
+
+* Avoid eager loading when no associations referenced
+* Prefer objects over class names
+* Readme extended
+
 Version 1.0.1:
 
 * Inheritance fix
