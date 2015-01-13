@@ -9,6 +9,16 @@ class StringTest < SearchCop::TestCase
     refute_includes Product.search("Rejected"), product
   end
 
+  def test_anywhere_quoted
+    product = create(:product, :title => "Expected title")
+
+    assert_includes Product.search("'Expected'"), product
+    assert_includes Product.search('"Expected"'), product
+
+    refute_includes Product.search("'Rejected'"), product
+    refute_includes Product.search('"Rejected"'), product
+  end
+
   def test_multiple
     product = create(:product, :comments => [create(:comment, :title => "Expected title", :message => "Expected message")])
 

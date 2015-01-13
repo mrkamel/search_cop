@@ -92,6 +92,18 @@ module SearchCopGrammar
     end
   end
 
+  class SingleQuotedAnywhereExpression < AnywhereExpression
+    def text_value
+      super.gsub /^'|'$/, ""
+    end
+  end
+
+  class DoubleQuotedAnywhereExpression < AnywhereExpression
+    def text_value
+      super.gsub /^"|"$/, ""
+    end
+  end
+
   class AndExpression < BaseNode
     def evaluate
       [elements.first.evaluate, elements.last.evaluate].inject(:and)
