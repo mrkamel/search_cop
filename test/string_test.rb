@@ -12,11 +12,11 @@ class StringTest < SearchCop::TestCase
   def test_anywhere_quoted
     product = create(:product, :title => "Expected title")
 
-    assert_includes Product.search("'Expected'"), product
-    assert_includes Product.search('"Expected"'), product
+    assert_includes Product.search("'Expected title'"), product
+    assert_includes Product.search('"Expected title"'), product
 
-    refute_includes Product.search("'Rejected'"), product
-    refute_includes Product.search('"Rejected"'), product
+    refute_includes Product.search("'Rejected title'"), product
+    refute_includes Product.search('"Rejected title"'), product
   end
 
   def test_multiple

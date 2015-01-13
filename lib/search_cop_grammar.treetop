@@ -37,7 +37,7 @@ grammar SearchCopGrammar
   end
 
   rule anywhere_expression
-    ("'" [^\']* "'" <SingleQuotedAnywhereExpression>) / ('"' [^\"]* '"' <DoubleQuotedAnywhereExpression>) / [^\s()]+ <AnywhereExpression>
+    "'" [^\']* "'" <SingleQuotedAnywhereExpression> / '"' [^\"]* '"' <DoubleQuotedAnywhereExpression> / [^\s()]+ <AnywhereExpression>
   end
 
   rule simple_column
