@@ -1,4 +1,3 @@
-
 require "search_cop_grammar/attributes"
 require "search_cop_grammar/nodes"
 
@@ -83,8 +82,19 @@ module SearchCopGrammar
   end
 
   class AnywhereExpression < BaseNode
+    def sanitized_text_value
+      text_value.gsub(/^'|'$/, "").gsub(/^"|"$/, "")
+    end
+
     def evaluate
-      queries = query_info.scope.reflection.default_attributes.keys.collect { |key| collection_for key }.select { |collection| collection.compatible? text_value }.collect { |collection| collection.matches text_value }
+      queries = query_info
+                .scope
+                .reflection
+                .default_attributes
+                .keys
+                .collect { |key| collection_for key }
+                .select { |collection| collection.compatible? sanitized_text_value }
+                .collect { |collection| collection.matches sanitized_text_value }
 
       raise SearchCop::NoSearchableAttributes if queries.empty?
 
@@ -130,4 +140,3 @@ module SearchCopGrammar
 
   class Value < BaseNode; end
 end
-
