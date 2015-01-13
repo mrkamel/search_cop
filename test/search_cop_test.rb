@@ -1,4 +1,3 @@
-
 require File.expand_path("../test_helper", __FILE__)
 
 class SearchCopTest < SearchCop::TestCase
@@ -131,5 +130,13 @@ class SearchCopTest < SearchCop::TestCase
   def test_blank
     assert_equal Product.all, Product.search("")
   end
-end
 
+  def test_quotes
+    product = create(:product, :title => "Title")
+
+    results = Product.search('"Title"')
+
+    assert_equal 1, results.count
+    assert_includes results, product
+  end
+end
