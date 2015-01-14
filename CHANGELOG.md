@@ -1,6 +1,10 @@
 
 # Changelog
 
+Version 1.0.5:
+
+* Fixes a bug regarding quotation
+
 Version 1.0.4:
 
 * Fix for Rails 4.2 regression regarding reflection access
