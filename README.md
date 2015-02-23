@@ -130,7 +130,7 @@ Book.where(:available => true).search("Harry Potter").order("books.id desc").pag
 By default, i.e. if you don't tell SearchCop about your fulltext indices,
 SearchCop will use `LIKE '%...%'` queries. Unfortunately, unless you
 create a [trigram index](http://www.postgresql.org/docs/9.1/static/pgtrgm.html)
-(postgres only), theses queries can not use SQL indices, such that every row
+(postgres only), these queries can not use SQL indices, such that every row
 needs to be scanned by your RDBMS when you search for `Book.search("Harry
 Potter")` or similar. To avoid the penalty of `LIKE` queries, SearchCop
 can exploit the fulltext index capabilities of MySQL and PostgreSQL. To use
@@ -160,7 +160,7 @@ Book.search("Harry Potter")
 # PostgreSQL: ... WHERE (to_tsvector('simple', books.title) @@ to_tsquery('simple', 'Harry') OR to_tsvector('simple', books.author) @@ to_tsquery('simple', 'Harry')) AND (to_tsvector('simple', books.title) @@ to_tsquery('simple', 'Potter') OR to_tsvector('simple', books.author) @@ to_tsquery('simple', 'Potter'))
 ```
 
-Obviously, theses queries won't always return the same results as wildcard
+Obviously, these queries won't always return the same results as wildcard
 `LIKE` queries, because we search for words instead of sub-strings. However,
 fulltext indices will usually of course provide better performance.
 
