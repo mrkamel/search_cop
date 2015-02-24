@@ -66,6 +66,12 @@ class DateTest < SearchCop::TestCase
     refute_includes Product.search("created_on <= 2014-05-01"), product
   end
 
+  def test_no_overflow
+    assert_nothing_raised do
+      Product.search("created_on: 1000000").to_a
+    end
+  end
+
   def test_incompatible_datatype
     assert_raises SearchCop::IncompatibleDatatype do
       Product.unsafe_search "created_on: Value"

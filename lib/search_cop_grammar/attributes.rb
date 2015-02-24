@@ -178,11 +178,11 @@ module SearchCopGrammar
       def parse(value)
         return value .. value unless value.is_a?(::String)
 
-        if value =~ /^[0-9]{4,}$/
+        if value =~ /^[0-9]{4}$/
           ::Time.new(value).beginning_of_year .. ::Time.new(value).end_of_year
-        elsif value =~ /^([0-9]{4,})(\.|-|\/)([0-9]{1,2})$/
+        elsif value =~ /^([0-9]{4})(\.|-|\/)([0-9]{1,2})$/
           ::Time.new($1, $3, 15).beginning_of_month .. ::Time.new($1, $3, 15).end_of_month
-        elsif value =~ /^([0-9]{1,2})(\.|-|\/)([0-9]{4,})$/
+        elsif value =~ /^([0-9]{1,2})(\.|-|\/)([0-9]{4})$/
           ::Time.new($3, $1, 15).beginning_of_month .. ::Time.new($3, $1, 15).end_of_month
         elsif value !~ /:/
           time = ::Time.parse(value)
@@ -222,11 +222,11 @@ module SearchCopGrammar
       def parse(value)
         return value .. value unless value.is_a?(::String)
 
-        if value =~ /^[0-9]{4,}$/
+        if value =~ /^[0-9]{4}$/
           ::Date.new(value.to_i).beginning_of_year .. ::Date.new(value.to_i).end_of_year
-        elsif value =~ /^([0-9]{4,})(\.|-|\/)([0-9]{1,2})$/
+        elsif value =~ /^([0-9]{4})(\.|-|\/)([0-9]{1,2})$/
           ::Date.new($1.to_i, $3.to_i, 15).beginning_of_month .. ::Date.new($1.to_i, $3.to_i, 15).end_of_month
-        elsif value =~ /^([0-9]{1,2})(\.|-|\/)([0-9]{4,})$/
+        elsif value =~ /^([0-9]{1,2})(\.|-|\/)([0-9]{4})$/
           ::Date.new($3.to_i, $1.to_i, 15).beginning_of_month .. ::Date.new($3.to_i, $1.to_i, 15).end_of_month
         else
           date = ::Date.parse(value)
