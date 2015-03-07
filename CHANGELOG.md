@@ -1,6 +1,10 @@
 
 # Changelog
 
+Version 1.0.6:
+
+* Fixes a bug regarding date overflows in PostgreSQL
+
 Version 1.0.5:
 
 * Fixes a bug regarding quotation
