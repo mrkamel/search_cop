@@ -8,7 +8,7 @@ module SearchCop
   class GrammarParser
     attr_reader :query_info
 
-    In_Operator_Regex = /(([a-zA-Z]*) in \(([a-zA-Z|, ]*)\))/
+    In_Operator_Regex = /(([a-zA-Z]*) in \(([a-zA-Z0-9|, ]*)\))/
 
     def initialize(query_info)
       @query_info = query_info
@@ -27,7 +27,7 @@ module SearchCop
              "#{param} = #{value}"
           end.join(" or ")
 
-          string = string.sub(in_exp, subquery)
+          string = string.sub(in_exp, "(#{subquery})")
       end 
       string
     end
