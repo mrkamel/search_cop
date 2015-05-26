@@ -72,8 +72,19 @@ class Product < ActiveRecord::Base
   belongs_to :user
 end
 
+class ProductTest < Product
+  include SearchCop
+
+  search_scope :search do
+    attributes :test2
+  end
+end
+
 FactoryGirl.define do
   factory :product do
+  end
+
+  factory :product_test do
   end
 
   factory :comment do
