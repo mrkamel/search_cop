@@ -92,11 +92,7 @@ class SearchCopTest < SearchCop::TestCase
   end
 
   def test_types
-    product1 = create(:product, :title => "Expected")
-
     assert Product.search("test = test")
-
-    product2 = create(:product_test, :title => "Expected")
     assert_raises (SearchCop::UnknownAttribute) {ProductTest.search("test2 = test")}
   end
 
