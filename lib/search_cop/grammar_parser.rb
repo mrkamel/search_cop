@@ -23,7 +23,7 @@ module SearchCop
 
     def convert_in_operator_to_or_chain(string)
       string.scan(In_Operator_Regex).each do |in_exp, param, list|
-          list.split(",").map(&:strip).map do |value|
+          subquery = list.split(",").map(&:strip).map do |value|
              "#{param} = #{value}"
           end.join(" or ")
 
