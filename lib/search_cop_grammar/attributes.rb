@@ -87,7 +87,7 @@ module SearchCopGrammar
 
         table, column = attribute_definition.split(".")
         klass = klass_for(table)
-
+        puts type || column
         type_ = type || begin
           raise(SearchCop::UnknownAttribute, "Unknown attribute #{attribute_definition}") unless klass.columns_hash[column]
           klass.columns_hash[column].type

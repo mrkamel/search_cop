@@ -91,6 +91,8 @@ class SearchCopTest < SearchCop::TestCase
     refute_includes results, product3
   end
 
+
+
   def test_custom_default_disabled
     product1 = create(:product, :brand => "Expected")
     product2 = create(:product, :notice => "Expected")
@@ -118,7 +120,7 @@ class SearchCopTest < SearchCop::TestCase
   def test_default_attributes_fales
     with_options(Product.search_scopes[:search], :title, :default => false) do
       with_options(Product.search_scopes[:search], :description, :default => false) do
-        assert_equal Product.search_scopes[:search].reflection.attributes.keys - ["title", "description"], Product.search_scopes[:search].reflection.default_attributes.keys
+        assert_equal Product.search_scopes[:search].reflection.attributes.keys - ["title", "description", "test"], Product.search_scopes[:search].reflection.default_attributes.keys
       end
     end
   end

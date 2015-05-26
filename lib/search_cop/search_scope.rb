@@ -15,7 +15,9 @@ module SearchCop
       keys = attributes.keys.reject { |key| options[key] && options[key][:default] == false } if keys.empty?
       keys = keys.to_set
 
-      attributes.select { |key, value| keys.include? key }
+      attributes.select do |key, value|
+        keys.include?(key) && !type.keys.include?(key)
+      end
     end
   end
 

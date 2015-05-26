@@ -37,7 +37,7 @@ class Product < ActiveRecord::Base
   include SearchCop
 
   search_scope :search do
-    attributes :title, :description, :brand, :notice, :stock, :price, :created_at, :created_on, :available
+    attributes :title, :description, :brand, :notice, :stock, :price, :created_at, :created_on, :available, :test
     attributes :comment => ["comments.title", "comments.message"], :user => ["users.username", "users_products.username"]
     attributes :primary => [:title, :description]
 
@@ -52,6 +52,8 @@ class Product < ActiveRecord::Base
     if DATABASE == "postgres"
       options :title, :dictionary => "english"
     end
+
+    type :test, :float
   end
 
   search_scope :user_search do
