@@ -8,7 +8,7 @@ module SearchCop
   class GrammarParser
     attr_reader :query_info
 
-    In_Operator_Regex = /(([a-zA-Z]*) in \(([a-zA-Z0-9|, ]*)\))/
+    In_Operator_Regex = /(([a-zA-Z_]*) in \(([a-zA-Z0-9_|, ]*)\))/
 
     def initialize(query_info)
       @query_info = query_info
