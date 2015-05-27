@@ -3,12 +3,12 @@
 
 There are two ways to contribute: issues and pull requests
 
-# Issues
+## Issues
 
 You are very welcome to submit a github issue in case you find a bug.
 The more detailed, the easier to reproduce. So please be verbose.
 
-# Pull Requests
+## Pull Requests
 
 1. Fork it
 2. Create your feature branch (`git checkout -b my-new-feature`)
