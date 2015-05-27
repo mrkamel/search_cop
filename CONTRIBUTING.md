@@ -1,7 +1,7 @@
 
 # Contributing
 
-There are two ways to contribute: issues and pull requests
+There are two ways to contribute: issues and pull requests.
 
 ## Issues
 
