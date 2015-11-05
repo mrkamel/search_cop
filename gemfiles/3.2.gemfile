@@ -2,7 +2,7 @@
 
 source "https://rubygems.org"
 
-gem "activerecord", "~> 3.2.18"
+gem "activerecord", "~> 3.2.22"
 gem "search_cop", :path => "../"
 
 platforms :jruby do
@@ -13,7 +13,7 @@ end
 
 platforms :ruby do
   gem "sqlite3"
-  gem "mysql2", "~> 0.3"
+  gem "mysql2"
   gem "pg"
 end
 
