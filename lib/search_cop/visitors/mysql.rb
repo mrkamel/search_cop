@@ -14,11 +14,11 @@ module SearchCop
         end
 
         def visit_SearchCopGrammar_Nodes_And_Fulltext(node)
-          res = node.nodes.collect do |node|
-            if node.is_a?(SearchCopGrammar::Nodes::MatchesFulltextNot)
-              visit node
+          res = node.nodes.collect do |child_node|
+            if child_node.is_a?(SearchCopGrammar::Nodes::MatchesFulltextNot)
+              visit child_node
             else
-              node.nodes.size > 1 ? "+(#{visit node})" : "+#{visit node}"
+              child_node.nodes.size > 1 ? "+(#{visit child_node})" : "+#{visit child_node}"
             end
           end
 
@@ -26,7 +26,7 @@ module SearchCop
         end
 
         def visit_SearchCopGrammar_Nodes_Or_Fulltext(node)
-          node.nodes.collect { |node| "(#{visit node})" }.join(" ")
+          node.nodes.collect { |child_node| "(#{visit child_node})" }.join(" ")
         end
       end
 

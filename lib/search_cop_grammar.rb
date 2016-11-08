@@ -7,7 +7,7 @@ module SearchCopGrammar
     attr_accessor :query_info
 
     def query_info
-      @query_info || parent.query_info
+      (@query_info ||= nil) || parent.query_info
     end
 
     def evaluate
@@ -94,13 +94,13 @@ module SearchCopGrammar
 
   class SingleQuotedAnywhereExpression < AnywhereExpression
     def text_value
-      super.gsub /^'|'$/, ""
+      super.gsub(/^'|'$/, "")
     end
   end
 
   class DoubleQuotedAnywhereExpression < AnywhereExpression
     def text_value
-      super.gsub /^"|"$/, ""
+      super.gsub(/^"|"$/, "")
     end
   end
 
@@ -130,13 +130,13 @@ module SearchCopGrammar
 
   class SingleQuotedValue < BaseNode
     def text_value
-      super.gsub /^'|'$/, ""
+      super.gsub(/^'|'$/, "")
     end
   end
 
   class DoubleQuotedValue < BaseNode
     def text_value
-      super.gsub /^"|"$/, ""
+      super.gsub(/^"|"$/, "")
     end
   end
 

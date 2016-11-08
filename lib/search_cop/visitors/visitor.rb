@@ -12,7 +12,7 @@ module SearchCop
       end
 
       def visit(visit_node = node)
-        send "visit_#{visit_node.class.name.gsub /::/, "_"}", visit_node
+        send "visit_#{visit_node.class.name.gsub(/::/, "_")}", visit_node
       end
 
       def visit_SearchCopGrammar_Nodes_And(node)

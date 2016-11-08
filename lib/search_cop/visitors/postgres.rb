@@ -4,19 +4,19 @@ module SearchCop
     module Postgres
       class FulltextQuery < Visitor
         def visit_SearchCopGrammar_Nodes_MatchesFulltextNot(node)
-          "!'#{node.right.gsub /[\s&|!:'"]+/, " "}'"
+          "!'#{node.right.gsub(/[\s&|!:'"]+/, " ")}'"
         end
 
         def visit_SearchCopGrammar_Nodes_MatchesFulltext(node)
-          "'#{node.right.gsub /[\s&|!:'"]+/, " "}'"
+          "'#{node.right.gsub(/[\s&|!:'"]+/, " ")}'"
         end
 
         def visit_SearchCopGrammar_Nodes_And_Fulltext(node)
-          node.nodes.collect { |node| "(#{visit node})" }.join(" & ")
+          node.nodes.collect { |child_node| "(#{visit child_node})" }.join(" & ")
         end
 
         def visit_SearchCopGrammar_Nodes_Or_Fulltext(node)
-          node.nodes.collect { |node| "(#{visit node})" }.join(" | ")
+          node.nodes.collect { |child_node| "(#{visit child_node})" }.join(" | ")
         end
       end
 

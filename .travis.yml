@@ -8,9 +8,9 @@ before_script:
 
 rvm:
   - 2.1.10
+  - 2.2.5
   - 2.3.1
-  - 2.4.0
-  - rbx-2
+  - rbx
   - jruby
 env:
   - DATABASE=sqlite
@@ -18,7 +18,7 @@ env:
   - DATABASE=postgres
 matrix:
   allow_failures:
-    - rvm: rbx-2
+    - rvm: rbx
     - rvm: jruby
 
 gemfile:
