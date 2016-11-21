@@ -36,14 +36,6 @@ Book.search(:or => [{:query => "Rowling -Potter"}, {:query => "Tolkien -Rings"}]
 # ...
 ```
 
-## AttrSearchable is now SearchCop
-
-As the set of features of AttrSearchable grew and grew, it has been neccessary
-to change its DSL and name, as no `attr_searchable` method is present anymore.
-The new DSL is cleaner and more concise. Morever, the migration process is
-simple. Please take a look into the migration guide
-[MIGRATION.md](https://github.com/mrkamel/search_cop/blob/master/MIGRATION.md)
-
 ## Installation
 
 For Rails/ActiveRecord 3 (or 4), add this line to your application's Gemfile:
