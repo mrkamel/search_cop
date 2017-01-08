@@ -26,6 +26,7 @@ gemfile:
   - gemfiles/4.0.gemfile
   - gemfiles/4.1.gemfile
   - gemfiles/4.2.gemfile
+  - gemfiles/5.0.gemfile
 
 install:
   - "travis_retry bundle install"
