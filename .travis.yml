@@ -17,6 +17,9 @@ env:
   - DATABASE=mysql
   - DATABASE=postgres
 matrix:
+  include:
+    - rvm: 2.3.1
+      gemfile: gemfiles/5.0-Gemfile
   allow_failures:
     - rvm: rbx-3
     - rvm: jruby
@@ -26,7 +29,6 @@ gemfile:
   - gemfiles/4.0.gemfile
   - gemfiles/4.1.gemfile
   - gemfiles/4.2.gemfile
-  - gemfiles/5.0.gemfile
 
 install:
   - "travis_retry bundle install"
