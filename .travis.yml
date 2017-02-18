@@ -20,6 +20,13 @@ matrix:
   include:
     - rvm: 2.3.1
       gemfile: gemfiles/5.0-Gemfile
+      env: DATABASE=sqlite
+    - rvm: 2.3.1
+      gemfile: gemfiles/5.0-Gemfile
+      env: DATABASE=mysql
+    - rvm: 2.3.1
+      gemfile: gemfiles/5.0-Gemfile
+      env: DATABASE=postgres
   allow_failures:
     - rvm: rbx-3
     - rvm: jruby
