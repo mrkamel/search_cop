@@ -7,7 +7,7 @@ class FulltextTest < SearchCop::TestCase
     product2 = create(:product, :title => "word2 word3")
     product3 = create(:product, :title => "word2")
 
-    results = Product.search("title:word1 OR (title:word2 -title:word3)")
+    results = Product.search("word1 OR (title:word2 -word3)")
 
     assert_includes results, product1
     refute_includes results, product2
@@ -18,7 +18,7 @@ class FulltextTest < SearchCop::TestCase
     expected = create(:product, :title => "Expected title", :stock => 1)
     rejected = create(:product, :title => "Expected title", :stock => 0)
 
-    results = Product.search("title:Expected title:Title stock > 0")
+    results = Product.search("Expected title:Title stock > 0")
 
     assert_includes results, expected
     refute_includes results, rejected

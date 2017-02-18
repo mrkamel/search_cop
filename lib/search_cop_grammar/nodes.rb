@@ -82,6 +82,12 @@ module SearchCopGrammar
       def initialize(object)
         @object = object
       end
+
+      def finalize!
+        @object.finalize!
+
+        self
+      end
     end
 
     class MatchesFulltext < Binary
