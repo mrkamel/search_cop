@@ -48,7 +48,7 @@ module SearchCop
       end
 
       def visit_SearchCopGrammar_Nodes_Matches(node)
-        "COALESCE(#{visit node.left} LIKE #{visit node.right}, 0)"
+        "(#{visit node.left} IS NOT NULL AND #{visit node.left} LIKE #{visit node.right})"
       end
 
       def visit_SearchCopGrammar_Nodes_Not(node)

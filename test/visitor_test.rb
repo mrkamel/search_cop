@@ -53,8 +53,8 @@ class VisitorTest < SearchCop::TestCase
   def test_matches
     node = SearchCopGrammar::Attributes::String.new(Product, "products", "notice").matches("Notice")
 
-    assert_equal("COALESCE(#{quote_table_name "products"}.#{quote_column_name "notice"} LIKE #{quote "%Notice%"}, 0)", SearchCop::Visitors::Visitor.new(ActiveRecord::Base.connection).visit(node)) if ENV["DATABASE"] != "postgres"
-    assert_equal("COALESCE(#{quote_table_name "products"}.#{quote_column_name "notice"} ILIKE #{quote "%Notice%"}, 0)", SearchCop::Visitors::Visitor.new(ActiveRecord::Base.connection).visit(node)) if ENV["DATABASE"] == "postgres"
+    assert_equal("(#{quote_table_name "products"}.#{quote_column_name "notice"} IS NOT NULL AND #{quote_table_name "products"}.#{quote_column_name "notice"} LIKE #{quote "%Notice%"})", SearchCop::Visitors::Visitor.new(ActiveRecord::Base.connection).visit(node)) if ENV["DATABASE"] != "postgres"
+    assert_equal("(#{quote_table_name "products"}.#{quote_column_name "notice"} IS NOT NULL AND #{quote_table_name "products"}.#{quote_column_name "notice"} ILIKE #{quote "%Notice%"})", SearchCop::Visitors::Visitor.new(ActiveRecord::Base.connection).visit(node)) if ENV["DATABASE"] == "postgres"
   end
 
   def test_not
