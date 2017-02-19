@@ -247,6 +247,23 @@ Regarding compound indices for PostgreSQL, use:
 ActiveRecord::Base.connection.execute "CREATE INDEX fulltext_index_books_on_title ON books USING GIN(to_tsvector('simple', author || ' ' || title))"
 ```
 
+To handle NULL values with PostgreSQL correctly, use COALESCE both at index
+creation time and when specifying the `search_scope`:
+
+```ruby
+ActiveRecord::Base.connection.execute "CREATE INDEX fulltext_index_books_on_title ON books USING GIN(to_tsvector('simple', COALESCE(author, '') || ' ' || COALESCE(title, '')))"
+```
+
+plus:
+
+```ruby
+search_scope :search do
+  attributes :title
+
+  options :title, :type => :fulltext, coalesce: true
+end
+```
+
 To use another PostgreSQL dictionary than `simple`, you have to create the
 index accordingly and you need tell SearchCop about it, e.g.:
 
@@ -254,7 +271,7 @@ index accordingly and you need tell SearchCop about it, e.g.:
 search_scope :search do
   attributes :title
 
-  options :title, :type => :fulltext, :dictionary => "english"
+  options :title, :type => :fulltext, dictionary: "english"
 end
 ```
 

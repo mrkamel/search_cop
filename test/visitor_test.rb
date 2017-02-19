@@ -75,7 +75,7 @@ class VisitorTest < SearchCop::TestCase
     node = SearchCopGrammar::Attributes::Collection.new(SearchCop::QueryInfo.new(Product, Product.search_scopes[:search]), "title").matches("Query").optimize!
 
     assert_equal("MATCH(`products`.`title`) AGAINST('Query' IN BOOLEAN MODE)", SearchCop::Visitors::Visitor.new(ActiveRecord::Base.connection).visit(node)) if ENV["DATABASE"] == "mysql"
-    assert_equal("to_tsvector('english', \"products\".\"title\") @@ to_tsquery('english', '''Query''')", SearchCop::Visitors::Visitor.new(ActiveRecord::Base.connection).visit(node)) if ENV["DATABASE"] == "postgres"
+    assert_equal("to_tsvector('english', COALESCE(\"products\".\"title\", '')) @@ to_tsquery('english', '''Query''')", SearchCop::Visitors::Visitor.new(ActiveRecord::Base.connection).visit(node)) if ENV["DATABASE"] == "postgres"
   end
 
   def test_fulltext_and
@@ -85,7 +85,7 @@ class VisitorTest < SearchCop::TestCase
     node = query1.and(query2).optimize!
 
     assert_equal("(MATCH(`products`.`title`) AGAINST('+Query1 +Query2' IN BOOLEAN MODE))", SearchCop::Visitors::Visitor.new(ActiveRecord::Base.connection).visit(node)) if ENV["DATABASE"] == "mysql"
-    assert_equal("(to_tsvector('english', \"products\".\"title\") @@ to_tsquery('english', '(''Query1'') & (''Query2'')'))", SearchCop::Visitors::Visitor.new(ActiveRecord::Base.connection).visit(node)) if ENV["DATABASE"] == "postgres"
+    assert_equal("(to_tsvector('english', COALESCE(\"products\".\"title\", '')) @@ to_tsquery('english', '(''Query1'') & (''Query2'')'))", SearchCop::Visitors::Visitor.new(ActiveRecord::Base.connection).visit(node)) if ENV["DATABASE"] == "postgres"
   end
 
   def test_fulltext_or
@@ -95,7 +95,7 @@ class VisitorTest < SearchCop::TestCase
     node = query1.or(query2).optimize!
 
     assert_equal("(MATCH(`products`.`title`) AGAINST('(Query1) (Query2)' IN BOOLEAN MODE))", SearchCop::Visitors::Visitor.new(ActiveRecord::Base.connection).visit(node)) if ENV["DATABASE"] == "mysql"
-    assert_equal("(to_tsvector('english', \"products\".\"title\") @@ to_tsquery('english', '(''Query1'') | (''Query2'')'))", SearchCop::Visitors::Visitor.new(ActiveRecord::Base.connection).visit(node)) if ENV["DATABASE"] == "postgres"
+    assert_equal("(to_tsvector('english', COALESCE(\"products\".\"title\", '')) @@ to_tsquery('english', '(''Query1'') | (''Query2'')'))", SearchCop::Visitors::Visitor.new(ActiveRecord::Base.connection).visit(node)) if ENV["DATABASE"] == "postgres"
   end
 end
 

@@ -25,7 +25,15 @@ module SearchCop
       end
 
       def visit_SearchCopGrammar_Attributes_Collection(node)
-        node.attributes.collect { |attribute| visit attribute }.join(" || ' ' || ")
+        res = node.attributes.collect do |attribute|
+          if attribute.options[:coalesce]
+            "COALESCE(#{visit attribute}, '')"
+          else
+            visit attribute
+          end
+        end
+
+        res.join(" || ' ' || ")
       end
 
       def visit_SearchCopGrammar_Nodes_FulltextExpression(node)

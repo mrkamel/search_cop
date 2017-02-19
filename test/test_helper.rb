@@ -44,9 +44,9 @@ class Product < ActiveRecord::Base
     aliases :users_products => :user
 
     if DATABASE != "sqlite"
-      options :title, :type => :fulltext
-      options :description, :type => :fulltext
-      options :comment, :type => :fulltext
+      options :title, :type => :fulltext, coalesce:  true
+      options :description, :type => :fulltext, coalesce: true
+      options :comment, :type => :fulltext, coalesce: true
     end
 
     if DATABASE == "postgres"
