@@ -131,5 +131,12 @@ class SearchCopTest < SearchCop::TestCase
   def test_blank
     assert_equal Product.all, Product.search("")
   end
+
+  def test_in
+    product = create(:product, :title => "Expected")
+
+    assert_includes Product.search("title in (Expected, Rejected)"), product
+    refute_includes Product.search("title in (Rejected)"), product
+  end
 end
 
