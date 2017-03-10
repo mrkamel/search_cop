@@ -40,11 +40,19 @@ module SearchCop
       end
 
       def visit_SearchCopGrammar_Nodes_Equality(node)
-        "#{visit node.left} = #{visit node.right}"
+        if node.right =~ /\A__null__\Z/i
+          "#{visit node.left} IS NULL"
+        else
+          "#{visit node.left} = #{visit node.right}"
+        end
       end
 
       def visit_SearchCopGrammar_Nodes_NotEqual(node)
-        "#{visit node.left} != #{visit node.right}"
+        if node.right =~ /\A__null__\Z/i
+          "#{visit node.left} IS NOT NULL"
+        else
+          "#{visit node.left} != #{visit node.right}"
+        end
       end
 
       def visit_SearchCopGrammar_Nodes_Matches(node)
