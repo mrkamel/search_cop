@@ -41,8 +41,8 @@ module SearchCop
       search_scopes[name] = SearchScope.new(name, self)
       search_scopes[name].instance_exec(&block)
 
-      self.class.send(:define_method, name) { |query| search_cop query, name }
-      self.class.send(:define_method, "unsafe_#{name}") { |query| unsafe_search_cop query, name }
+      self.send(:define_singleton_method, name) { |query| search_cop query, name }
+      self.send(:define_singleton_method, "unsafe_#{name}") { |query| unsafe_search_cop query, name }
     end
 
     def search_reflection(scope_name)
