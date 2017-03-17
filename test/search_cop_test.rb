@@ -131,5 +131,10 @@ class SearchCopTest < SearchCop::TestCase
   def test_blank
     assert_equal Product.all, Product.search("")
   end
+
+  def test_not_adding_search_to_object
+    Product
+    assert_equal false, Object.respond_to?(:search)
+  end
 end
 
