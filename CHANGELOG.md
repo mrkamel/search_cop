@@ -1,6 +1,10 @@
 
 # Changelog
 
+Version 1.0.8:
+
+* No longer add search scope methods globally #34
+
 Version 1.0.7:
 
 * Bugfix regarding NOT queries in fulltext mode #32
