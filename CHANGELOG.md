@@ -1,6 +1,12 @@
 
 # Changelog
 
+Version 1.0.7:
+
+* Bugfix regarding NOT queries in fulltext mode #32
+* Safely handle NULL values for match queries
+* Added coalesce option
+
 Version 1.0.6:
 
 * Fixes a bug regarding date overflows in PostgreSQL
