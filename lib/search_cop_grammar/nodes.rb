@@ -73,6 +73,7 @@ module SearchCopGrammar
     class LessThan < Binary; end
     class LessThanOrEqual < Binary; end
     class Matches < Binary; end
+    class Generator < Binary; end
 
     class Not
       include Base

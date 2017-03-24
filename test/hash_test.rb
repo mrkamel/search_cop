@@ -93,5 +93,15 @@ class HashTest < SearchCop::TestCase
     assert_includes results, expected
     refute_includes results, rejected
   end
+
+  def test_custom_matcher
+    expected = create(:product, :title => "Expected")
+    rejected = create(:product, :title => "Rejected")
+
+    results = Product.search(:title => { :custom_eq => "Expected" })
+
+    assert_includes results, expected
+    refute_includes results, rejected
+  end
 end
 
