@@ -38,7 +38,7 @@ Book.search(:or => [{:query => "Rowling -Potter"}, {:query => "Tolkien -Rings"}]
 
 ## Installation
 
-For Rails/ActiveRecord 3 (or 4), add this line to your application's Gemfile:
+Add this line to your application's Gemfile:
 
     gem 'search_cop'
 
