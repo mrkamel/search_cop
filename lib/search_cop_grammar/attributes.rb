@@ -55,6 +55,10 @@ module SearchCopGrammar
         @attributes ||= query_info.scope.reflection.attributes[key].collect { |attribute_definition| attribute_for attribute_definition }
       end
 
+      def type
+        query_info.scope.reflection.type[key]
+      end
+
       def klass_for_association(name)
         reflections = query_info.model.reflections
 
@@ -84,9 +88,17 @@ module SearchCopGrammar
         table, column = attribute_definition.split(".")
         klass = klass_for(table)
 
-        raise(SearchCop::UnknownAttribute, "Unknown attribute #{attribute_definition}") unless klass.columns_hash[column]
+        column_type = type || begin
+          if klass.columns_hash[column].nil?
+            raise(SearchCop::UnknownAttribute,
+              "Unknown attribute #{attribute_definition}")
+          end
 
-        Attributes.const_get(klass.columns_hash[column].type.to_s.classify).new(klass, alias_for(table), column, options)
+          klass.columns_hash[column].type
+        end
+
+        Attributes.const_get(column_type.to_s.classify).
+          new(klass, alias_for(table), column, options)
       end
     end
 

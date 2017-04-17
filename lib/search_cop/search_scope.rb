@@ -1,12 +1,13 @@
 
 module SearchCop
   class Reflection
-    attr_accessor :attributes, :options, :aliases, :scope
+    attr_accessor :attributes, :options, :aliases, :scope, :type
 
     def initialize
       self.attributes = {}
       self.options = {}
       self.aliases = {}
+      self.type = {}
     end
 
     def default_attributes
@@ -14,7 +15,9 @@ module SearchCop
       keys = attributes.keys.reject { |key| options[key] && options[key][:default] == false } if keys.empty?
       keys = keys.to_set
 
-      attributes.select { |key, value| keys.include? key }
+      attributes.select do |key, value|
+        keys.include?(key) && !type.keys.include?(key)
+      end
     end
   end
 
@@ -44,6 +47,10 @@ module SearchCop
 
     def scope(&block)
       reflection.scope = block
+    end
+
+    def type(key, type)
+      reflection.type[key.to_s] ||= type
     end
 
     private
