@@ -52,6 +52,10 @@ class Product < ActiveRecord::Base
     if DATABASE == "postgres"
       options :title, :dictionary => "english"
     end
+
+    generator :custom_eq do |column_name, raw_value|
+      "#{column_name} = #{quote raw_value}"
+    end
   end
 
   search_scope :user_search do

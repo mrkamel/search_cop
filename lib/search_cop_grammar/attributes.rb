@@ -6,6 +6,8 @@ module SearchCopGrammar
     class Collection
       attr_reader :query_info, :key
 
+      INCLUDED_OPERATORS = [:matches, :eq, :not_eq, :gt, :gteq, :lt, :lteq].freeze
+
       def initialize(query_info, key)
         raise(SearchCop::UnknownColumn, "Unknown column #{key}") unless query_info.scope.reflection.attributes[key]
 
@@ -29,6 +31,12 @@ module SearchCopGrammar
          define_method method do |value|
            attributes.collect! { |attribute| attribute.send method, value }.inject(:or)
          end
+      end
+
+      def generator(generator, value)
+        attributes.collect! do |attribute|
+          SearchCopGrammar::Nodes::Generator.new(attribute, generator: generator, value: value)
+        end.inject(:or)
       end
 
       def matches(value)
@@ -87,6 +95,18 @@ module SearchCopGrammar
         raise(SearchCop::UnknownAttribute, "Unknown attribute #{attribute_definition}") unless klass.columns_hash[column]
 
         Attributes.const_get(klass.columns_hash[column].type.to_s.classify).new(klass, alias_for(table), column, options)
+      end
+
+      def generator_for(name)
+        generators[name]
+      end
+
+      def valid_operator?(operator)
+        (INCLUDED_OPERATORS + generators.keys).include?(operator)
+      end
+
+      def generators
+        query_info.scope.reflection.generators
       end
     end
 

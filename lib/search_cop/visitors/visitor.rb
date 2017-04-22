@@ -55,6 +55,10 @@ module SearchCop
         "NOT (#{visit node.object})"
       end
 
+      def visit_SearchCopGrammar_Nodes_Generator(node)
+        instance_exec visit(node.left), node.right[:value], &node.right[:generator]
+      end
+
       def quote_table_name(name)
         connection.quote_table_name name
       end

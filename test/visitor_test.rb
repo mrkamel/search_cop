@@ -97,5 +97,14 @@ class VisitorTest < SearchCop::TestCase
     assert_equal("(MATCH(`products`.`title`) AGAINST('(Query1) (Query2)' IN BOOLEAN MODE))", SearchCop::Visitors::Visitor.new(ActiveRecord::Base.connection).visit(node)) if ENV["DATABASE"] == "mysql"
     assert_equal("(to_tsvector('english', COALESCE(\"products\".\"title\", '')) @@ to_tsquery('english', '(''Query1'') | (''Query2'')'))", SearchCop::Visitors::Visitor.new(ActiveRecord::Base.connection).visit(node)) if ENV["DATABASE"] == "postgres"
   end
+
+  def test_generator
+    generator = ->(column_name, value) do
+      "#{column_name} = #{quote value}"
+    end
+    node = SearchCopGrammar::Attributes::Collection.new(SearchCop::QueryInfo.new(Product, Product.search_scopes[:search]), "title").generator(generator, "value").optimize!
+
+    assert_equal "#{quote_table_name "products"}.#{quote_column_name "title"} = 'value'", SearchCop::Visitors::Visitor.new(ActiveRecord::Base.connection).visit(node)
+  end
 end
 

@@ -1,12 +1,13 @@
 
 module SearchCop
   class Reflection
-    attr_accessor :attributes, :options, :aliases, :scope
+    attr_accessor :attributes, :options, :aliases, :scope, :generators
 
     def initialize
       self.attributes = {}
       self.options = {}
       self.aliases = {}
+      self.generators = {}
     end
 
     def default_attributes
@@ -44,6 +45,10 @@ module SearchCop
 
     def scope(&block)
       reflection.scope = block
+    end
+
+    def generator(name, &block)
+      reflection.generators[name] = block
     end
 
     private

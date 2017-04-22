@@ -31,9 +31,13 @@ class SearchCop::HashParser
     collection = SearchCopGrammar::Attributes::Collection.new(query_info, key.to_s)
 
     if value.is_a?(Hash)
-      raise(SearchCop::ParseError, "Unknown operator #{value.keys.first}") unless [:matches, :eq, :not_eq, :gt, :gteq, :lt, :lteq].include?(value.keys.first)
+      raise(SearchCop::ParseError, "Unknown operator #{value.keys.first}") unless collection.valid_operator?(value.keys.first)
 
-      collection.send value.keys.first, value.values.first.to_s
+      if generator = collection.generator_for(value.keys.first)
+        collection.generator generator, value.values.first
+      else
+        collection.send value.keys.first, value.values.first.to_s
+      end
     else
       collection.send :matches, value.to_s
     end

@@ -33,6 +33,7 @@ Book.search(:author => "Rowling", :title => "Harry Potter")
 Book.search(:or => [{:author => "Rowling"}, {:author => "Tolkien"}])
 Book.search(:and => [{:price => {:gt => 10}}, {:not => {:stock => 0}}, :or => [{:title => "Potter"}, {:author => "Rowling"}]])
 Book.search(:or => [{:query => "Rowling -Potter"}, {:query => "Tolkien -Rings"}])
+Book.search(:title => {:my_custom_sql_query => "Rowl"}})
 # ...
 ```
 
@@ -445,6 +446,38 @@ of `:not => {...}`, `:matches => {...}`, `:eq => {...}`, `:not_eq => {...}`,
 `:lt => {...}`, `:lteq => {...}`, `:gt => {...}`, `:gteq => {...}` and `:query => "..."`
 arguments. Moreover, `:query => "..."` makes it possible to create sub-queries.
 The other rules for query string queries apply to hash based queries as well.
+
+### Custom operators
+
+SearchCop also provides the ability to define custom operators by defining
+a `generator` in `search_scope`. They can then be used with the hash based
+query search. This is useful when you want to use database operators that are
+not supported by SearchCop.
+
+For example, if you wanted to perform a `LIKE` query where a book title starts
+with a string, you can define the search scope like so:
+
+```ruby
+search_scope :search do
+  attributes :title
+
+  generator :starts_with do |column_name, raw_value|
+    pattern = "#{raw_value}%"
+    "#{column_name} LIKE #{quote pattern}"
+  end
+end
+```
+
+When you want to perform the search you use it like this:
+
+```ruby
+Book.search({:title => {:starts_with => "The Great"}}})
+```
+
+Security Note: The query returned from the generator will be interpolated
+directly into the query that goes to your database. This opens up a potential
+SQL Injection point in your app. If you use this feature you'll want to make
+sure the query you're returning is safe to execute.
 
 ## Mapping
 
