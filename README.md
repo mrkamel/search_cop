@@ -29,11 +29,11 @@ to make optimal use of them. Read more below.
 Complex hash-based queries are supported as well:
 
 ```ruby
-Book.search(:author => "Rowling", :title => "Harry Potter")
-Book.search(:or => [{:author => "Rowling"}, {:author => "Tolkien"}])
-Book.search(:and => [{:price => {:gt => 10}}, {:not => {:stock => 0}}, :or => [{:title => "Potter"}, {:author => "Rowling"}]])
-Book.search(:or => [{:query => "Rowling -Potter"}, {:query => "Tolkien -Rings"}])
-Book.search(:title => {:my_custom_sql_query => "Rowl"}})
+Book.search(author: "Rowling", title: "Harry Potter")
+Book.search(or: [{author: "Rowling"}, {author: "Tolkien"}])
+Book.search(and: [{price: {gt: 10}}, {not: {stock: 0}}, or: [{title: "Potter"}, {author: "Rowling"}]])
+Book.search(or: [{query: "Rowling -Potter"}, {query: "Tolkien -Rings"}])
+Book.search(title: {my_custom_sql_query: "Rowl"}})
 # ...
 ```
 
@@ -62,8 +62,8 @@ class Book < ActiveRecord::Base
 
   search_scope :search do
     attributes :title, :description, :stock, :price, :created_at, :available
-    attributes :comment => ["comments.title", "comments.message"]
-    attributes :author => "author.name"
+    attributes comment: ["comments.title", "comments.message"]
+    attributes author: "author.name"
     # ...
   end
 
@@ -115,7 +115,7 @@ As `Book.search(...)` returns an `ActiveRecord::Relation`, you are free to pre-
 or post-process the search results in every possible way:
 
 ```ruby
-Book.where(:available => true).search("Harry Potter").order("books.id desc").paginate(:page => params[:page])
+Book.where(available: true).search("Harry Potter").order("books.id desc").paginate(page: params[:page])
 ```
 
 ## Fulltext index capabilities
@@ -165,12 +165,12 @@ search in, such that SearchCop must no longer search within all fields:
 
 ```ruby
 search_scope :search do
-  attributes :all => [:author, :title]
+  attributes all: [:author, :title]
 
-  options :all, :type => :fulltext, :default => true
+  options :all, :type => :fulltext, default: true
 
-  # Use :default => true to explicitly enable fields as default fields (whitelist approach)
-  # Use :default => false to explicitly disable fields as default fields (blacklist approach)
+  # Use default: true to explicitly enable fields as default fields (whitelist approach)
+  # Use default: false to explicitly disable fields as default fields (blacklist approach)
 end
 ```
 
@@ -299,7 +299,7 @@ class User < ActiveRecord::Base
   search_scope :search do
     attributes :username
 
-    options :username, :left_wildcard => false
+    options :username, left_wildcard: false
   end
 
   # ...
@@ -323,7 +323,7 @@ class Book < ActiveRecord::Base
   belongs_to :author
 
   search_scope :search do
-    attributes :author => "author.name"
+    attributes author: "author.name"
   end
 
   # ...
@@ -357,13 +357,13 @@ class Book < ActiveRecord::Base
   # ...
 
   search_scope :search do
-    attributes :similar => ["similar_books.title", "similar_books.description"]
+    attributes similar: ["similar_books.title", "similar_books.description"]
 
     scope do
       joins "left outer join books similar_books on ..."
     end
 
-    aliases :similar_books => Book # Tell SearchCop how to map SQL aliases to models
+    aliases similar_books: Book # Tell SearchCop how to map SQL aliases to models
   end
 
   # ...
@@ -380,7 +380,7 @@ class Book < ActiveRecord::Base
   has_many :users, :through => :comments
 
   search_scope :search do
-    attributes :user => "users.username"
+    attributes user: "users.username"
   end
 
   # ...
@@ -403,7 +403,7 @@ class Book < ActiveRecord::Base
   belongs_to :user
 
   search_scope :search do
-    attributes :user => ["user.username", "users_books.username"]
+    attributes user: ["user.username", "users_books.username"]
   end
 
   # ...
@@ -441,18 +441,18 @@ Query string queries support `AND/and`, `OR/or`, `:`, `=`, `!=`, `<`, `<=`,
 and `matches`, `OR` has precedence over `AND`. `NOT` can only be used as infix
 operator regarding a single attribute.
 
-Hash based queries support `:and => [...]` and `:or => [...]`, which take an array
-of `:not => {...}`, `:matches => {...}`, `:eq => {...}`, `:not_eq => {...}`,
-`:lt => {...}`, `:lteq => {...}`, `:gt => {...}`, `:gteq => {...}` and `:query => "..."`
-arguments. Moreover, `:query => "..."` makes it possible to create sub-queries.
+Hash based queries support `and: [...]` and `or: [...]`, which take an array
+of `not: {...}`, `matches: {...}`, `eq: {...}`, `not_eq: {...}`,
+`lt: {...}`, `lteq: {...}`, `gt: {...}`, `gteq: {...}` and `query: "..."`
+arguments. Moreover, `query: "..."` makes it possible to create sub-queries.
 The other rules for query string queries apply to hash based queries as well.
 
-### Custom operators
+### Custom operators (Hash based queries)
 
-SearchCop also provides the ability to define custom operators by defining
-a `generator` in `search_scope`. They can then be used with the hash based
-query search. This is useful when you want to use database operators that are
-not supported by SearchCop.
+SearchCop also provides the ability to define custom operators by defining a
+`generator` in `search_scope`. They can then be used with the hash based query
+search. This is useful when you want to use database operators that are not
+supported by SearchCop.
 
 For example, if you wanted to perform a `LIKE` query where a book title starts
 with a string, you can define the search scope like so:
@@ -471,7 +471,7 @@ end
 When you want to perform the search you use it like this:
 
 ```ruby
-Book.search({:title => {:starts_with => "The Great"}}})
+Book.search(title: { starts_with: "The Great" })
 ```
 
 Security Note: The query returned from the generator will be interpolated
@@ -563,7 +563,7 @@ class Product < ActiveRecord::Base
   search_scope :search do
     attributes :title, :description
 
-    options :title, :default => true
+    options :title, default: true
   end
 end
 
