@@ -94,6 +94,7 @@ module SearchCop
       alias :visit_Float :quote
       alias :visit_Fixnum :quote
       alias :visit_Symbol :quote
+      alias :visit_Integer :quote
     end
   end
 end
