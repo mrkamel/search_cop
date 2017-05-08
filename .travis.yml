@@ -10,7 +10,6 @@ rvm:
   - 2.1.10
   - 2.2.5
   - 2.3.1
-  - 2.4.1
   - rbx-3
   - jruby
 env:
@@ -19,13 +18,13 @@ env:
   - DATABASE=postgres
 matrix:
   include:
-    - rvm: 2.3.1
+    - rvm: 2.4.1
       gemfile: gemfiles/5.0-Gemfile
       env: DATABASE=sqlite
-    - rvm: 2.3.1
+    - rvm: 2.4.1
       gemfile: gemfiles/5.0-Gemfile
       env: DATABASE=mysql
-    - rvm: 2.3.1
+    - rvm: 2.4.1
       gemfile: gemfiles/5.0-Gemfile
       env: DATABASE=postgres
   allow_failures:
