@@ -35,10 +35,10 @@ module SearchCop
   end
 
   module ClassMethods
-    def search_scope(name, options = {}, &block)
+    def search_scope(name, &block)
       self.search_scopes = search_scopes.dup
 
-      search_scopes[name] = SearchScope.new(name, options, self)
+      search_scopes[name] = SearchScope.new(name, self)
       search_scopes[name].instance_exec(&block)
 
       self.send(:define_singleton_method, name) { |query| search_cop query, name }

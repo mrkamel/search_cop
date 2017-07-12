@@ -20,11 +20,10 @@ module SearchCop
   end
 
   class SearchScope
-    attr_accessor :name, :settings, :model, :reflection
+    attr_accessor :name, :model, :reflection
 
-    def initialize(name, settings, model)
+    def initialize(name, model)
       self.model = model
-      self.settings = settings
       self.reflection = Reflection.new
     end
 
