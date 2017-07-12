@@ -58,6 +58,10 @@ class Product < ActiveRecord::Base
     end
   end
 
+  search_scope :search_v2, :parser => :v2 do
+    attributes :title, :price
+  end
+
   search_scope :user_search do
     scope { joins "LEFT OUTER JOIN users users_products ON users_products.id = products.user_id" }
 
