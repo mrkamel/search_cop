@@ -33,7 +33,13 @@ grammar SearchCopGrammarV2
   end
 
   rule comparison_operator
-    ':' space? '=' <::SearchCopGrammar::EqualOperator> / ':' space? '!=' <::SearchCopGrammar::UnequalOperator> / ':' space? '>=' <::SearchCopGrammar::GreaterEqualOperator> / ':' space? '>' <::SearchCopGrammar::GreaterOperator> / ':' space? '<=' <::SearchCopGrammar::LessEqualOperator> / ':' space? '<' <::SearchCopGrammar::LessOperator> / ':' <::SearchCopGrammar::IncludesOperator>
+    ':' space? '=' <::SearchCopGrammar::EqualOperator> /
+    ':' space? '!=' <::SearchCopGrammar::UnequalOperator> /
+    ':' space? '>=' <::SearchCopGrammar::GreaterEqualOperator> /
+    ':' space? '>' <::SearchCopGrammar::GreaterOperator> /
+    ':' space? '<=' <::SearchCopGrammar::LessEqualOperator> /
+    ':' space? '<' <::SearchCopGrammar::LessOperator> /
+    ':' <::SearchCopGrammar::IncludesOperator>
   end
 
   rule anywhere_expression
