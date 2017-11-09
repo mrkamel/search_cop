@@ -60,7 +60,7 @@ module SearchCop
 
       query_builder = QueryBuilder.new(self, query, search_scopes[scope_name])
 
-      scope = instance_exec(&search_scopes[scope_name].reflection.scope) if search_scopes[scope_name].reflection.scope
+      scope = instance_exec(query, &search_scopes[scope_name].reflection.scope) if search_scopes[scope_name].reflection.scope
       scope ||= eager_load(query_builder.associations) if query_builder.associations.any?
 
       (scope || self).where(query_builder.sql)
