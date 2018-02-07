@@ -4,7 +4,7 @@ require "search_cop_grammar/nodes"
 
 module SearchCopGrammar
   class BaseNode < Treetop::Runtime::SyntaxNode
-    attr_accessor :query_info
+    attr_writer :query_info
 
     def query_info
       (@query_info ||= nil) || parent.query_info

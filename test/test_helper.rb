@@ -18,6 +18,7 @@ require "yaml"
 
 DATABASE = ENV["DATABASE"] || "sqlite"
 
+puts YAML.load_file(File.expand_path("../database.yml", __FILE__))[DATABASE].inspect
 ActiveRecord::Base.establish_connection YAML.load_file(File.expand_path("../database.yml", __FILE__))[DATABASE]
 
 class User < ActiveRecord::Base; end

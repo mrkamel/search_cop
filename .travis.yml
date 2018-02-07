@@ -40,6 +40,6 @@ gemfile:
 install:
   - "travis_retry bundle install"
 
-script: "bundle exec rake test"
+script: "rake test"
 sudo: false
 
