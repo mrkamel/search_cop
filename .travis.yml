@@ -4,7 +4,8 @@ addons:
 
 before_script:
   - mysql -e 'create database search_cop;'
-  - psql -c 'create database search_cop;' -U postgres
+  - psql -c "create user search_cop password 'secret';" -U postgres
+  - psql -c 'create database search_cop owner search_cop;' -U postgres
 
 rvm:
   - 2.1.10
