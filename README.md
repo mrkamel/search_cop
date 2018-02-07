@@ -118,6 +118,24 @@ or post-process the search results in every possible way:
 Book.where(available: true).search("Harry Potter").order("books.id desc").paginate(page: params[:page])
 ```
 
+## Security
+
+When you pass a query string to SearchCop, it gets parsed, analyzed and mapped
+to finally build up an SQL query. To be more precise, when SearchCop parses the
+query, it creates objects (nodes), which represent the query expressions (And-,
+Or-, Not-, String-, Date-, etc Nodes). To build the SQL query, SearchCop uses
+the concept of visitors like e.g. used in
+[Arel](https://github.com/rails/arel), such that, for every node there must be
+a [visitor](https://github.com/mrkamel/search_cop/blob/master/lib/search_cop/visitors/visitor.rb),
+which transforms the node to SQL. When there is no visitor, an exception is
+raised when the query builder tries to "visit" the node. The visitors are
+responsible for sanitizing the user supplied input. This is primilarly done via
+quoting (string-, table-name-, column-quoting, etc). SearchCop is using the
+methods provided by the ActiveRecord connection adapter for sanitizing/quoting
+to prevent SQL injection. While we can never be 100% safe from security issues,
+SearchCop takes security issues seriously. Please report responsibly via
+security at flakks dot com in case you find any security related issues.
+
 ## Fulltext index capabilities
 
 By default, i.e. if you don't tell SearchCop about your fulltext indices,
