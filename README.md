@@ -472,6 +472,10 @@ SearchCop also provides the ability to define custom operators by defining a
 search. This is useful when you want to use database operators that are not
 supported by SearchCop.
 
+Please note, when using generators, you are responsible for sanitizing/quoting
+the values (see example below). Otherwise your generator will allow SQL
+injection. Thus, please only use generators if you know what you're doing.
+
 For example, if you wanted to perform a `LIKE` query where a book title starts
 with a string, you can define the search scope like so:
 
