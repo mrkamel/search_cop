@@ -9,23 +9,22 @@ before_script:
 
 rvm:
   - ruby-head
-  - jruby
+  - jruby-head
 env:
   - DATABASE=sqlite
   - DATABASE=mysql
   - DATABASE=postgres
 matrix:
   allow_failures:
-    - rvm: jruby
+    - rvm: jruby-head
 
 gemfile:
-  - gemfiles/3.2.gemfile
   - gemfiles/4.2.gemfile
-  - gemfiles/5.0.gemfile
+  - gemfiles/5.1.gemfile
 
 install:
   - "travis_retry bundle install"
 
-script: "rake test"
+script: "rake test --trace"
 sudo: false
 
