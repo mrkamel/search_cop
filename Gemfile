@@ -12,12 +12,6 @@ end
 platforms :ruby do
   gem 'sqlite3'
   gem 'mysql2'
-  gem 'pg', '< 1.0.0'
-end
-
-platforms :rbx do
-  gem 'racc'
-  gem 'rubysl', '~> 2.0'
-  gem 'psych'
+  gem 'pg'
 end
 
