@@ -2,7 +2,6 @@
 
 [![Build Status](https://secure.travis-ci.org/mrkamel/search_cop.png?branch=master)](http://travis-ci.org/mrkamel/search_cop)
 [![Code Climate](https://codeclimate.com/github/mrkamel/search_cop.png)](https://codeclimate.com/github/mrkamel/search_cop)
-[![Dependency Status](https://gemnasium.com/mrkamel/search_cop.png?travis)](https://gemnasium.com/mrkamel/search_cop)
 [![Gem Version](https://badge.fury.io/rb/search_cop.svg)](http://badge.fury.io/rb/search_cop)
 
 ![search_cop](https://raw.githubusercontent.com/mrkamel/search_cop_logo/master/search_cop.png)
@@ -301,7 +300,7 @@ For more details about PostgreSQL fulltext indices visit
 
 In case you expose non-fulltext attributes to search queries (price, stock,
 etc.), the respective queries, like `Book.search("stock > 0")`, will profit
-from from the usual non-fulltext indices. Thus, you should add a usual index on
+from the usual non-fulltext indices. Thus, you should add a usual index on
 every column you expose to search queries plus a fulltext index for every
 fulltext attribute.
 
