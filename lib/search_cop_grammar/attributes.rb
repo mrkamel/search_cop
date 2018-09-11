@@ -198,7 +198,11 @@ module SearchCopGrammar
       def parse(value)
         return value .. value unless value.is_a?(::String)
 
-        if value =~ /^[0-9]{4}$/
+        if value =~ /^[0-9]+ (hour|day|week|month|year)s{0,1} (ago)$/
+          number,period,ago = value.split(' ')
+          time = number.to_i.send(period.to_sym).send(ago.to_sym)
+          time .. ::Time.now
+        elsif value =~ /^[0-9]{4}$/
           ::Time.new(value).beginning_of_year .. ::Time.new(value).end_of_year
         elsif value =~ /^([0-9]{4})(\.|-|\/)([0-9]{1,2})$/
           ::Time.new($1, $3, 15).beginning_of_month .. ::Time.new($1, $3, 15).end_of_month
@@ -244,7 +248,11 @@ module SearchCopGrammar
       def parse(value)
         return value .. value unless value.is_a?(::String)
 
-        if value =~ /^[0-9]{4}$/
+        if value =~ /^[0-9]+ (day|week|month|year)s{0,1} (ago)$/
+          number,period,ago = value.split(' ')
+          time = number.to_i.send(period.to_sym).send(ago.to_sym)
+          time.to_date .. ::Date.today
+        elsif value =~ /^[0-9]{4}$/
           ::Date.new(value.to_i).beginning_of_year .. ::Date.new(value.to_i).end_of_year
         elsif value =~ /^([0-9]{4})(\.|-|\/)([0-9]{1,2})$/
           ::Date.new($1.to_i, $3.to_i, 15).beginning_of_month .. ::Date.new($1.to_i, $3.to_i, 15).end_of_month
