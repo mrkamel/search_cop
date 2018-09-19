@@ -133,8 +133,7 @@ class SearchCopTest < SearchCop::TestCase
   end
 
   def test_not_adding_search_to_object
-    Product
-    assert_equal false, Object.respond_to?(:search)
+    refute Object.respond_to?(:search)
   end
 end
 
