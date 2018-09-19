@@ -176,7 +176,7 @@ module SearchCopGrammar
 
     class Float < WithoutMatches
       def compatible?(value)
-        return true if value.to_s =~ /^[0-9]+(\.[0-9]+)?$/
+        return true if value.to_s =~ /^\-?[0-9]+(\.[0-9]+)?$/
 
         false
       end

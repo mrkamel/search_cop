@@ -58,6 +58,13 @@ class FloatTest < SearchCop::TestCase
     refute_includes Product.search("price <= 10.4"), product
   end
 
+  def test_negative
+    product = create(:product, price: -10)
+
+    assert_includes Product.search("price = -10"), product
+    refute_includes Product.search("price = -11"), product
+  end
+
   def test_incompatible_datatype
     assert_raises SearchCop::IncompatibleDatatype do
       Product.unsafe_search "price: Value"
