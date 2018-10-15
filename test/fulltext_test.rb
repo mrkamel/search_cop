@@ -23,5 +23,25 @@ class FulltextTest < SearchCop::TestCase
     assert_includes results, expected
     refute_includes results, rejected
   end
+
+  def test_wildcard
+    expected = create(:product, title: "Expected")
+    rejected = create(:product, title: "Rejected")
+
+    results = Product.search("title:expect*")
+
+    assert_includes results, expected
+    refute_includes results, rejected
+  end
+
+  def test_fulltext_with_wildcards
+    expected = create(:product, description: "Expected")
+    rejected = create(:product, description: "Rejected")
+
+    results = Product.search("description:expect")
+
+    assert_includes results, expected
+    refute_includes results, rejected
+  end
 end
 

@@ -296,6 +296,32 @@ end
 For more details about PostgreSQL fulltext indices visit
 [http://www.postgresql.org/docs/9.3/static/textsearch.html](http://www.postgresql.org/docs/9.3/static/textsearch.html)
 
+## Fulltext wildcard
+
+By default, SearchCop won't add wildcards for fulltext queries/fields. To auto-
+append a wildcard for fulltext queries pass `right_wildcard: true` to the
+`options` method
+
+```ruby
+search_scope :search do
+  attributes :title
+
+  options :title, type: :fulltext, right_wildcard: true
+end
+```
+
+such that
+
+```ruby
+Product.search("title:movi")
+```
+
+becomes equivalent to
+
+```ruby
+Product.search("title:movi*")
+```
+
 ## Other indices
 
 In case you expose non-fulltext attributes to search queries (price, stock,

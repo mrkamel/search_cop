@@ -13,7 +13,7 @@ end
 
 require "minitest/autorun"
 require "active_record"
-require "factory_girl"
+require "factory_bot"
 require "yaml"
 
 DATABASE = ENV["DATABASE"] || "sqlite"
@@ -44,8 +44,9 @@ class Product < ActiveRecord::Base
     aliases :users_products => :user
 
     if DATABASE != "sqlite"
+      options :primary, type: :fulltext, coalesce: true
       options :title, :type => :fulltext, coalesce:  true
-      options :description, :type => :fulltext, coalesce: true
+      options :description, :type => :fulltext, coalesce: true, right_wildcard: true
       options :comment, :type => :fulltext, coalesce: true
     end
 
@@ -78,7 +79,7 @@ class Product < ActiveRecord::Base
   belongs_to :user
 end
 
-FactoryGirl.define do
+FactoryBot.define do
   factory :product do
   end
 
@@ -126,7 +127,7 @@ if DATABASE == "mysql"
 end
 
 class SearchCop::TestCase
-  include FactoryGirl::Syntax::Methods
+  include FactoryBot::Syntax::Methods
 
   def teardown
     Product.delete_all

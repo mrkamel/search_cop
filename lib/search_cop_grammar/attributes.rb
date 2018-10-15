@@ -41,7 +41,10 @@ module SearchCopGrammar
 
       def matches(value)
         if fulltext?
-          SearchCopGrammar::Nodes::MatchesFulltext.new self, value.to_s
+          res = value.to_s
+          res = "#{res}*" if options[:right_wildcard] && res !~ /(?<!\\)\*\z/
+
+          SearchCopGrammar::Nodes::MatchesFulltext.new(self, res)
         else
           attributes.collect! { |attribute| attribute.matches value }.inject(:or)
         end
@@ -156,9 +159,10 @@ module SearchCopGrammar
 
     class String < Base
       def matches_value(value)
-        return value.gsub(/\*/, "%") if (options[:left_wildcard] != false && value.strip =~ /^[^*]+\*$|^\*[^*]+$/) || value.strip =~ /^[^*]+\*$/
-
-        options[:left_wildcard] != false ? "%#{value}%" : "#{value}%"
+        res = value.gsub(/(?<!\\)\*/, "%")
+        res = "%#{res}" unless options[:left_wildcard] == false || res.starts_with?("%")
+        res = "#{res}%" unless res.ends_with?("%")
+        res
       end
 
       def matches(value)
