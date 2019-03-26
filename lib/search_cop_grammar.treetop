@@ -37,7 +37,7 @@ grammar SearchCopGrammar
   end
 
   rule anywhere_expression
-    "'" [^\']* "'" <SingleQuotedAnywhereExpression> / '"' [^\"]* '"' <DoubleQuotedAnywhereExpression> / [^\s()]+ <AnywhereExpression>
+    "'" [^\']* "'" <SingleQuotedAnywhereExpression> / '"' [^\"]* '"' <DoubleQuotedAnywhereExpression> / [^[:blank:]()]+ <AnywhereExpression>
   end
 
   rule simple_column
@@ -45,11 +45,11 @@ grammar SearchCopGrammar
   end
 
   rule value
-    "'" [^\']* "'" <SingleQuotedValue> / '"' [^\"]* '"' <DoubleQuotedValue> / [^\s()]+ <Value>
+    "'" [^\']* "'" <SingleQuotedValue> / '"' [^\"]* '"' <DoubleQuotedValue> / [^[:blank:]()]+ <Value>
   end
 
   rule space
-    [\s]+
+    [[:blank:]]+
   end
 end
 
