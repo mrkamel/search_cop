@@ -9,7 +9,7 @@ before_script:
 
 matrix:
   include:
-    - rvm: 2.5.4
+    - rvm: 2.4.4
       gemfile: gemfiles/4.2.gemfile
       env: DATABASE=sqlite
     - rvm: ruby-head
