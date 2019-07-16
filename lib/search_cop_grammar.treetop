@@ -9,7 +9,7 @@ grammar SearchCopGrammar
   end
 
   rule and_expression
-    or_expression (space? ('AND' / 'and') space? / space !('OR' / 'or')) complex_expression <AndExpression> / or_expression
+    or_expression (space? ('AND' / 'and') space? / space !('OR' / 'or')) complex_expression <AndOrExpression> / or_expression
   end
 
   rule or_expression

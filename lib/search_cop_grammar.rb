@@ -110,6 +110,13 @@ module SearchCopGrammar
     end
   end
 
+  class AndOrExpression < BaseNode
+    def evaluate
+      [elements.first.evaluate, elements.last.evaluate]
+        .inject(query_info.scope.reflection.default_operator)
+    end
+  end
+
   class OrExpression < BaseNode
     def evaluate
       [elements.first.evaluate, elements.last.evaluate].inject(:or)

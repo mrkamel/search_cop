@@ -1,13 +1,14 @@
 
 module SearchCop
   class Reflection
-    attr_accessor :attributes, :options, :aliases, :scope, :generators
+    attr_accessor :attributes, :options, :aliases, :scope, :generators, :default_operator
 
     def initialize
       self.attributes = {}
       self.options = {}
       self.aliases = {}
       self.generators = {}
+      self.default_operator = :and
     end
 
     def default_attributes
@@ -35,6 +36,10 @@ module SearchCop
 
     def options(key, options = {})
       reflection.options[key.to_s] = (reflection.options[key.to_s] || {}).merge(options)
+    end
+
+    def default_operator(operator)
+      reflection.default_operator = operator.is_a?(Symbol) ? operator : :and
     end
 
     def aliases(hash)

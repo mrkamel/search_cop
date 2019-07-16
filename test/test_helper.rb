@@ -68,6 +68,16 @@ class Product < ActiveRecord::Base
     aliases :users_products => User
   end
 
+  search_scope :search_with_and_operator do
+    attributes all: [:title, :description]
+    default_operator :and
+  end
+
+  search_scope :search_with_or_operator do
+    attributes all: [:title, :description]
+    default_operator :or
+  end
+
   has_many :comments
   has_many :users, :through => :comments
 
