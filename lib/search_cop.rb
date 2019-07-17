@@ -41,22 +41,24 @@ module SearchCop
       search_scopes[name] = SearchScope.new(name, self)
       search_scopes[name].instance_exec(&block)
 
-      self.send(:define_singleton_method, name) { |query| search_cop query, name }
-      self.send(:define_singleton_method, "unsafe_#{name}") { |query| unsafe_search_cop query, name }
+      self.send(:define_singleton_method, name) { |query, options={}| search_cop query, name, options }
+      self.send(:define_singleton_method, "unsafe_#{name}") { |query, operator={}| unsafe_search_cop query, name, operator }
     end
 
     def search_reflection(scope_name)
       search_scopes[scope_name].reflection
     end
 
-    def search_cop(query, scope_name)
-      unsafe_search_cop query, scope_name
+    def search_cop(query, scope_name, options)
+      unsafe_search_cop query, scope_name, options
     rescue SearchCop::RuntimeError
       respond_to?(:none) ? none : where("1 = 0")
     end
 
-    def unsafe_search_cop(query, scope_name)
+    def unsafe_search_cop(query, scope_name, options)
       return respond_to?(:scoped) ? scoped : all if query.blank?
+
+      search_scopes[scope_name].default_operator options[:default_operator] if options.member?(:default_operator)
 
       query_builder = QueryBuilder.new(self, query, search_scopes[scope_name])
 

@@ -39,7 +39,7 @@ module SearchCop
     end
 
     def default_operator(operator)
-      reflection.default_operator = operator.is_a?(Symbol) ? operator : :and
+      reflection.default_operator = operator.is_a?(Symbol) && [:and, :or].include?(operator) ? operator : :and
     end
 
     def aliases(hash)
