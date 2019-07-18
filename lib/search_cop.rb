@@ -18,11 +18,11 @@ module SearchCop
   class ParseError < RuntimeError; end
 
   module Parser
-    def self.parse(query, query_info)
+    def self.parse(query, query_info, query_options = {})
       if query.is_a?(Hash)
         SearchCop::HashParser.new(query_info).parse(query)
       else
-        SearchCop::GrammarParser.new(query_info).parse(query)
+        SearchCop::GrammarParser.new(query_info).parse(query, query_options)
       end
     end
   end
@@ -41,26 +41,24 @@ module SearchCop
       search_scopes[name] = SearchScope.new(name, self)
       search_scopes[name].instance_exec(&block)
 
-      self.send(:define_singleton_method, name) { |query, options={}| search_cop query, name, options }
-      self.send(:define_singleton_method, "unsafe_#{name}") { |query, operator={}| unsafe_search_cop query, name, operator }
+      self.send(:define_singleton_method, name) { |query, query_options={}| search_cop query, name, query_options }
+      self.send(:define_singleton_method, "unsafe_#{name}") { |query, query_options={}| unsafe_search_cop query, name, query_options }
     end
 
     def search_reflection(scope_name)
       search_scopes[scope_name].reflection
     end
 
-    def search_cop(query, scope_name, options)
-      unsafe_search_cop query, scope_name, options
+    def search_cop(query, scope_name, query_options)
+      unsafe_search_cop query, scope_name, query_options
     rescue SearchCop::RuntimeError
       respond_to?(:none) ? none : where("1 = 0")
     end
 
-    def unsafe_search_cop(query, scope_name, options)
+    def unsafe_search_cop(query, scope_name, query_options)
       return respond_to?(:scoped) ? scoped : all if query.blank?
 
-      search_scopes[scope_name].default_operator options[:default_operator] if options.member?(:default_operator)
-
-      query_builder = QueryBuilder.new(self, query, search_scopes[scope_name])
+      query_builder = QueryBuilder.new(self, query, search_scopes[scope_name], query_options)
 
       scope = instance_exec(&search_scopes[scope_name].reflection.scope) if search_scopes[scope_name].reflection.scope
       scope ||= eager_load(query_builder.associations) if query_builder.associations.any?
