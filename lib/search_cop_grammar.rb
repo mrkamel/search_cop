@@ -117,7 +117,9 @@ module SearchCopGrammar
   class AndOrExpression < BaseNode
     def evaluate
       default_operator = :and
-      if query_options.member?(:default_operator) && [:and, :or].include?(query_options[:default_operator])
+      if query_options.member?(:default_operator)
+        raise(SearchCop::UnknownAttribute, "Unknown default operator value #{query_options[:default_operator]}") unless [:and, :or].include?(query_options[:default_operator])
+
         default_operator = query_options[:default_operator]
       end
       [elements.first.evaluate, elements.last.evaluate].inject(default_operator)

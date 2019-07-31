@@ -7,6 +7,14 @@ class SearchCop::HashParser
   end
 
   def parse(hash)
+    default_operator = :and
+    if hash.member?(:default_operator)
+      raise(SearchCop::UnknownAttribute, "Unknown default operator value #{hash[:default_operator]}") unless [:and, :or].include?(hash[:default_operator])
+
+      default_operator = hash[:default_operator]
+      hash.delete(:default_operator)
+    end
+
     res = hash.collect do |key, value|
       case key
         when :and
@@ -22,7 +30,7 @@ class SearchCop::HashParser
       end
     end
 
-    res.inject :and
+    res.inject default_operator
   end
 
   private

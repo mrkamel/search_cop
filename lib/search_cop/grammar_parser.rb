@@ -12,7 +12,7 @@ module SearchCop
       @query_info = query_info
     end
 
-    def parse(string, query_options = {})
+    def parse(string, query_options)
       node = SearchCopGrammarParser.new.parse(string) || raise(ParseError)
       node.query_info = query_info
       node.query_options = query_options
