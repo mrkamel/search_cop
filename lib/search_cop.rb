@@ -8,10 +8,12 @@ require "search_cop/hash_parser"
 require "search_cop/visitors"
 
 module SearchCop
-  class SpecificationError < StandardError; end
+  class Error < StandardError; end
+
+  class SpecificationError < Error; end
   class UnknownAttribute < SpecificationError; end
 
-  class RuntimeError < StandardError; end
+  class RuntimeError < Error; end
   class UnknownColumn < RuntimeError; end
   class NoSearchableAttributes < RuntimeError; end
   class IncompatibleDatatype < RuntimeError; end
