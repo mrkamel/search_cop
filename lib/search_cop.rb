@@ -10,6 +10,7 @@ require "search_cop/visitors"
 module SearchCop
   class SpecificationError < StandardError; end
   class UnknownAttribute < SpecificationError; end
+  class UnknownDefaultOperator < SpecificationError; end
 
   class RuntimeError < StandardError; end
   class UnknownColumn < RuntimeError; end
@@ -64,6 +65,23 @@ module SearchCop
       scope ||= eager_load(query_builder.associations) if query_builder.associations.any?
 
       (scope || self).where(query_builder.sql)
+    end
+  end
+
+  module Helpers
+    def self.sanitize_default_operator(hash, delete_hash_option=false)
+      default_operator = :and
+      if hash.member?(:default_operator)
+        unless [:and, :or].include?(hash[:default_operator])
+          raise(SearchCop::UnknownDefaultOperator, "Unknown default operator value #{hash[:default_operator]}")
+        end
+
+        default_operator = hash[:default_operator]
+      end
+
+      hash.delete(:default_operator) if delete_hash_option
+
+      default_operator
     end
   end
 end

@@ -37,10 +37,10 @@ class DefaultOperatorTest < SearchCop::TestCase
   end
 
   def test_with_invalid_default_operator
-    assert_raises SearchCop::UnknownAttribute do
+    assert_raises SearchCop::UnknownDefaultOperator do
       Product.search_multi_columns('Matrix movie', default_operator: :xpto)
     end
-    assert_raises SearchCop::UnknownAttribute do
+    assert_raises SearchCop::UnknownDefaultOperator do
       Product.search_multi_columns(title: 'Matrix movie', default_operator: :xpto)
     end
   end
