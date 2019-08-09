@@ -1,6 +1,7 @@
 
-addons:
-  postgresql: "9.6"
+services:
+  - postgresql
+  - mysql
 
 before_script:
   - mysql -e 'create database search_cop;'
