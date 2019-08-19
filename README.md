@@ -329,6 +329,37 @@ User.search("admin")
 # ... WHERE users.username LIKE 'admin%'
 ```
 
+## Default operator
+
+When you define multiple fields on a search scope, the SearcCop will use 
+by default the AND operator to concatenate the conditions, E.g:
+
+```ruby
+class User < ActiveRecord::Base
+  include SearchCop
+
+  search_scope :search do
+    attributes :username, :fullname
+  end
+
+  # ...
+```
+
+So a search like this: `User.search("something")` will render the query 
+with the following conditions:
+```sql
+WHERE `username` LIKE '%something%' AND `fullname` LIKE '%something%'
+```
+
+There are cases where using the AND by default will lead to not being 
+able to get results, so this way SearchCop allows you to override the
+default operator to use the OR.
+So a query like `User.search("something", :default_operator: :or)` will
+generate the query using OR to concatenate the conditions
+```sql
+WHERE `username` LIKE '%something%' OR `fullname` LIKE '%something%'
+```
+
 ## Associations
 
 If you specify searchable attributes from another model, like
