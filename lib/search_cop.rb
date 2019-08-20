@@ -12,6 +12,7 @@ module SearchCop
 
   class SpecificationError < Error; end
   class UnknownAttribute < SpecificationError; end
+  class UnknownDefaultOperator < SpecificationError; end
 
   class RuntimeError < Error; end
   class UnknownColumn < RuntimeError; end
@@ -20,11 +21,11 @@ module SearchCop
   class ParseError < RuntimeError; end
 
   module Parser
-    def self.parse(query, query_info)
+    def self.parse(query, query_info, query_options = {})
       if query.is_a?(Hash)
         SearchCop::HashParser.new(query_info).parse(query)
       else
-        SearchCop::GrammarParser.new(query_info).parse(query)
+        SearchCop::GrammarParser.new(query_info).parse(query, query_options)
       end
     end
   end
@@ -43,29 +44,46 @@ module SearchCop
       search_scopes[name] = SearchScope.new(name, self)
       search_scopes[name].instance_exec(&block)
 
-      self.send(:define_singleton_method, name) { |query| search_cop query, name }
-      self.send(:define_singleton_method, "unsafe_#{name}") { |query| unsafe_search_cop query, name }
+      self.send(:define_singleton_method, name) { |query, query_options={}| search_cop query, name, query_options }
+      self.send(:define_singleton_method, "unsafe_#{name}") { |query, query_options={}| unsafe_search_cop query, name, query_options }
     end
 
     def search_reflection(scope_name)
       search_scopes[scope_name].reflection
     end
 
-    def search_cop(query, scope_name)
-      unsafe_search_cop query, scope_name
+    def search_cop(query, scope_name, query_options)
+      unsafe_search_cop query, scope_name, query_options
     rescue SearchCop::RuntimeError
       respond_to?(:none) ? none : where("1 = 0")
     end
 
-    def unsafe_search_cop(query, scope_name)
+    def unsafe_search_cop(query, scope_name, query_options)
       return respond_to?(:scoped) ? scoped : all if query.blank?
 
-      query_builder = QueryBuilder.new(self, query, search_scopes[scope_name])
+      query_builder = QueryBuilder.new(self, query, search_scopes[scope_name], query_options)
 
       scope = instance_exec(&search_scopes[scope_name].reflection.scope) if search_scopes[scope_name].reflection.scope
       scope ||= eager_load(query_builder.associations) if query_builder.associations.any?
 
       (scope || self).where(query_builder.sql)
+    end
+  end
+
+  module Helpers
+    def self.sanitize_default_operator(hash, delete_hash_option=false)
+      default_operator = :and
+      if hash.member?(:default_operator)
+        unless [:and, :or].include?(hash[:default_operator])
+          raise(SearchCop::UnknownDefaultOperator, "Unknown default operator value #{hash[:default_operator]}")
+        end
+
+        default_operator = hash[:default_operator]
+      end
+
+      hash.delete(:default_operator) if delete_hash_option
+
+      default_operator
     end
   end
 end

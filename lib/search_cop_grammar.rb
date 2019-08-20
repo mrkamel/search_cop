@@ -4,10 +4,14 @@ require "search_cop_grammar/nodes"
 
 module SearchCopGrammar
   class BaseNode < Treetop::Runtime::SyntaxNode
-    attr_writer :query_info
+    attr_writer :query_info, :query_options
 
     def query_info
       (@query_info ||= nil) || parent.query_info
+    end
+
+    def query_options
+      (@query_options ||= nil) || parent.query_options
     end
 
     def evaluate
@@ -107,6 +111,13 @@ module SearchCopGrammar
   class AndExpression < BaseNode
     def evaluate
       [elements.first.evaluate, elements.last.evaluate].inject(:and)
+    end
+  end
+
+  class AndOrExpression < BaseNode
+    def evaluate
+      default_operator = SearchCop::Helpers.sanitize_default_operator(query_options)
+      [elements.first.evaluate, elements.last.evaluate].inject(default_operator)
     end
   end
 

@@ -7,6 +7,8 @@ class SearchCop::HashParser
   end
 
   def parse(hash)
+    default_operator = SearchCop::Helpers.sanitize_default_operator(hash, true)
+
     res = hash.collect do |key, value|
       case key
         when :and
@@ -22,7 +24,7 @@ class SearchCop::HashParser
       end
     end
 
-    res.inject :and
+    res.inject default_operator
   end
 
   private

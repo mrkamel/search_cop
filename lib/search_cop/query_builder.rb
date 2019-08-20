@@ -3,11 +3,11 @@ module SearchCop
   class QueryBuilder
     attr_accessor :query_info, :scope, :sql
 
-    def initialize(model, query, scope)
+    def initialize(model, query, scope, query_options)
       self.scope = scope
       self.query_info = QueryInfo.new(model, scope)
 
-      arel = SearchCop::Parser.parse(query, query_info).optimize!
+      arel = SearchCop::Parser.parse(query, query_info, query_options).optimize!
 
       self.sql = SearchCop::Visitors::Visitor.new(model.connection).visit(arel)
     end

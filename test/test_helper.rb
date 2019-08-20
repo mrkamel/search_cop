@@ -68,6 +68,10 @@ class Product < ActiveRecord::Base
     aliases :users_products => User
   end
 
+  search_scope :search_multi_columns do
+    attributes all: [:title, :description]
+  end
+
   has_many :comments
   has_many :users, :through => :comments
 
