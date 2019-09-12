@@ -8,7 +8,7 @@ module SearchCop
         @connection = connection
 
         extend(SearchCop::Visitors::Mysql) if @connection.adapter_name =~ /mysql/i
-        extend(SearchCop::Visitors::Postgres) if @connection.adapter_name =~ /postgres/i
+        extend(SearchCop::Visitors::Postgres) if @connection.adapter_name =~ /postgres|postgis/i
       end
 
       def visit(visit_node = node)
