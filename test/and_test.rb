@@ -3,7 +3,7 @@ require File.expand_path("../test_helper", __FILE__)
 
 class AndTest < SearchCop::TestCase
   def test_and_string
-    expected = create(:product, :title => "Expected title", :description => "Description")
+    expected = create(:product, :title => "expected title", :description => "Description")
     rejected = create(:product, :title => "Rejected title", :description => "Description")
 
     results = Product.search("title: 'Expected title' description: Description")

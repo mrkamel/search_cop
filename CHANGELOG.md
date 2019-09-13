@@ -1,6 +1,18 @@
 
 # Changelog
 
+Version 1.2.0:
+
+* Adds customizable default operator to concatenate conditions (#49)
+* Make the postgis adapter use the postgres extensions
+
+Version 1.0.9:
+
+* Use [:blank:] instead of \s for space (#46)
+* Updated SearchCop::Visitors::Visitor to check the connection's adapter_name when extending. (#47)
+* Fix for negative numeric values
+* allow searching for relative dates, like hours, days, weeks, months or years ago
+
 Version 1.0.8:
 
 * No longer add search scope methods globally #34
