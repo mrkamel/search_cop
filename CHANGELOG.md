@@ -1,7 +1,7 @@
 
 # Changelog
 
-Version 1.2.0:
+Version 1.1.0:
 
 * Adds customizable default operator to concatenate conditions (#49)
 * Make the postgis adapter use the postgres extensions
