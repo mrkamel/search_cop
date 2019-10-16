@@ -11,19 +11,22 @@ before_script:
 matrix:
   include:
     - rvm: ruby-head
-      gemfile: gemfiles/4.2.gemfile
+      gemfile: gemfiles/5.1.gemfile
       env: DATABASE=sqlite
     - rvm: ruby-head
-      gemfile: gemfiles/4.2.gemfile
-      env: DATABASE=mysql
-    - rvm: ruby-head
       gemfile: gemfiles/5.1.gemfile
       env: DATABASE=mysql
     - rvm: ruby-head
-      gemfile: gemfiles/4.2.gemfile
+      gemfile: gemfiles/5.1.gemfile
       env: DATABASE=postgres
     - rvm: ruby-head
-      gemfile: gemfiles/5.1.gemfile
+      gemfile: gemfiles/6.0.gemfile
+      env: DATABASE=sqlite
+    - rvm: ruby-head
+      gemfile: gemfiles/6.0.gemfile
+      env: DATABASE=mysql
+    - rvm: ruby-head
+      gemfile: gemfiles/6.0.gemfile
       env: DATABASE=postgres
 
 install:
