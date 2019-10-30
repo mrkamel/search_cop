@@ -1,11 +1,10 @@
-
-require File.expand_path("../test_helper", __FILE__)
+require File.expand_path("test_helper", __dir__)
 
 class FulltextTest < SearchCop::TestCase
   def test_complex
-    product1 = create(:product, :title => "word1")
-    product2 = create(:product, :title => "word2 word3")
-    product3 = create(:product, :title => "word2")
+    product1 = create(:product, title: "word1")
+    product2 = create(:product, title: "word2 word3")
+    product3 = create(:product, title: "word2")
 
     results = Product.search("word1 OR (title:word2 -word3)")
 
@@ -15,8 +14,8 @@ class FulltextTest < SearchCop::TestCase
   end
 
   def test_mixed
-    expected = create(:product, :title => "Expected title", :stock => 1)
-    rejected = create(:product, :title => "Expected title", :stock => 0)
+    expected = create(:product, title: "Expected title", stock: 1)
+    rejected = create(:product, title: "Expected title", stock: 0)
 
     results = Product.search("Expected title:Title stock > 0")
 
@@ -24,4 +23,3 @@ class FulltextTest < SearchCop::TestCase
     refute_includes results, rejected
   end
 end
-

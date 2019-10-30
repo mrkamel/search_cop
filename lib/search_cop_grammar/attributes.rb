@@ -1,4 +1,3 @@
-
 require "treetop"
 
 module SearchCopGrammar
@@ -28,9 +27,9 @@ module SearchCopGrammar
       end
 
       [:eq, :not_eq, :lt, :lteq, :gt, :gteq].each do |method|
-         define_method method do |value|
-           attributes.collect! { |attribute| attribute.send method, value }.inject(:or)
-         end
+        define_method method do |value|
+          attributes.collect! { |attribute| attribute.send method, value }.inject(:or)
+        end
       end
 
       def generator(generator, value)
@@ -137,7 +136,7 @@ module SearchCopGrammar
         false
       end
 
-      { :eq => "Equality", :not_eq => "NotEqual", :lt => "LessThan", :lteq => "LessThanOrEqual", :gt => "GreaterThan", :gteq => "GreaterThanOrEqual", :matches => "Matches" }.each do |method, class_name|
+      { eq: "Equality", not_eq: "NotEqual", lt: "LessThan", lteq: "LessThanOrEqual", gt: "GreaterThan", gteq: "GreaterThanOrEqual", matches: "Matches" }.each do |method, class_name|
         define_method method do |value|
           raise(SearchCop::IncompatibleDatatype, "Incompatible datatype for #{value}") unless compatible?(value)
 
@@ -146,11 +145,15 @@ module SearchCopGrammar
       end
 
       def method_missing(name, *args, &block)
-        @attribute.send(name, *args, &block)
+        if @attribute.respond_to?(name)
+          @attribute.send(name, *args, &block)
+        else
+          super
+        end
       end
 
-      def respond_to?(*args)
-        super(*args) || @attribute.respond_to?(*args)
+      def respond_to_missing?(*args)
+        @attribute.respond_to?(*args) || super
       end
     end
 
@@ -196,24 +199,24 @@ module SearchCopGrammar
 
     class Datetime < WithoutMatches
       def parse(value)
-        return value .. value unless value.is_a?(::String)
+        return value..value unless value.is_a?(::String)
 
         if value =~ /^[0-9]+ (hour|day|week|month|year)s{0,1} (ago)$/
-          number,period,ago = value.split(' ')
+          number, period, ago = value.split(" ")
           time = number.to_i.send(period.to_sym).send(ago.to_sym)
-          time .. ::Time.now
+          time..::Time.now
         elsif value =~ /^[0-9]{4}$/
-          ::Time.new(value).beginning_of_year .. ::Time.new(value).end_of_year
-        elsif value =~ /^([0-9]{4})(\.|-|\/)([0-9]{1,2})$/
-          ::Time.new($1, $3, 15).beginning_of_month .. ::Time.new($1, $3, 15).end_of_month
-        elsif value =~ /^([0-9]{1,2})(\.|-|\/)([0-9]{4})$/
-          ::Time.new($3, $1, 15).beginning_of_month .. ::Time.new($3, $1, 15).end_of_month
-        elsif value =~ /^[0-9]{4}(\.|-|\/)[0-9]{1,2}(\.|-|\/)[0-9]{1,2}$/ || value =~ /^[0-9]{1,2}(\.|-|\/)[0-9]{1,2}(\.|-|\/)[0-9]{4}$/
+          ::Time.new(value).beginning_of_year..::Time.new(value).end_of_year
+        elsif value =~ %r{^([0-9]{4})(\.|-|/)([0-9]{1,2})$}
+          ::Time.new(Regexp.last_match(1), Regexp.last_match(3), 15).beginning_of_month..::Time.new(Regexp.last_match(1), Regexp.last_match(3), 15).end_of_month
+        elsif value =~ %r{^([0-9]{1,2})(\.|-|/)([0-9]{4})$}
+          ::Time.new(Regexp.last_match(3), Regexp.last_match(1), 15).beginning_of_month..::Time.new(Regexp.last_match(3), Regexp.last_match(1), 15).end_of_month
+        elsif value =~ %r{^[0-9]{4}(\.|-|/)[0-9]{1,2}(\.|-|/)[0-9]{1,2}$} || value =~ %r{^[0-9]{1,2}(\.|-|/)[0-9]{1,2}(\.|-|/)[0-9]{4}$}
           time = ::Time.parse(value)
-          time.beginning_of_day .. time.end_of_day
-        elsif value =~ /[0-9]{4}(\.|-|\/)[0-9]{1,2}(\.|-|\/)[0-9]{1,2}/ || value =~ /[0-9]{1,2}(\.|-|\/)[0-9]{1,2}(\.|-|\/)[0-9]{4}/
+          time.beginning_of_day..time.end_of_day
+        elsif value =~ %r{[0-9]{4}(\.|-|/)[0-9]{1,2}(\.|-|/)[0-9]{1,2}} || value =~ %r{[0-9]{1,2}(\.|-|/)[0-9]{1,2}(\.|-|/)[0-9]{4}}
           time = ::Time.parse(value)
-          time .. time
+          time..time
         else
           raise ArgumentError
         end
@@ -246,21 +249,21 @@ module SearchCopGrammar
 
     class Date < Datetime
       def parse(value)
-        return value .. value unless value.is_a?(::String)
+        return value..value unless value.is_a?(::String)
 
         if value =~ /^[0-9]+ (day|week|month|year)s{0,1} (ago)$/
-          number,period,ago = value.split(' ')
+          number, period, ago = value.split(" ")
           time = number.to_i.send(period.to_sym).send(ago.to_sym)
-          time.to_date .. ::Date.today
+          time.to_date..::Date.today
         elsif value =~ /^[0-9]{4}$/
-          ::Date.new(value.to_i).beginning_of_year .. ::Date.new(value.to_i).end_of_year
-        elsif value =~ /^([0-9]{4})(\.|-|\/)([0-9]{1,2})$/
-          ::Date.new($1.to_i, $3.to_i, 15).beginning_of_month .. ::Date.new($1.to_i, $3.to_i, 15).end_of_month
-        elsif value =~ /^([0-9]{1,2})(\.|-|\/)([0-9]{4})$/
-          ::Date.new($3.to_i, $1.to_i, 15).beginning_of_month .. ::Date.new($3.to_i, $1.to_i, 15).end_of_month
-        elsif value =~ /[0-9]{4}(\.|-|\/)[0-9]{1,2}(\.|-|\/)[0-9]{1,2}/ || value =~ /[0-9]{1,2}(\.|-|\/)[0-9]{1,2}(\.|-|\/)[0-9]{4}/
+          ::Date.new(value.to_i).beginning_of_year..::Date.new(value.to_i).end_of_year
+        elsif value =~ %r{^([0-9]{4})(\.|-|/)([0-9]{1,2})$}
+          ::Date.new(Regexp.last_match(1).to_i, Regexp.last_match(3).to_i, 15).beginning_of_month..::Date.new(Regexp.last_match(1).to_i, Regexp.last_match(3).to_i, 15).end_of_month
+        elsif value =~ %r{^([0-9]{1,2})(\.|-|/)([0-9]{4})$}
+          ::Date.new(Regexp.last_match(3).to_i, Regexp.last_match(1).to_i, 15).beginning_of_month..::Date.new(Regexp.last_match(3).to_i, Regexp.last_match(1).to_i, 15).end_of_month
+        elsif value =~ %r{[0-9]{4}(\.|-|/)[0-9]{1,2}(\.|-|/)[0-9]{1,2}} || value =~ %r{[0-9]{1,2}(\.|-|/)[0-9]{1,2}(\.|-|/)[0-9]{4}}
           date = ::Date.parse(value)
-          date .. date
+          date..date
         else
           raise ArgumentError
         end
@@ -281,4 +284,3 @@ module SearchCopGrammar
     end
   end
 end
-

@@ -1,10 +1,9 @@
-
-require File.expand_path("../test_helper", __FILE__)
+require File.expand_path("test_helper", __dir__)
 
 class AndTest < SearchCop::TestCase
   def test_and_string
-    expected = create(:product, :title => "expected title", :description => "Description")
-    rejected = create(:product, :title => "Rejected title", :description => "Description")
+    expected = create(:product, title: "expected title", description: "Description")
+    rejected = create(:product, title: "Rejected title", description: "Description")
 
     results = Product.search("title: 'Expected title' description: Description")
 
@@ -15,13 +14,12 @@ class AndTest < SearchCop::TestCase
   end
 
   def test_and_hash
-    expected = create(:product, :title => "Expected title", :description => "Description")
-    rejected = create(:product, :title => "Rejected title", :description => "Description")
+    expected = create(:product, title: "Expected title", description: "Description")
+    rejected = create(:product, title: "Rejected title", description: "Description")
 
-    results = Product.search(:and => [{:title => "Expected title"}, {:description => "Description"}])
+    results = Product.search(and: [{ title: "Expected title" }, { description: "Description" }])
 
     assert_includes results, expected
     refute_includes results, rejected
   end
 end
-

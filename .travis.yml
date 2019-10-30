@@ -32,6 +32,9 @@ matrix:
 install:
   - "travis_retry bundle install"
 
-script: "rake test --trace"
+script:
+  - rake test --trace
+  - rubocop
+
 sudo: false
 

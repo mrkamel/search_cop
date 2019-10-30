@@ -1,4 +1,3 @@
-
 module SearchCop
   module Visitors
     module Mysql
@@ -40,4 +39,3 @@ module SearchCop
     end
   end
 end
-

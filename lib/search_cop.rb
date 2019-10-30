@@ -1,4 +1,3 @@
-
 require "search_cop/version"
 require "search_cop/search_scope"
 require "search_cop/query_info"
@@ -44,8 +43,8 @@ module SearchCop
       search_scopes[name] = SearchScope.new(name, self)
       search_scopes[name].instance_exec(&block)
 
-      self.send(:define_singleton_method, name) { |query, query_options={}| search_cop query, name, query_options }
-      self.send(:define_singleton_method, "unsafe_#{name}") { |query, query_options={}| unsafe_search_cop query, name, query_options }
+      send(:define_singleton_method, name) { |query, query_options = {}| search_cop query, name, query_options }
+      send(:define_singleton_method, "unsafe_#{name}") { |query, query_options = {}| unsafe_search_cop query, name, query_options }
     end
 
     def search_reflection(scope_name)
@@ -71,7 +70,7 @@ module SearchCop
   end
 
   module Helpers
-    def self.sanitize_default_operator(hash, delete_hash_option=false)
+    def self.sanitize_default_operator(hash, delete_hash_option = false)
       default_operator = :and
       if hash.member?(:default_operator)
         unless [:and, :or].include?(hash[:default_operator])
@@ -87,4 +86,3 @@ module SearchCop
     end
   end
 end
-

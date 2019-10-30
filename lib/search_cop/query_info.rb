@@ -1,4 +1,3 @@
-
 module SearchCop
   class QueryInfo
     attr_accessor :model, :scope, :references
@@ -10,4 +9,3 @@ module SearchCop
     end
   end
 end
-

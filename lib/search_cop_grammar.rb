@@ -1,4 +1,3 @@
-
 require "search_cop_grammar/attributes"
 require "search_cop_grammar/nodes"
 
@@ -19,7 +18,7 @@ module SearchCopGrammar
     end
 
     def elements
-      super.select { |element| element.class != Treetop::Runtime::SyntaxNode }
+      super.reject { |element| element.class == Treetop::Runtime::SyntaxNode }
     end
 
     def collection_for(key)
@@ -153,4 +152,3 @@ module SearchCopGrammar
 
   class Value < BaseNode; end
 end
-

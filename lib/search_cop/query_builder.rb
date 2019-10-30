@@ -1,4 +1,3 @@
-
 module SearchCop
   class QueryBuilder
     attr_accessor :query_info, :scope, :sql
@@ -32,4 +31,3 @@ module SearchCop
     end
   end
 end
-

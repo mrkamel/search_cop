@@ -1,15 +1,14 @@
-
-require File.expand_path("../test_helper", __FILE__)
+require File.expand_path("test_helper", __dir__)
 
 class BooleanTest < SearchCop::TestCase
   def test_mapping
-    product = create(:product, :available => true)
+    product = create(:product, available: true)
 
     assert_includes Product.search("available: 1"), product
     assert_includes Product.search("available: true"), product
     assert_includes Product.search("available: yes"), product
 
-    product = create(:product, :available => false)
+    product = create(:product, available: false)
 
     assert_includes Product.search("available: 0"), product
     assert_includes Product.search("available: false"), product
@@ -17,28 +16,28 @@ class BooleanTest < SearchCop::TestCase
   end
 
   def test_anywhere
-    product = create(:product, :available => true)
+    product = create(:product, available: true)
 
     assert_includes Product.search("true"), product
     refute_includes Product.search("false"), product
   end
 
   def test_includes
-    product = create(:product, :available => true)
+    product = create(:product, available: true)
 
     assert_includes Product.search("available: true"), product
     refute_includes Product.search("available: false"), product
   end
 
   def test_equals
-    product = create(:product, :available => true)
+    product = create(:product, available: true)
 
     assert_includes Product.search("available = true"), product
     refute_includes Product.search("available = false"), product
   end
 
   def test_equals_not
-    product = create(:product, :available => false)
+    product = create(:product, available: false)
 
     assert_includes Product.search("available != true"), product
     refute_includes Product.search("available != false"), product
@@ -50,4 +49,3 @@ class BooleanTest < SearchCop::TestCase
     end
   end
 end
-

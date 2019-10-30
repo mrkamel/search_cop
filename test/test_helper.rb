@@ -1,4 +1,3 @@
-
 require "search_cop"
 
 begin
@@ -18,7 +17,7 @@ require "yaml"
 
 DATABASE = ENV["DATABASE"] || "sqlite"
 
-ActiveRecord::Base.establish_connection YAML.load_file(File.expand_path("../database.yml", __FILE__))[DATABASE]
+ActiveRecord::Base.establish_connection YAML.load_file(File.expand_path("database.yml", __dir__))[DATABASE]
 
 class User < ActiveRecord::Base; end
 
@@ -28,7 +27,7 @@ class Comment < ActiveRecord::Base
   belongs_to :user
 
   search_scope :search do
-    attributes :user => "user.username"
+    attributes user: "user.username"
     attributes :title, :message
   end
 end
@@ -38,19 +37,19 @@ class Product < ActiveRecord::Base
 
   search_scope :search do
     attributes :title, :description, :brand, :notice, :stock, :price, :created_at, :created_on, :available
-    attributes :comment => ["comments.title", "comments.message"], :user => ["users.username", "users_products.username"]
-    attributes :primary => [:title, :description]
+    attributes comment: ["comments.title", "comments.message"], user: ["users.username", "users_products.username"]
+    attributes primary: [:title, :description]
 
-    aliases :users_products => :user
+    aliases users_products: :user
 
     if DATABASE != "sqlite"
-      options :title, :type => :fulltext, coalesce:  true
-      options :description, :type => :fulltext, coalesce: true
-      options :comment, :type => :fulltext, coalesce: true
+      options :title, type: :fulltext, coalesce: true
+      options :description, type: :fulltext, coalesce: true
+      options :comment, type: :fulltext, coalesce: true
     end
 
     if DATABASE == "postgres"
-      options :title, :dictionary => "english"
+      options :title, dictionary: "english"
     end
 
     generator :custom_eq do |column_name, raw_value|
@@ -62,10 +61,10 @@ class Product < ActiveRecord::Base
     scope { joins "LEFT OUTER JOIN users users_products ON users_products.id = products.user_id" }
 
     attributes :title, :description
-    attributes :user => "users_products.username"
+    attributes user: "users_products.username"
 
-    options :title, :default => true
-    aliases :users_products => User
+    options :title, default: true
+    aliases users_products: User
   end
 
   search_scope :search_multi_columns do
@@ -73,7 +72,7 @@ class Product < ActiveRecord::Base
   end
 
   has_many :comments
-  has_many :users, :through => :comments
+  has_many :users, through: :comments
 
   belongs_to :user
 end
@@ -173,4 +172,3 @@ class SearchCop::TestCase
     ActiveRecord::Base.connection.quote object
   end
 end
-

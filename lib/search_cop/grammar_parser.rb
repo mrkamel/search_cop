@@ -1,8 +1,7 @@
-
 require "search_cop_grammar"
 require "treetop"
 
-Treetop.load File.expand_path("../../search_cop_grammar.treetop", __FILE__)
+Treetop.load File.expand_path("../search_cop_grammar.treetop", __dir__)
 
 module SearchCop
   class GrammarParser
@@ -20,4 +19,3 @@ module SearchCop
     end
   end
 end
-

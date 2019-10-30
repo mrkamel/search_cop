@@ -1,4 +1,3 @@
-
 module SearchCop
   class Reflection
     attr_accessor :attributes, :options, :aliases, :scope, :generators
@@ -11,11 +10,11 @@ module SearchCop
     end
 
     def default_attributes
-      keys = options.select { |key, value| value[:default] == true }.keys
+      keys = options.select { |_key, value| value[:default] == true }.keys
       keys = attributes.keys.reject { |key| options[key] && options[key][:default] == false } if keys.empty?
       keys = keys.to_set
 
-      attributes.select { |key, value| keys.include? key }
+      attributes.select { |key, _value| keys.include? key }
     end
   end
 
@@ -64,4 +63,3 @@ module SearchCop
     end
   end
 end
-

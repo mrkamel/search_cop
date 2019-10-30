@@ -1,7 +1,6 @@
-require File.expand_path('../test_helper', __FILE__)
+require File.expand_path("test_helper", __dir__)
 
 class DefaultOperatorTest < SearchCop::TestCase
-
   def test_without_default_operator
     avengers = create(:product, title: "Title Avengers", description: "2012")
     inception = create(:product, title: "Title Inception", description: "2010")
@@ -38,10 +37,10 @@ class DefaultOperatorTest < SearchCop::TestCase
 
   def test_with_invalid_default_operator
     assert_raises SearchCop::UnknownDefaultOperator do
-      Product.search_multi_columns('Matrix movie', default_operator: :xpto)
+      Product.search_multi_columns("Matrix movie", default_operator: :xpto)
     end
     assert_raises SearchCop::UnknownDefaultOperator do
-      Product.search_multi_columns(title: 'Matrix movie', default_operator: :xpto)
+      Product.search_multi_columns(title: "Matrix movie", default_operator: :xpto)
     end
   end
 end

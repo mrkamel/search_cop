@@ -1,10 +1,9 @@
-
-require File.expand_path("../test_helper", __FILE__)
+require File.expand_path("test_helper", __dir__)
 
 class ErrorTest < SearchCop::TestCase
   def test_parse_error
     assert_raises SearchCop::ParseError do
-      Product.unsafe_search :title => { :unknown_operator => "Value" }
+      Product.unsafe_search title: { unknown_operator: "Value" }
     end
   end
 
@@ -14,4 +13,3 @@ class ErrorTest < SearchCop::TestCase
     end
   end
 end
-

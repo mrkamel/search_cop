@@ -1,5 +1,4 @@
-
-require File.expand_path("../test_helper", __FILE__)
+require File.expand_path("test_helper", __dir__)
 
 class VisitorTest < SearchCop::TestCase
   def test_and
@@ -99,7 +98,7 @@ class VisitorTest < SearchCop::TestCase
   end
 
   def test_generator
-    generator = ->(column_name, value) do
+    generator = lambda do |column_name, value|
       "#{column_name} = #{quote value}"
     end
     node = SearchCopGrammar::Attributes::Collection.new(SearchCop::QueryInfo.new(Product, Product.search_scopes[:search]), "title").generator(generator, "value").optimize!
@@ -107,4 +106,3 @@ class VisitorTest < SearchCop::TestCase
     assert_equal "#{quote_table_name "products"}.#{quote_column_name "title"} = 'value'", SearchCop::Visitors::Visitor.new(ActiveRecord::Base.connection).visit(node)
   end
 end
-

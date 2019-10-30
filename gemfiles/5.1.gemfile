@@ -5,9 +5,9 @@ source "https://rubygems.org"
 gem "activerecord", "~> 5.1"
 
 platforms :ruby do
-  gem "sqlite3"
   gem "mysql2"
   gem "pg"
+  gem "sqlite3"
 end
 
-gemspec :path => "../"
+gemspec path: "../"
