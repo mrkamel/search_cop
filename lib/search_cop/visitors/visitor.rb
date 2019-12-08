@@ -1,6 +1,8 @@
 module SearchCop
   module Visitors
     class Visitor
+      # rubocop:disable Naming/MethodName
+
       attr_accessor :connection
 
       def initialize(connection)
@@ -94,6 +96,8 @@ module SearchCop
       alias :visit_Fixnum :quote
       alias :visit_Symbol :quote
       alias :visit_Integer :quote
+
+      # rubocop:enable Naming/MethodName
     end
   end
 end

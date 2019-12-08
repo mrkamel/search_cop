@@ -1,6 +1,8 @@
 module SearchCop
   module Visitors
     module Postgres
+      # rubocop:disable Naming/MethodName
+
       class FulltextQuery < Visitor
         def visit_SearchCopGrammar_Nodes_MatchesFulltextNot(node)
           "!'#{node.right.gsub(/[\s&|!:'"]+/, " ")}'"
@@ -40,6 +42,8 @@ module SearchCop
 
         "to_tsvector(#{visit dictionary}, #{visit node.collection}) @@ to_tsquery(#{visit dictionary}, #{visit FulltextQuery.new(connection).visit(node.node)})"
       end
+
+      # rubocop:enable Naming/MethodName
     end
   end
 end

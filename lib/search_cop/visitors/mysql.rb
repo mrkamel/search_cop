@@ -1,6 +1,8 @@
 module SearchCop
   module Visitors
     module Mysql
+      # rubocop:disable Naming/MethodName
+
       class FulltextQuery < Visitor
         def visit_SearchCopGrammar_Nodes_MatchesFulltextNot(node)
           node.right.split(/[\s+'"<>()~-]+/).collect { |word| "-#{word}" }.join(" ")
@@ -37,5 +39,7 @@ module SearchCop
         "MATCH(#{visit node.collection}) AGAINST(#{visit FulltextQuery.new(connection).visit(node.node)} IN BOOLEAN MODE)"
       end
     end
+
+    # rubocop:enable Naming/MethodName
   end
 end

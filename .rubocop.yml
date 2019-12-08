@@ -1,16 +1,13 @@
-Naming/MethodName:
-  Enabled: false
-
 Style/FrozenStringLiteralComment:
   Enabled: false
 
 Lint/RedundantRequireStatement:
   Enabled: false
 
-Layout/AlignArguments:
+Layout/ArgumentAlignment:
   EnforcedStyle: with_fixed_indentation
 
-Layout/IndentFirstArrayElement:
+Layout/FirstArrayElementIndentation:
   EnforcedStyle: consistent
 
 Style/BracesAroundHashParameters:
@@ -43,7 +40,7 @@ Style/StringLiteralsInInterpolation:
 Metrics/ClassLength:
   Enabled: false
 
-Naming/UncommunicativeMethodParamName:
+Naming/MethodParameterName:
   Enabled: false
 
 Style/SymbolArray:
@@ -103,7 +100,7 @@ Style/MutableConstant:
 Layout/MultilineMethodCallIndentation:
   EnforcedStyle: indented
 
-Layout/AlignParameters:
+Layout/ParameterAlignment:
   EnforcedStyle: with_fixed_indentation
 
 Lint/UnusedMethodArgument:
