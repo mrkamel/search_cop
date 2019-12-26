@@ -1,4 +1,5 @@
 require "search_cop/version"
+require "search_cop/helpers"
 require "search_cop/search_scope"
 require "search_cop/query_info"
 require "search_cop/query_builder"
@@ -22,7 +23,7 @@ module SearchCop
   module Parser
     def self.parse(query, query_info, query_options = {})
       if query.is_a?(Hash)
-        SearchCop::HashParser.new(query_info).parse(query)
+        SearchCop::HashParser.new(query_info).parse(query, query_options)
       else
         SearchCop::GrammarParser.new(query_info).parse(query, query_options)
       end
@@ -43,8 +44,8 @@ module SearchCop
       search_scopes[name] = SearchScope.new(name, self)
       search_scopes[name].instance_exec(&block)
 
-      send(:define_singleton_method, name) { |query, query_options = {}| search_cop query, name, query_options }
-      send(:define_singleton_method, "unsafe_#{name}") { |query, query_options = {}| unsafe_search_cop query, name, query_options }
+      send(:define_singleton_method, name) { |query, query_options = {}| search_cop(query, name, query_options) }
+      send(:define_singleton_method, "unsafe_#{name}") { |query, query_options = {}| unsafe_search_cop(query, name, query_options) }
     end
 
     def search_reflection(scope_name)
@@ -52,7 +53,7 @@ module SearchCop
     end
 
     def search_cop(query, scope_name, query_options)
-      unsafe_search_cop query, scope_name, query_options
+      unsafe_search_cop(query, scope_name, query_options)
     rescue SearchCop::RuntimeError
       respond_to?(:none) ? none : where("1 = 0")
     end
@@ -66,23 +67,6 @@ module SearchCop
       scope ||= eager_load(query_builder.associations) if query_builder.associations.any?
 
       (scope || self).where(query_builder.sql)
-    end
-  end
-
-  module Helpers
-    def self.sanitize_default_operator(hash, delete_hash_option = false)
-      default_operator = :and
-      if hash.member?(:default_operator)
-        unless [:and, :or].include?(hash[:default_operator])
-          raise(SearchCop::UnknownDefaultOperator, "Unknown default operator value #{hash[:default_operator]}")
-        end
-
-        default_operator = hash[:default_operator]
-      end
-
-      hash.delete(:default_operator) if delete_hash_option
-
-      default_operator
     end
   end
 end

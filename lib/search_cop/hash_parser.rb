@@ -5,8 +5,8 @@ class SearchCop::HashParser
     @query_info = query_info
   end
 
-  def parse(hash)
-    default_operator = SearchCop::Helpers.sanitize_default_operator(hash, true)
+  def parse(hash, query_options = {})
+    default_operator = SearchCop::Helpers.sanitize_default_operator(query_options)
 
     res = hash.collect do |key, value|
       case key
@@ -23,7 +23,7 @@ class SearchCop::HashParser
       end
     end
 
-    res.inject default_operator
+    res.inject(default_operator)
   end
 
   private
