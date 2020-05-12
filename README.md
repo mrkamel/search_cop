@@ -329,6 +329,16 @@ User.search("admin")
 # ... WHERE users.username LIKE 'admin%'
 ```
 
+Similarly, you can disable the right wildcard as well:
+
+```ruby
+search_scope :search do
+  attributes :username
+
+  options :username, right_wildcard: false
+end
+```
+
 ## Default operator
 
 When you define multiple fields on a search scope, SearcCop will use

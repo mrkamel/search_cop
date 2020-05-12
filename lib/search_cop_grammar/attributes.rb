@@ -159,9 +159,18 @@ module SearchCopGrammar
 
     class String < Base
       def matches_value(value)
-        return value.gsub(/\*/, "%") if (options[:left_wildcard] != false && value.strip =~ /^[^*]+\*$|^\*[^*]+$/) || value.strip =~ /^[^*]+\*$/
+        res = value
 
-        options[:left_wildcard] != false ? "%#{value}%" : "#{value}%"
+        if value.strip =~ /\*$|^\*/
+          res = res.gsub(/^\*/, "%") if options[:left_wildcard] != false
+          res = res.gsub(/\*$/, "%") if options[:right_wildcard] != false
+
+          return res
+        end
+
+        res = "%#{res}" if options[:left_wildcard] != false
+        res = "#{res}%" if options[:right_wildcard] != false
+        res
       end
 
       def matches(value)

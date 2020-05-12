@@ -48,6 +48,16 @@ class StringTest < SearchCop::TestCase
     refute_includes results, rejected
   end
 
+  def test_includes_without_right_wildcard
+    expected = create(:product, brand: 'Brand')
+    rejected = create(:product, brand: 'Brand rejected')
+
+    results = with_options(Product.search_scopes[:search], :brand, right_wildcard: false) { Product.search "brand: Brand" }
+
+    assert_includes results, expected
+    refute_includes results, rejected
+  end
+
   def test_equals
     product = create(:product, title: "Expected title")
 
