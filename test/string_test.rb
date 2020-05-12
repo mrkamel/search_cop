@@ -49,8 +49,8 @@ class StringTest < SearchCop::TestCase
   end
 
   def test_includes_without_right_wildcard
-    expected = create(:product, brand: 'Brand')
-    rejected = create(:product, brand: 'Brand rejected')
+    expected = create(:product, brand: "Brand")
+    rejected = create(:product, brand: "Brand rejected")
 
     results = with_options(Product.search_scopes[:search], :brand, right_wildcard: false) { Product.search "brand: Brand" }
 
