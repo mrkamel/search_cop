@@ -8,4 +8,11 @@ services:
       - MYSQL_ROOT_PASSWORD=
     ports:
       - 3306:3306
-
+  postgres:
+    image: postgres:9.6.6
+    environment:
+      POSTGRES_DB: search_cop
+      POSTGRES_USER: search_cop
+      POSTGRES_PASSWORD: secret
+    ports:
+      - 5432:5432

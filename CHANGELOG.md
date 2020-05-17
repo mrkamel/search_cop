@@ -1,6 +1,10 @@
 
 # Changelog
 
+Version 1.2.0:
+
+* Added support for disabling the right wildcard
+
 Version 1.1.0:
 
 * Adds customizable default operator to concatenate conditions (#49)

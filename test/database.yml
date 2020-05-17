@@ -6,11 +6,12 @@ sqlite:
 mysql:
   adapter: mysql2
   database: search_cop
+  host: 127.0.0.1
   username: root
   encoding: utf8
 
 postgres:
-  host: localhost
+  host: 127.0.0.1
   adapter: postgresql
   database: search_cop
   username: search_cop

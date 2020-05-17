@@ -10,13 +10,13 @@ before_script:
 
 matrix:
   include:
-    - rvm: ruby-head
+    - rvm: ruby-2.6.6
       gemfile: gemfiles/5.1.gemfile
       env: DATABASE=sqlite
-    - rvm: ruby-head
+    - rvm: ruby-2.6.6
       gemfile: gemfiles/5.1.gemfile
       env: DATABASE=mysql
-    - rvm: ruby-head
+    - rvm: ruby-2.6.6
       gemfile: gemfiles/5.1.gemfile
       env: DATABASE=postgres
     - rvm: ruby-head

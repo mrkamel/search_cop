@@ -32,17 +32,55 @@ class StringTest < SearchCop::TestCase
     refute_includes Product.search("title: Rejected"), product
   end
 
-  def test_includes_with_left_wildcard
-    product = create(:product, title: "Some title")
+  def test_query_string_wildcards
+    product1 = create(:product, brand: "First brand")
+    product2 = create(:product, brand: "Second brand")
 
-    assert_includes Product.search("title: Title"), product
+    assert_equal Product.search("brand: First*"), [product1]
+    assert_equal Product.search("brand: brand*"), []
+    assert_equal Product.search("brand: *brand*").to_set, [product1, product2].to_set
+    assert_equal Product.search("brand: *brand").to_set, [product1, product2].to_set
   end
 
-  def test_includes_without_left_wildcard
+  def test_query_string_wildcards_with_left_wildcard_false
+    product = create(:product, brand: "Some brand")
+
+    with_options(Product.search_scopes[:search], :brand, left_wildcard: false) do
+      refute_includes Product.search("brand: *brand"), product
+      assert_includes Product.search("brand: Some"), product
+    end
+  end
+
+  def test_query_string_wildcards_with_right_wildcard_false
+    product = create(:product, brand: "Some brand")
+
+    with_options(Product.search_scopes[:search], :brand, right_wildcard: false) do
+      refute_includes Product.search("brand: Some*"), product
+      assert_includes Product.search("brand: brand"), product
+    end
+  end
+
+  def test_includes_with_left_wildcard
+    product = create(:product, brand: "Some brand")
+
+    assert_includes Product.search("brand: brand"), product
+  end
+
+  def test_includes_with_left_wildcard_false
     expected = create(:product, brand: "Brand")
     rejected = create(:product, brand: "Rejected brand")
 
     results = with_options(Product.search_scopes[:search], :brand, left_wildcard: false) { Product.search "brand: Brand" }
+
+    assert_includes results, expected
+    refute_includes results, rejected
+  end
+
+  def test_includes_with_right_wildcard_false
+    expected = create(:product, brand: "Brand")
+    rejected = create(:product, brand: "Brand rejected")
+
+    results = with_options(Product.search_scopes[:search], :brand, right_wildcard: false) { Product.search "brand: Brand" }
 
     assert_includes results, expected
     refute_includes results, rejected
