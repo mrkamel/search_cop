@@ -32,13 +32,41 @@ class StringTest < SearchCop::TestCase
     refute_includes Product.search("title: Rejected"), product
   end
 
+  def test_query_string_wildcards
+    product1 = create(:product, title: "First title")
+    product2 = create(:product, title: "Second title")
+
+    assert_equal Product.search("title: First*"), [product1]
+    assert_equal Product.search("title: title*"), []
+    assert_equal Product.search("title: *title*"), [product1, product2]
+    assert_equal Product.search("title: *title"), [product1, product2]
+  end
+
+  def test_query_string_wildcards_with_left_wildcard_false
+    product = create(:product, title: "Some title")
+
+    with_options(Product.search_scopes[:search], :title, left_wildcard: false) do
+      refute_includes Product.search("title: *title"), product
+      assert_includes Product.search("title: Some"), product
+    end
+  end
+
+  def test_query_string_wildcards_with_right_wildcard_false
+    product = create(:product, title: "Some title")
+
+    with_options(Product.search_scopes[:search], :title, right_wildcard: false) do
+      refute_includes Product.search("title: Some*"), product
+      assert_includes Product.search("title: title"), product
+    end
+  end
+
   def test_includes_with_left_wildcard
     product = create(:product, title: "Some title")
 
     assert_includes Product.search("title: Title"), product
   end
 
-  def test_includes_without_left_wildcard
+  def test_includes_with_left_wildcard_false
     expected = create(:product, brand: "Brand")
     rejected = create(:product, brand: "Rejected brand")
 
@@ -48,7 +76,7 @@ class StringTest < SearchCop::TestCase
     refute_includes results, rejected
   end
 
-  def test_includes_without_right_wildcard
+  def test_includes_with_right_wildcard_false
     expected = create(:product, brand: "Brand")
     rejected = create(:product, brand: "Brand rejected")
 
