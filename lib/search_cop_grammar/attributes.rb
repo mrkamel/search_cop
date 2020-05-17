@@ -161,7 +161,7 @@ module SearchCopGrammar
       def matches_value(value)
         res = value
 
-        if value.strip =~ /\*$|^\*/
+        if value.strip =~ /^\*|\*$/
           res = res.gsub(/^\*/, "%") if options[:left_wildcard] != false
           res = res.gsub(/\*$/, "%") if options[:right_wildcard] != false
 
