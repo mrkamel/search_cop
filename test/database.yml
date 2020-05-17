@@ -11,7 +11,7 @@ mysql:
   encoding: utf8
 
 postgres:
-  host: localhost
+  host: 127.0.0.1
   adapter: postgresql
   database: search_cop
   username: search_cop

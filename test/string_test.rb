@@ -38,8 +38,8 @@ class StringTest < SearchCop::TestCase
 
     assert_equal Product.search("brand: First*"), [product1]
     assert_equal Product.search("brand: brand*"), []
-    assert_equal Product.search("brand: *brand*"), [product1, product2]
-    assert_equal Product.search("brand: *brand"), [product1, product2]
+    assert_equal Product.search("brand: *brand*").to_set, [product1, product2].to_set
+    assert_equal Product.search("brand: *brand").to_set, [product1, product2].to_set
   end
 
   def test_query_string_wildcards_with_left_wildcard_false
