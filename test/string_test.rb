@@ -33,37 +33,37 @@ class StringTest < SearchCop::TestCase
   end
 
   def test_query_string_wildcards
-    product1 = create(:product, title: "First title")
-    product2 = create(:product, title: "Second title")
+    product1 = create(:product, brand: "First brand")
+    product2 = create(:product, brand: "Second brand")
 
-    assert_equal Product.search("title: First*"), [product1]
-    assert_equal Product.search("title: title*"), []
-    assert_equal Product.search("title: *title*"), [product1, product2]
-    assert_equal Product.search("title: *title"), [product1, product2]
+    assert_equal Product.search("brand: First*"), [product1]
+    assert_equal Product.search("brand: brand*"), []
+    assert_equal Product.search("brand: *brand*"), [product1, product2]
+    assert_equal Product.search("brand: *brand"), [product1, product2]
   end
 
   def test_query_string_wildcards_with_left_wildcard_false
-    product = create(:product, title: "Some title")
+    product = create(:product, brand: "Some brand")
 
-    with_options(Product.search_scopes[:search], :title, left_wildcard: false) do
-      refute_includes Product.search("title: *title"), product
-      assert_includes Product.search("title: Some"), product
+    with_options(Product.search_scopes[:search], :brand, left_wildcard: false) do
+      refute_includes Product.search("brand: *brand"), product
+      assert_includes Product.search("brand: Some"), product
     end
   end
 
   def test_query_string_wildcards_with_right_wildcard_false
-    product = create(:product, title: "Some title")
+    product = create(:product, brand: "Some brand")
 
-    with_options(Product.search_scopes[:search], :title, right_wildcard: false) do
-      refute_includes Product.search("title: Some*"), product
-      assert_includes Product.search("title: title"), product
+    with_options(Product.search_scopes[:search], :brand, right_wildcard: false) do
+      refute_includes Product.search("brand: Some*"), product
+      assert_includes Product.search("brand: brand"), product
     end
   end
 
   def test_includes_with_left_wildcard
-    product = create(:product, title: "Some title")
+    product = create(:product, brand: "Some brand")
 
-    assert_includes Product.search("title: Title"), product
+    assert_includes Product.search("brand: brand"), product
   end
 
   def test_includes_with_left_wildcard_false
