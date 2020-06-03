@@ -88,12 +88,12 @@ module SearchCopGrammar
       def attribute_for(attribute_definition)
         query_info.references.push attribute_definition
 
-        table, column = attribute_definition.split(".")
+        table, column, field = attribute_definition.split(/[.:]/)
         klass = klass_for(table)
 
         raise(SearchCop::UnknownAttribute, "Unknown attribute #{attribute_definition}") unless klass.columns_hash[column]
 
-        Attributes.const_get(klass.columns_hash[column].type.to_s.classify).new(klass, alias_for(table), column, options)
+        Attributes.const_get(klass.columns_hash[column].type.to_s.classify).new(klass, alias_for(table), column, field, options)
       end
 
       def generator_for(name)
@@ -110,13 +110,14 @@ module SearchCopGrammar
     end
 
     class Base
-      attr_reader :attribute, :table_alias, :column_name, :options
+      attr_reader :attribute, :table_alias, :column_name, :field_name, :options
 
-      def initialize(klass, table_alias, column_name, options = {})
+      def initialize(klass, table_alias, column_name, field_name, options = {})
         @attribute = klass.arel_table.alias(table_alias)[column_name]
         @klass = klass
         @table_alias = table_alias
         @column_name = column_name
+        @field_name = field_name
         @options = (options || {})
       end
 
@@ -179,6 +180,7 @@ module SearchCopGrammar
     end
 
     class Text < String; end
+    class Jsonb < String; end
 
     class WithoutMatches < Base
       def matches(value)

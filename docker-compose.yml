@@ -9,10 +9,11 @@ services:
     ports:
       - 3306:3306
   postgres:
-    image: postgres:9.6.6
+    image: postgres:12.3-alpine
     environment:
       POSTGRES_DB: search_cop
       POSTGRES_USER: search_cop
       POSTGRES_PASSWORD: secret
+      DB_HSTORE: "true"
     ports:
       - 5432:5432

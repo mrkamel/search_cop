@@ -39,6 +39,7 @@ class Product < ActiveRecord::Base
     attributes :title, :description, :brand, :notice, :stock, :price, :created_at, :created_on, :available
     attributes comment: ["comments.title", "comments.message"], user: ["users.username", "users_products.username"]
     attributes primary: [:title, :description]
+    attributes json_name: "json:name"
 
     aliases users_products: :user
 
@@ -103,6 +104,7 @@ ActiveRecord::Base.connection.create_table :products do |t|
   t.boolean :available
   t.string :brand
   t.string :notice
+  t.jsonb :json
 end
 
 ActiveRecord::Base.connection.create_table :comments do |t|

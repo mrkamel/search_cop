@@ -127,4 +127,11 @@ class StringTest < SearchCop::TestCase
     assert_includes Product.search("title <= 'Title B'"), product
     refute_includes Product.search("title <= 'Title A'"), product
   end
+
+  def test_jsonb
+    product = create(:product, json: { name: "expected" })
+
+    assert_includes Product.search("json_name: expected"), product
+    refute_includes Product.search("json_name: rejected"), product
+  end
 end
