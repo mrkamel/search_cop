@@ -129,6 +129,8 @@ class StringTest < SearchCop::TestCase
   end
 
   def test_jsonb
+    return if DATABASE != "postgres"
+
     product = create(:product, json: { name: "expected" })
 
     assert_includes Product.search("json_name: expected"), product

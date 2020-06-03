@@ -39,7 +39,6 @@ class Product < ActiveRecord::Base
     attributes :title, :description, :brand, :notice, :stock, :price, :created_at, :created_on, :available
     attributes comment: ["comments.title", "comments.message"], user: ["users.username", "users_products.username"]
     attributes primary: [:title, :description]
-    attributes json_name: "json:name"
 
     aliases users_products: :user
 
@@ -50,6 +49,8 @@ class Product < ActiveRecord::Base
     end
 
     if DATABASE == "postgres"
+      attributes json_name: "json:name"
+
       options :title, dictionary: "english"
     end
 
@@ -104,7 +105,10 @@ ActiveRecord::Base.connection.create_table :products do |t|
   t.boolean :available
   t.string :brand
   t.string :notice
-  t.jsonb :json
+
+  if DATABASE == "postgres"
+    t.jsonb :json
+  end
 end
 
 ActiveRecord::Base.connection.create_table :comments do |t|
