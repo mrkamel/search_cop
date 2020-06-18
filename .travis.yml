@@ -1,7 +1,9 @@
 
-services:
-  - postgresql
-  - mysql
+sudo: false
+
+before_install:
+  - docker-compose up -d
+  - sleep 10
 
 before_script:
   - mysql -e 'create database search_cop;'
@@ -35,6 +37,4 @@ install:
 script:
   - rake test --trace
   - rubocop
-
-sudo: false
 

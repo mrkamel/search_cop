@@ -9,7 +9,7 @@ services:
     ports:
       - 3306:3306
   postgres:
-    image: postgres:12.3-alpine
+    image: styriadigital/postgres_hstore:10
     environment:
       POSTGRES_DB: search_cop
       POSTGRES_USER: search_cop

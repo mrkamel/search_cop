@@ -181,6 +181,7 @@ module SearchCopGrammar
 
     class Text < String; end
     class Jsonb < String; end
+    class Hstore < String; end
 
     class WithoutMatches < Base
       def matches(value)

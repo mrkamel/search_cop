@@ -136,4 +136,13 @@ class StringTest < SearchCop::TestCase
     assert_includes Product.search("json_name: expected"), product
     refute_includes Product.search("json_name: rejected"), product
   end
+
+  def test_hstore
+    return if DATABASE != "postgres"
+
+    product = create(:product, hstore: { name: "expected" })
+
+    assert_includes Product.search("hstore_name: expected"), product
+    refute_includes Product.search("hstore_name: rejected"), product
+  end
 end
