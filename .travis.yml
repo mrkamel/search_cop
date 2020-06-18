@@ -3,7 +3,7 @@ sudo: false
 
 before_install:
   - docker-compose up -d
-  - sleep 10
+  - sleep 30
 
 before_script:
   - mysql -h 127.0.0.1 -e 'create database search_cop;'
