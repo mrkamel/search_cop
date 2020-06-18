@@ -13,6 +13,6 @@ services:
     environment:
       POSTGRES_DB: search_cop
       POSTGRES_USER: search_cop
-      POSTGRES_PASSWORD: secret
+      POSTGRES_PASSWORD:
     ports:
       - 5432:5432
