@@ -3,11 +3,11 @@ sudo: false
 
 before_install:
   - docker-compose up -d
-  - sleep 30
+  - sleep 15
 
 before_script:
   - mysql -h 127.0.0.1 -e 'create database search_cop;'
-  - psql -w -h 127.0.0.1 -c 'create database search_cop owner search_cop;' -U search_cop
+  - PGPASSWORD=secret psql -w -h 127.0.0.1 -c 'create database search_cop owner search_cop;' -U search_cop
 
 matrix:
   include:
