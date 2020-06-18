@@ -6,9 +6,9 @@ before_install:
   - sleep 10
 
 before_script:
-  - mysql -e 'create database search_cop;'
-  - psql -c "create user search_cop password 'secret';" -U postgres
-  - psql -c 'create database search_cop owner search_cop;' -U postgres
+  - mysql -h 127.0.0.1 -e 'create database search_cop;'
+  - psql -h 127.0.0.1 -c "create user search_cop password 'secret';" -U postgres
+  - psql -h 127.0.0.1 -c 'create database search_cop owner search_cop;' -U postgres
 
 matrix:
   include:
