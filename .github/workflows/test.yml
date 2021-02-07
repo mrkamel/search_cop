@@ -6,7 +6,7 @@ jobs:
     strategy:
       matrix:
         ruby: ["2.5", "2.6", "2.7"]
-        rails: ["5.1", "6.0"]
+        rails: ["rails5", "rails6"]
         database: ["sqlite", "postgres", "mysql"]
     services:
       postgres:
@@ -30,7 +30,8 @@ jobs:
       - uses: actions/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
-      - env:
+      - name: test
+        env:
           DATABASE: ${{ matrix.database }}
         run: |
           gem install bundler
