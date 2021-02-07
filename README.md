@@ -1,6 +1,6 @@
 # SearchCop
 
-[![Build Status](https://github.com/search_cop/search_cop/workflows/test/badge.svg?branch=master)](https://github.com/search_cop/search_cop/actions?query=workflow%3Atest)
+[![Build Status](https://github.com/mrkamel/search_cop/workflows/test/badge.svg?branch=master)](https://github.com/mrkamel/search_cop/actions?query=workflow%3Atest)
 [![Code Climate](https://codeclimate.com/github/mrkamel/search_cop.png)](https://codeclimate.com/github/mrkamel/search_cop)
 [![Gem Version](https://badge.fury.io/rb/search_cop.svg)](http://badge.fury.io/rb/search_cop)
 
