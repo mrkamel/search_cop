@@ -1,0 +1,42 @@
+name: test
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby: ["2.5", "2.6", "2.7"]
+        rails: ["rails5", "rails6"]
+        database: ["sqlite", "postgres", "mysql"]
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: search_cop
+          POSTGRES_PASSWORD: secret
+          POSTGRES_DB: search_cop
+        ports:
+          - 5432:5432
+      mysql:
+        image: mysql
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+          MYSQL_ROOT_PASSWORD: ""
+          MYSQL_DATABASE: search_cop
+        ports:
+          - 3306:3306
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+      - name: test
+        env:
+          DATABASE: ${{ matrix.database }}
+        run: |
+          gem install bundler
+          bundle config set --local gemfile "gemfiles/${{ matrix.rails }}.gemfile"
+          bundle config set --local path "../vendor/bundle"
+          bundle install
+          bundle exec rake test
+          bundle exec rubocop
