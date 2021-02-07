@@ -1,6 +1,21 @@
 AllCops:
   NewCops: enable
 
+Gemspec/RequiredRubyVersion:
+  Enabled: false
+
+Style/CaseLikeIf:
+  Enabled: false
+
+Style/RedundantArgument:
+  Enabled: false
+
+Lint/EmptyBlock:
+  Enabled: false
+
+Layout/EmptyLineBetweenDefs:
+  Enabled: false
+
 Style/FrozenStringLiteralComment:
   Enabled: false
 
