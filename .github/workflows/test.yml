@@ -6,19 +6,8 @@ jobs:
     strategy:
       matrix:
         ruby: ["2.5", "2.6", "2.7"]
-        include:
-          - rails: 5.1
-            database: sqlite
-          - rails: 5.1
-            database: postgres
-          - rails: 5.1
-            databse: mysql
-          - rails: 6.0
-            database: sqlite
-          - rails: 6.0
-            database: postgres
-          - rails: 6.0
-            database: mysql
+        rails: ["5.1", "6.0"]
+        database: ["sqlite", "postgres", "mysql"]
     services:
       postgres:
         image: postgres
@@ -41,7 +30,9 @@ jobs:
       - uses: actions/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
-      - run: |
+      - env:
+          DATABASE: ${{ matrix.database }}
+        run: |
           gem install bundler
           bundle install --gemfile=gemfiles/${{ matrix.rails }}.gemfile --path=vendor/bundler
           bundle exec --gemfile=gemfiles/${{ matrix.rails }}.gemfile rspec
