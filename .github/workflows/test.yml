@@ -34,6 +34,6 @@ jobs:
           DATABASE: ${{ matrix.database }}
         run: |
           gem install bundler
-          bundle install --gemfile=gemfiles/${{ matrix.rails }}.gemfile --path=/bundle
+          bundle install --gemfile=gemfiles/${{ matrix.rails }}.gemfile --path=../vendor/bundle
           bundle exec --gemfile=gemfiles/${{ matrix.rails }}.gemfile rake test
           bundle exec --gemfile=gemfiles/${{ matrix.rails }}.gemfile rubocop
