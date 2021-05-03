@@ -4,7 +4,7 @@
 Version 1.2.0:
 
 * Added support for disabling the right wildcard
-* Fixed escaping of wildcard chars (_, %, \)
+* Fixed escaping of wildcard chars (`_`, `%`)
 
 Version 1.1.0:
 
@@ -13,8 +13,8 @@ Version 1.1.0:
 
 Version 1.0.9:
 
-* Use [:blank:] instead of \s for space (#46)
-* Updated SearchCop::Visitors::Visitor to check the connection's adapter_name when extending. (#47)
+* Use `[:blank:]` instead of `\s` for space (#46)
+* Updated `SearchCop::Visitors::Visitor` to check the connection's `adapter_name` when extending. (#47)
 * Fix for negative numeric values
 * allow searching for relative dates, like hours, days, weeks, months or years ago
 
@@ -24,8 +24,8 @@ Version 1.0.8:
 
 Version 1.0.7:
 
-* Bugfix regarding NOT queries in fulltext mode #32
-* Safely handle NULL values for match queries
+* Bugfix regarding `NOT` queries in fulltext mode #32
+* Safely handle `NULL` values for match queries
 * Added coalesce option
 
 Version 1.0.6:
@@ -63,7 +63,7 @@ Version 1.0.0:
 
 Version 0.0.5:
 
-* Supporting :default => false
+* Supporting `:default => false`
 * Datetime/Date greater operator fix
 * Use reflection to find associated models
 * Providing reflection
@@ -72,16 +72,16 @@ Version 0.0.4:
 
 * Fixed date attributes
 * Fail softly for mixed datatype attributes
-* Support custom table, class and alias names via attr_searchable_alias
+* Support custom table, class and alias names via `attr_searchable_alias`
 
 Version 0.0.3:
 
-* belongs_to association fixes
+* `belongs_to` association fixes
 
 Version 0.0.2:
 
 * Arel abstraction layer added
-* count() queries resulting in "Cannot visit AttrSearchableGrammar::Nodes..." fixed
+* `count()` queries resulting in "Cannot visit AttrSearchableGrammar::Nodes..." fixed
 * Better error messages
-* Model#unsafe_search added
+* `Model#unsafe_search` added
 
