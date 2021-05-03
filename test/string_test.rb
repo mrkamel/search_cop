@@ -37,6 +37,7 @@ class StringTest < SearchCop::TestCase
     product2 = create(:product, brand: "Second brand")
 
     assert_equal Product.search("brand: First*"), [product1]
+    assert_equal Product.search("brand: br*nd"), []
     assert_equal Product.search("brand: brand*"), []
     assert_equal Product.search("brand: *brand*").to_set, [product1, product2].to_set
     assert_equal Product.search("brand: *brand").to_set, [product1, product2].to_set
