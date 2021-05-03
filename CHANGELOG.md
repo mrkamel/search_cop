@@ -4,6 +4,7 @@
 Version 1.2.0:
 
 * Added support for disabling the right wildcard
+* Fixed escaping of wildcard chars (_, %, \)
 
 Version 1.1.0:
 

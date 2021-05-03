@@ -42,6 +42,17 @@ class StringTest < SearchCop::TestCase
     assert_equal Product.search("brand: *brand").to_set, [product1, product2].to_set
   end
 
+  def test_query_string_wildcard_escaping
+    product1 = create(:product, brand: "som% brand")
+    product2 = create(:product, brand: "som_ brand")
+    product3 = create(:product, brand: "som\\ brand")
+    product4 = create(:product, brand: "some brand")
+
+    assert_equal Product.search("brand: som% brand"), [product1]
+    assert_equal Product.search("brand: som_ brand"), [product2]
+    assert_equal Product.search("brand: som\\ brand"), [product3]
+  end
+
   def test_query_string_wildcards_with_left_wildcard_false
     product = create(:product, brand: "Some brand")
 
