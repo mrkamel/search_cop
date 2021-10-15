@@ -10,7 +10,7 @@ jobs:
         database: ["sqlite", "postgres", "mysql"]
     services:
       postgres:
-        image: postgres
+        image: styriadigital/postgres_hstore:10
         env:
           POSTGRES_USER: search_cop
           POSTGRES_PASSWORD: secret
