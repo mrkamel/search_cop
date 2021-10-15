@@ -18,7 +18,7 @@ module SearchCopGrammar
     end
 
     def elements
-      super.reject { |element| element.class == Treetop::Runtime::SyntaxNode }
+      super.reject { |element| element.instance_of?(Treetop::Runtime::SyntaxNode) }
     end
 
     def collection_for(key)

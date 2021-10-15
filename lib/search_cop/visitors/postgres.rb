@@ -30,7 +30,7 @@ module SearchCop
       end
 
       def visit_SearchCopGrammar_Nodes_Matches(node)
-        "(#{visit node.left} IS NOT NULL AND #{visit node.left} ILIKE #{visit node.right})"
+        "(#{visit node.left} IS NOT NULL AND #{visit node.left} ILIKE #{visit node.right} ESCAPE #{visit "\\"})"
       end
 
       def visit_SearchCopGrammar_Attributes_Collection(node)

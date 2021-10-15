@@ -161,7 +161,7 @@ module SearchCopGrammar
 
     class String < Base
       def matches_value(value)
-        res = value
+        res = value.gsub(/[%_\\]/) { |char| "\\#{char}" }
 
         if value.strip =~ /^\*|\*$/
           res = res.gsub(/^\*/, "%") if options[:left_wildcard] != false
