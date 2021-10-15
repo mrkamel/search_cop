@@ -49,7 +49,7 @@ class Product < ActiveRecord::Base
     end
 
     if DATABASE == "postgres"
-      attributes json_name: "json->name", hstore_name: "hstore->name"
+      attributes json_name: "json->name", jsonb_name: "jsonb->name", hstore_name: "hstore->name"
 
       options :title, dictionary: "english"
     end
@@ -111,7 +111,8 @@ ActiveRecord::Base.connection.create_table :products do |t|
   t.string :notice
 
   if DATABASE == "postgres"
-    t.jsonb :json
+    t.json :json
+    t.jsonb :jsonb
     t.hstore :hstore
   end
 
