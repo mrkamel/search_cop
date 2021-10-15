@@ -3,6 +3,10 @@ module SearchCop
     module Postgres
       # rubocop:disable Naming/MethodName
 
+      def visit_SearchCopGrammar_Attributes_Json(attribute)
+        "#{quote_table_name attribute.table_alias}.#{quote_column_name attribute.column_name}->>#{quote attribute.field_name}"
+      end
+
       def visit_SearchCopGrammar_Attributes_Jsonb(attribute)
         "#{quote_table_name attribute.table_alias}.#{quote_column_name attribute.column_name}->>#{quote attribute.field_name}"
       end
