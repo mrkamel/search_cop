@@ -49,9 +49,13 @@ class Product < ActiveRecord::Base
     end
 
     if DATABASE == "postgres"
-      attributes json_name: "json:name", hstore_name: "hstore:name"
+      attributes json_name: "json->name", hstore_name: "hstore->name"
 
       options :title, dictionary: "english"
+    end
+
+    if DATABASE == "mysql"
+      attributes json_name: "json->name"
     end
 
     generator :custom_eq do |column_name, raw_value|
@@ -109,6 +113,10 @@ ActiveRecord::Base.connection.create_table :products do |t|
   if DATABASE == "postgres"
     t.jsonb :json
     t.hstore :hstore
+  end
+
+  if DATABASE == "mysql"
+    t.json :json
   end
 end
 

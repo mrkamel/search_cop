@@ -128,8 +128,8 @@ class StringTest < SearchCop::TestCase
     refute_includes Product.search("title <= 'Title A'"), product
   end
 
-  def test_jsonb
-    return if DATABASE != "postgres"
+  def test_json
+    return if DATABASE != "postgres" && DATABASE != "mysql"
 
     product = create(:product, json: { name: "expected" })
 

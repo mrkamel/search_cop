@@ -88,7 +88,8 @@ module SearchCopGrammar
       def attribute_for(attribute_definition)
         query_info.references.push attribute_definition
 
-        table, column, field = attribute_definition.split(/[.:]/)
+        table, column_with_field = attribute_definition.split(".")
+        column, field = column_with_field.split("->")
         klass = klass_for(table)
 
         raise(SearchCop::UnknownAttribute, "Unknown attribute #{attribute_definition}") unless klass.columns_hash[column]
@@ -181,6 +182,7 @@ module SearchCopGrammar
 
     class Text < String; end
     class Jsonb < String; end
+    class Json < String; end
     class Hstore < String; end
 
     class WithoutMatches < Base
