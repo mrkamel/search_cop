@@ -77,8 +77,16 @@ class Product < ActiveRecord::Base
   belongs_to :user
 end
 
+class AvailableProduct < Product
+  default_scope { where(available: true) }
+end
+
 FactoryBot.define do
   factory :product do
+  end
+
+  factory :available_product do
+    available { true }
   end
 
   factory :comment do

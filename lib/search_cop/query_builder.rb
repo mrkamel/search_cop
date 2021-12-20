@@ -12,7 +12,7 @@ module SearchCop
     end
 
     def associations
-      all_associations - [query_info.model.name.tableize.to_sym]
+      all_associations - [query_info.model.table_name.to_sym]
     end
 
     private
