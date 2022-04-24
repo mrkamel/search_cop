@@ -9,6 +9,11 @@ jobs:
         ruby: ["2.7", "3.0", "3.1"]
         rails: ["rails5", "rails6", "rails7"]
         database: ["sqlite", "postgres", "mysql"]
+        exclude:
+          - ruby: "3.0"
+            rails: "rails5"
+          - ruby: "3.1"
+            rails: "rails5"
     services:
       postgres:
         image: postgres
