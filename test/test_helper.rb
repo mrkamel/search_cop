@@ -77,14 +77,14 @@ class Product < ActiveRecord::Base
   belongs_to :user
 end
 
-module SomeNamespace
-  class Product < ActiveRecord::Base
+module Blog
+  class Post < ActiveRecord::Base
     include SearchCop
 
     belongs_to :user
 
     search_scope :search do
-      attributes :title, :description
+      attributes :title, :content
       attributes user: ["user.username"]
     end
   end
@@ -96,6 +96,9 @@ end
 
 FactoryBot.define do
   factory :product do
+  end
+
+  factory :blog_post, class: Blog::Post do
   end
 
   factory :available_product do
@@ -110,6 +113,7 @@ FactoryBot.define do
 end
 
 ActiveRecord::Base.connection.execute "DROP TABLE IF EXISTS products"
+ActiveRecord::Base.connection.execute "DROP TABLE IF EXISTS posts"
 ActiveRecord::Base.connection.execute "DROP TABLE IF EXISTS comments"
 ActiveRecord::Base.connection.execute "DROP TABLE IF EXISTS users"
 
@@ -124,6 +128,12 @@ ActiveRecord::Base.connection.create_table :products do |t|
   t.boolean :available
   t.string :brand
   t.string :notice
+end
+
+ActiveRecord::Base.connection.create_table :posts do |t|
+  t.references :user
+  t.string :title
+  t.text :content
 end
 
 ActiveRecord::Base.connection.create_table :comments do |t|
