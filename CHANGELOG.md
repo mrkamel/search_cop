@@ -1,6 +1,10 @@
 
 # Changelog
 
+Version 1.2.2:
+
+* Fix table name for namespaced models #70
+
 Version 1.2.1:
 
 * Fix use of `table_name` to work with inherited models

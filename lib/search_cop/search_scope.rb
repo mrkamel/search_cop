@@ -55,7 +55,7 @@ module SearchCop
     def attributes_hash(hash)
       hash.each do |key, value|
         reflection.attributes[key.to_s] = Array(value).collect do |column|
-          table, attribute = column.to_s =~ /\./ ? column.to_s.split(".") : [model.name.tableize, column]
+          table, attribute = column.to_s =~ /\./ ? column.to_s.split(".") : [model.table_name, column]
 
           "#{table}.#{attribute}"
         end
