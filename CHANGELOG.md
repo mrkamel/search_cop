@@ -1,6 +1,10 @@
 
 # Changelog
 
+Version 1.2.3:
+
+* Fix table name for namespaced and inherited models #70 #67
+
 Version 1.2.2:
 
 * Fix table name for namespaced models #70
