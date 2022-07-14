@@ -77,6 +77,16 @@ class Product < ActiveRecord::Base
   belongs_to :user
 end
 
+module SomeNamespace
+  class Product < ActiveRecord::Base
+    include SearchCop
+
+    search_scope :search do
+      attributes :title, :description
+    end
+  end
+end
+
 class AvailableProduct < Product
   default_scope { where(available: true) }
 end
