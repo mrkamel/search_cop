@@ -81,8 +81,11 @@ module SomeNamespace
   class Product < ActiveRecord::Base
     include SearchCop
 
+    belongs_to :user
+
     search_scope :search do
       attributes :title, :description
+      attributes user: ["user.username"]
     end
   end
 end

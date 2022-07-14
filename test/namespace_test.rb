@@ -7,7 +7,17 @@ class NamespaceTest < SearchCop::TestCase
 
     results = SomeNamespace::Product.search("Expected")
 
-    assert_includes results, expected
-    refute_includes results, rejected
+    assert_includes results.map(&:id), expected.id
+    refute_includes results.map(&:id), rejected.id
+  end
+
+  def test_model_namespace_with_associations
+    expected = create(:product, user: create(:user, username: "Expected"))
+    rejected = create(:product, user: create(:user, username: "Rejected"))
+
+    results = SomeNamespace::Product.search("user:Expected")
+
+    assert_includes results.map(&:id), expected.id
+    refute_includes results.map(&:id), rejected.id
   end
 end
