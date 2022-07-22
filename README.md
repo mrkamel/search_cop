@@ -103,8 +103,9 @@ Book.search("Harry Potter")
 # ... WHERE (books.title LIKE '%Harry%' OR books.description LIKE '%Harry%' OR ...) AND (books.title LIKE '%Potter%' OR books.description LIKE '%Potter%' ...)
 
 Book.search("available:yes OR created_at:2014")
-# ... WHERE books.available = 1 OR (books.created_at >= '2014-01-01 00:00:00' and books.created_at <= '2014-12-31 00:00:00')
+# ... WHERE books.available = 1 OR (books.created_at >= '2014-01-01 00:00:00.00000' and books.created_at <= '2014-12-31 23:59:59.99999')
 ```
+SearchCop is using ActiveSupport's beginning_of_year and end_of_year methods for the values used in building the SQL query for this case.
 
 Of course, these `LIKE '%...%'` queries won't achieve optimal performance, but
 check out the section below on SearchCop's fulltext capabilities to
