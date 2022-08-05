@@ -44,26 +44,26 @@ module SearchCop
       search_scopes[name] = SearchScope.new(name, self)
       search_scopes[name].instance_exec(&block)
 
-      send(:define_singleton_method, name) { |query, query_options = {}| search_cop(query, name, query_options) }
-      send(:define_singleton_method, "unsafe_#{name}") { |query, query_options = {}| unsafe_search_cop(query, name, query_options) }
+      send(:define_singleton_method, name) { |query, query_options = {}, scope_options = {}| search_cop(query, name, query_options, scope_options) }
+      send(:define_singleton_method, "unsafe_#{name}") { |query, query_options = {}, scope_options = {}| unsafe_search_cop(query, name, query_options, scope_options) }
     end
 
     def search_reflection(scope_name)
       search_scopes[scope_name].reflection
     end
 
-    def search_cop(query, scope_name, query_options)
-      unsafe_search_cop(query, scope_name, query_options)
+    def search_cop(query, scope_name, query_options, scope_options)
+      unsafe_search_cop(query, scope_name, query_options, scope_options)
     rescue SearchCop::RuntimeError
       respond_to?(:none) ? none : where("1 = 0")
     end
 
-    def unsafe_search_cop(query, scope_name, query_options)
+    def unsafe_search_cop(query, scope_name, query_options, scope_options)
       return respond_to?(:scoped) ? scoped : all if query.blank?
 
       query_builder = QueryBuilder.new(self, query, search_scopes[scope_name], query_options)
 
-      scope = instance_exec(&search_scopes[scope_name].reflection.scope) if search_scopes[scope_name].reflection.scope
+      scope = instance_exec(scope_options, &search_scopes[scope_name].reflection.scope) if search_scopes[scope_name].reflection.scope
       scope ||= eager_load(query_builder.associations) if query_builder.associations.any?
 
       (scope || self).where(query_builder.sql)
