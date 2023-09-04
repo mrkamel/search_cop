@@ -4,13 +4,13 @@ source "https://rubygems.org"
 gemspec
 
 platforms :ruby do
-  gem "mysql2"
-  gem "pg"
-  gem "sqlite3"
   gem "activerecord", ">= 3.0.0"
   gem "bundler"
   gem "factory_bot"
   gem "minitest"
+  gem "mysql2"
+  gem "pg"
   gem "rake"
   gem "rubocop"
+  gem "sqlite3"
 end

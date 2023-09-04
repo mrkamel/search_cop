@@ -5,14 +5,14 @@ source "https://rubygems.org"
 gem "activerecord", "~> 6.0"
 
 platforms :ruby do
-  gem "mysql2"
-  gem "pg"
-  gem "sqlite3"
   gem "bundler"
   gem "factory_bot"
   gem "minitest"
+  gem "mysql2"
+  gem "pg"
   gem "rake"
   gem "rubocop"
+  gem "sqlite3"
 end
 
 gemspec path: "../"
