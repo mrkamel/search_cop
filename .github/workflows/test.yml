@@ -33,6 +33,8 @@ jobs:
           MYSQL_DATABASE: search_cop
         ports:
           - 3306:3306
+    env:
+      BUNDLE_PATH: vendor/bundle
     steps:
       - uses: actions/checkout@v1
       - uses: ruby/setup-ruby@v1
@@ -44,7 +46,6 @@ jobs:
         run: |
           gem install bundler
           bundle config set --local gemfile "gemfiles/${{ matrix.rails }}.gemfile"
-          bundle config set --local path "../vendor/bundle"
           bundle install
           bundle exec rake test
           bundle exec rubocop
