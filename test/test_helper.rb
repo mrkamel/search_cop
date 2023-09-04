@@ -3,11 +3,11 @@ require "search_cop"
 begin
   require "minitest"
 
-  class SearchCop::TestCase < MiniTest::Test; end
+  class SearchCop::TestCase < Minitest::Test; end
 rescue LoadError
   require "minitest/unit"
 
-  class SearchCop::TestCase < MiniTest::Unit::TestCase; end
+  class SearchCop::TestCase < Minitest::Unit::TestCase; end
 end
 
 require "minitest/autorun"
