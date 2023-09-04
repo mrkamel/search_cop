@@ -34,7 +34,7 @@ jobs:
         ports:
           - 3306:3306
     env:
-      BUNDLE_PATH: vendor/bundle
+      BUNDLE_PATH: ../vendor/bundle
     steps:
       - uses: actions/checkout@v1
       - uses: ruby/setup-ruby@v1
