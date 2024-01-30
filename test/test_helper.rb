@@ -3,11 +3,11 @@ require "search_cop"
 begin
   require "minitest"
 
-  class SearchCop::TestCase < MiniTest::Test; end
+  class SearchCop::TestCase < Minitest::Test; end
 rescue LoadError
   require "minitest/unit"
 
-  class SearchCop::TestCase < MiniTest::Unit::TestCase; end
+  class SearchCop::TestCase < Minitest::Unit::TestCase; end
 end
 
 require "minitest/autorun"
@@ -83,8 +83,32 @@ class Product < ActiveRecord::Base
   belongs_to :user
 end
 
+module Blog
+  class Post < ActiveRecord::Base
+    include SearchCop
+
+    belongs_to :user
+
+    search_scope :search do
+      attributes :title, :content
+      attributes user: ["user.username"]
+    end
+  end
+end
+
+class AvailableProduct < Product
+  default_scope { where(available: true) }
+end
+
 FactoryBot.define do
   factory :product do
+  end
+
+  factory :blog_post, class: Blog::Post do
+  end
+
+  factory :available_product do
+    available { true }
   end
 
   factory :comment do
@@ -95,6 +119,7 @@ FactoryBot.define do
 end
 
 ActiveRecord::Base.connection.execute "DROP TABLE IF EXISTS products"
+ActiveRecord::Base.connection.execute "DROP TABLE IF EXISTS posts"
 ActiveRecord::Base.connection.execute "DROP TABLE IF EXISTS comments"
 ActiveRecord::Base.connection.execute "DROP TABLE IF EXISTS users"
 
@@ -119,6 +144,12 @@ ActiveRecord::Base.connection.create_table :products do |t|
   if DATABASE == "mysql"
     t.json :json
   end
+end
+
+ActiveRecord::Base.connection.create_table :posts do |t|
+  t.references :user
+  t.string :title
+  t.text :content
 end
 
 ActiveRecord::Base.connection.create_table :comments do |t|

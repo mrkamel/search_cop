@@ -1,6 +1,19 @@
 
 # Changelog
 
+Version 1.2.3:
+
+* Fix table name for namespaced and inherited models #70 #67
+
+Version 1.2.2:
+
+* Fix table name for namespaced models #70
+
+Version 1.2.1:
+
+* Fix use of `table_name` to work with inherited models
+* Fix linter, add ruby 3 and rails 7 to ci pipeline
+
 Version 1.2.0:
 
 * Added support for disabling the right wildcard

@@ -4,10 +4,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        ruby: ["2.5", "2.6", "2.7"]
-        rails: ["rails5", "rails6"]
+        ruby: ["2.6", "2.7", "3.0", "3.1"]
+        rails: ["rails5", "rails6", "rails7"]
         database: ["sqlite", "postgres", "mysql"]
+        exclude:
+          - ruby: "3.0"
+            rails: "rails5"
+          - ruby: "3.1"
+            rails: "rails5"
+          - ruby: "2.6"
+            rails: "rails7"
     services:
       postgres:
         image: styriadigital/postgres_hstore:10
@@ -25,9 +33,11 @@ jobs:
           MYSQL_DATABASE: search_cop
         ports:
           - 3306:3306
+    env:
+      BUNDLE_PATH: ../vendor/bundle
     steps:
       - uses: actions/checkout@v1
-      - uses: actions/setup-ruby@v1
+      - uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
       - name: test
@@ -36,7 +46,6 @@ jobs:
         run: |
           gem install bundler
           bundle config set --local gemfile "gemfiles/${{ matrix.rails }}.gemfile"
-          bundle config set --local path "../vendor/bundle"
           bundle install
           bundle exec rake test
           bundle exec rubocop

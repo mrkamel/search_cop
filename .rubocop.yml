@@ -1,6 +1,12 @@
 AllCops:
   NewCops: enable
 
+Gemspec/RequireMFA:
+  Enabled: false
+
+Style/FetchEnvVar:
+  Enabled: false
+
 Gemspec/RequiredRubyVersion:
   Enabled: false
 

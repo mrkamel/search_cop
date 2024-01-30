@@ -61,6 +61,35 @@ class SearchCopTest < SearchCop::TestCase
     refute_includes results, rejected
   end
 
+  def test_inherited_model
+    expected = create(:available_product, comments: [create(:comment, user: create(:user, username: "Expected"))])
+    rejected = create(:available_product, comments: [create(:comment, user: create(:user, username: "Rejected"))])
+
+    results = AvailableProduct.search("user: Expected")
+    assert_includes results, expected
+    refute_includes results, rejected
+  end
+
+  def test_namespaced_model
+    expected = create(:blog_post, title: "Expected")
+    rejected = create(:blog_post, title: "Rejected")
+
+    results = Blog::Post.search("Expected")
+
+    assert_includes results, expected
+    refute_includes results, rejected
+  end
+
+  def test_namespaced_model_with_associations
+    expected = create(:blog_post, user: create(:user, username: "Expected"))
+    rejected = create(:blog_post, user: create(:user, username: "Rejected"))
+
+    results = Blog::Post.search("user:Expected")
+
+    assert_includes results, expected
+    refute_includes results, rejected
+  end
+
   def test_multiple
     product = create(:product, comments: [create(:comment, title: "Title", message: "Message")])
 
