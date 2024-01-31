@@ -48,4 +48,3 @@ jobs:
           bundle config set --local gemfile "gemfiles/${{ matrix.rails }}.gemfile"
           bundle install
           bundle exec rake test
-          bundle exec rubocop
