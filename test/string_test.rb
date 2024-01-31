@@ -149,6 +149,15 @@ class StringTest < SearchCop::TestCase
     refute_includes Product.search("jsonb_name: rejected"), product
   end
 
+  def test_nested_jsonb
+    return if DATABASE != "postgres"
+
+    product = create(:product, nested_jsonb: { nested: { name: "expected" } })
+
+    assert_includes Product.search("nested_jsonb_name: expected"), product
+    refute_includes Product.search("nested_jsonb_name: rejected"), product
+  end
+
   def test_json
     return if DATABASE != "postgres" && DATABASE != "mysql"
 
@@ -156,6 +165,15 @@ class StringTest < SearchCop::TestCase
 
     assert_includes Product.search("json_name: expected"), product
     refute_includes Product.search("json_name: rejected"), product
+  end
+
+  def test_nested_json
+    return if DATABASE != "postgres" && DATABASE != "mysql"
+
+    product = create(:product, nested_json: { nested: { name: "expected" } })
+
+    assert_includes Product.search("nested_json_name: expected"), product
+    refute_includes Product.search("nested_json_name: rejected"), product
   end
 
   def test_hstore

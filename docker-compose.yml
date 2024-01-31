@@ -6,6 +6,7 @@ services:
     environment:
       - MYSQL_ALLOW_EMPTY_PASSWORD=yes
       - MYSQL_ROOT_PASSWORD=
+      - MYSQL_DATABASE=search_cop
     ports:
       - 3306:3306
   postgres:

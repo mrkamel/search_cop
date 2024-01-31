@@ -4,15 +4,19 @@ module SearchCop
       # rubocop:disable Naming/MethodName
 
       def visit_SearchCopGrammar_Attributes_Json(attribute)
-        "#{quote_table_name attribute.table_alias}.#{quote_column_name attribute.column_name}->>#{quote attribute.field_name}"
+        elements = ["#{quote_table_name attribute.table_alias}.#{quote_column_name attribute.column_name}", *attribute.field_names.map { |field_name| quote(field_name) }]
+
+        "#{elements[0...-1].join("->")}->>#{elements.last}"
       end
 
       def visit_SearchCopGrammar_Attributes_Jsonb(attribute)
-        "#{quote_table_name attribute.table_alias}.#{quote_column_name attribute.column_name}->>#{quote attribute.field_name}"
+        elements = ["#{quote_table_name attribute.table_alias}.#{quote_column_name attribute.column_name}", *attribute.field_names.map { |field_name| quote(field_name) }]
+
+        "#{elements[0...-1].join("->")}->>#{elements.last}"
       end
 
       def visit_SearchCopGrammar_Attributes_Hstore(attribute)
-        "#{quote_table_name attribute.table_alias}.#{quote_column_name attribute.column_name}->#{quote attribute.field_name}"
+        "#{quote_table_name attribute.table_alias}.#{quote_column_name attribute.column_name}->#{quote attribute.field_names.first}"
       end
 
       class FulltextQuery < Visitor
