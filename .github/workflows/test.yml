@@ -44,7 +44,6 @@ jobs:
         env:
           DATABASE: ${{ matrix.database }}
         run: |
-          gem install bundler
           bundle config set --local gemfile "gemfiles/${{ matrix.rails }}.gemfile"
           bundle install
           bundle exec rake test
