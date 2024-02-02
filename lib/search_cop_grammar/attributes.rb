@@ -255,6 +255,7 @@ module SearchCopGrammar
     end
 
     class Timestamp < Datetime; end
+    class Timestamptz < Datetime; end
 
     class Date < Datetime
       def parse(value)

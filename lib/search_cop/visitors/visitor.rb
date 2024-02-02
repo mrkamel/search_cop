@@ -79,6 +79,7 @@ module SearchCop
       alias :visit_SearchCopGrammar_Attributes_Decimal :visit_attribute
       alias :visit_SearchCopGrammar_Attributes_Datetime :visit_attribute
       alias :visit_SearchCopGrammar_Attributes_Timestamp :visit_attribute
+      alias :visit_SearchCopGrammar_Attributes_Timestamptz :visit_attribute
       alias :visit_SearchCopGrammar_Attributes_Date :visit_attribute
       alias :visit_SearchCopGrammar_Attributes_Time :visit_attribute
       alias :visit_SearchCopGrammar_Attributes_Boolean :visit_attribute
