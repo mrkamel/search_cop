@@ -49,6 +49,8 @@ class Product < ActiveRecord::Base
     end
 
     if DATABASE == "postgres"
+      attributes :restocked_at
+
       options :title, dictionary: "english"
     end
 
@@ -128,6 +130,10 @@ ActiveRecord::Base.connection.create_table :products do |t|
   t.boolean :available
   t.string :brand
   t.string :notice
+
+  if DATABASE == "postgres"
+    t.timestamptz :restocked_at
+  end
 end
 
 ActiveRecord::Base.connection.create_table :posts do |t|
