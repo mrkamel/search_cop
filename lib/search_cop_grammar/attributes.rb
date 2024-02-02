@@ -88,12 +88,13 @@ module SearchCopGrammar
       def attribute_for(attribute_definition)
         query_info.references.push attribute_definition
 
-        table, column = attribute_definition.split(".")
+        table, column_with_fields = attribute_definition.split(".")
+        column, *fields = column_with_fields.split("->")
         klass = klass_for(table)
 
         raise(SearchCop::UnknownAttribute, "Unknown attribute #{attribute_definition}") unless klass.columns_hash[column]
 
-        Attributes.const_get(klass.columns_hash[column].type.to_s.classify).new(klass, alias_for(table), column, options)
+        Attributes.const_get(klass.columns_hash[column].type.to_s.classify).new(klass, alias_for(table), column, fields, options)
       end
 
       def generator_for(name)
@@ -110,13 +111,14 @@ module SearchCopGrammar
     end
 
     class Base
-      attr_reader :attribute, :table_alias, :column_name, :options
+      attr_reader :attribute, :table_alias, :column_name, :field_names, :options
 
-      def initialize(klass, table_alias, column_name, options = {})
+      def initialize(klass, table_alias, column_name, field_names, options = {})
         @attribute = klass.arel_table.alias(table_alias)[column_name]
         @klass = klass
         @table_alias = table_alias
         @column_name = column_name
+        @field_names = field_names
         @options = (options || {})
       end
 
@@ -179,6 +181,9 @@ module SearchCopGrammar
     end
 
     class Text < String; end
+    class Jsonb < String; end
+    class Json < String; end
+    class Hstore < String; end
 
     class WithoutMatches < Base
       def matches(value)

@@ -10,6 +10,7 @@ module SearchCop
 
         extend(SearchCop::Visitors::Mysql) if @connection.adapter_name =~ /mysql/i
         extend(SearchCop::Visitors::Postgres) if @connection.adapter_name =~ /postgres|postgis/i
+        extend(SearchCop::Visitors::Sqlite) if @connection.adapter_name =~ /sqlite/i
       end
 
       def visit(visit_node = node)
