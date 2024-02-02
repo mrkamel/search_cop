@@ -136,6 +136,30 @@ to prevent SQL injection. While we can never be 100% safe from security issues,
 SearchCop takes security issues seriously. Please report responsibly via
 security at flakks dot com in case you find any security related issues.
 
+## json/jsonb/hstore
+
+SearchCop supports json fields for MySQL, as well as json, jsonb and hstore
+fields for postgres. Currently, field values are always expected to be strings
+and no arrays are supported. You can specify json attributes via:
+
+```ruby
+search_scope :search do
+  attributes user_agent: "context->browser->user_agent"
+
+  # ...
+end
+```
+
+where `context` is a json/jsonb column which e.g. contains:
+
+```json
+{
+  "browser": {
+    "user_agent": "Firefox ..."
+  }
+}
+```
+
 ## Fulltext index capabilities
 
 By default, i.e. if you don't tell SearchCop about your fulltext indices,

@@ -6,10 +6,11 @@ services:
     environment:
       - MYSQL_ALLOW_EMPTY_PASSWORD=yes
       - MYSQL_ROOT_PASSWORD=
+      - MYSQL_DATABASE=search_cop
     ports:
       - 3306:3306
   postgres:
-    image: postgres:9.6.6
+    image: styriadigital/postgres_hstore:10
     environment:
       POSTGRES_DB: search_cop
       POSTGRES_USER: search_cop

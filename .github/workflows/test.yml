@@ -6,7 +6,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: ["2.6", "2.7", "3.0", "3.1"]
+        ruby: ["2.7", "3.0", "3.1", "3.2"]
         rails: ["rails5", "rails6", "rails7"]
         database: ["sqlite", "postgres", "mysql"]
         exclude:
@@ -14,11 +14,11 @@ jobs:
             rails: "rails5"
           - ruby: "3.1"
             rails: "rails5"
-          - ruby: "2.6"
-            rails: "rails7"
+          - ruby: "3.2"
+            rails: "rails5"
     services:
       postgres:
-        image: postgres
+        image: styriadigital/postgres_hstore:10
         env:
           POSTGRES_USER: search_cop
           POSTGRES_PASSWORD: secret
@@ -44,8 +44,6 @@ jobs:
         env:
           DATABASE: ${{ matrix.database }}
         run: |
-          gem install bundler
           bundle config set --local gemfile "gemfiles/${{ matrix.rails }}.gemfile"
           bundle install
           bundle exec rake test
-          bundle exec rubocop

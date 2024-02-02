@@ -52,9 +52,13 @@ class Product < ActiveRecord::Base
       if ActiveRecord::VERSION::MAJOR >= 7
         attributes :restocked_at
       end
+      
+      attributes nested_jsonb_name: "nested_jsonb->nested->name", jsonb_name: "jsonb->name", hstore_name: "hstore->name"
 
       options :title, dictionary: "english"
     end
+
+    attributes nested_json_name: "nested_json->nested->name", json_name: "json->name"
 
     generator :custom_eq do |column_name, raw_value|
       "#{column_name} = #{quote raw_value}"
@@ -136,6 +140,15 @@ ActiveRecord::Base.connection.create_table :products do |t|
   if DATABASE == "postgres" && ActiveRecord::VERSION::MAJOR >= 7
     t.timestamptz :restocked_at
   end
+  
+  if DATABASE == "postgres"
+    t.jsonb :jsonb
+    t.jsonb :nested_jsonb
+    t.hstore :hstore
+  end
+
+  t.json :json
+  t.json :nested_json
 end
 
 ActiveRecord::Base.connection.create_table :posts do |t|
