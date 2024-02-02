@@ -49,7 +49,9 @@ class Product < ActiveRecord::Base
     end
 
     if DATABASE == "postgres"
-      attributes :restocked_at
+      if ActiveRecord::VERSION::MAJOR >= 7
+        attributes :restocked_at
+      end
 
       options :title, dictionary: "english"
     end
@@ -131,7 +133,7 @@ ActiveRecord::Base.connection.create_table :products do |t|
   t.string :brand
   t.string :notice
 
-  if DATABASE == "postgres"
+  if DATABASE == "postgres" && ActiveRecord::VERSION::MAJOR >= 7
     t.timestamptz :restocked_at
   end
 end
