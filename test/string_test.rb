@@ -159,8 +159,6 @@ class StringTest < SearchCop::TestCase
   end
 
   def test_json
-    return if DATABASE != "postgres" && DATABASE != "mysql"
-
     product = create(:product, json: { name: "expected" })
 
     assert_includes Product.search("json_name: expected"), product
@@ -168,8 +166,6 @@ class StringTest < SearchCop::TestCase
   end
 
   def test_nested_json
-    return if DATABASE != "postgres" && DATABASE != "mysql"
-
     product = create(:product, nested_json: { nested: { name: "expected" } })
 
     assert_includes Product.search("nested_json_name: expected"), product

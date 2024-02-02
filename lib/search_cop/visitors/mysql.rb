@@ -42,8 +42,8 @@ module SearchCop
       def visit_SearchCopGrammar_Nodes_FulltextExpression(node)
         "MATCH(#{visit node.collection}) AGAINST(#{visit FulltextQuery.new(connection).visit(node.node)} IN BOOLEAN MODE)"
       end
-    end
 
-    # rubocop:enable Naming/MethodName
+      # rubocop:enable Naming/MethodName
+    end
   end
 end
