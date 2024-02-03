@@ -101,7 +101,7 @@ class DatetimeTest < SearchCop::TestCase
     refute_includes Product.search("created_at <= '3 years ago'"), product
   end
 
-  if DATABASE == "postgres"
+  if DATABASE == "postgres" && ActiveRecord::VERSION::MAJOR >= 7
     def test_timezone
       product = create(:product, timestamp_with_zone: Time.parse("2014-05-01 12:30:30"))
 
