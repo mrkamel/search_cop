@@ -50,7 +50,7 @@ class Product < ActiveRecord::Base
 
     if DATABASE == "postgres"
       if ActiveRecord::VERSION::MAJOR >= 7
-        attributes :restocked_at
+        attributes :timestamp_with_zone
       end
       
       attributes nested_jsonb_name: "nested_jsonb->nested->name", jsonb_name: "jsonb->name", hstore_name: "hstore->name"
@@ -138,7 +138,7 @@ ActiveRecord::Base.connection.create_table :products do |t|
   t.string :notice
 
   if DATABASE == "postgres" && ActiveRecord::VERSION::MAJOR >= 7
-    t.timestamptz :restocked_at
+    t.timestamptz :timestamp_with_zone
   end
   
   if DATABASE == "postgres"
