@@ -1,6 +1,12 @@
 
 # Changelog
 
+Version 1.3.0:
+
+* Support json fields for postgres, mysql and sqlite
+* Support jsonb and hstore fields for postgres
+* Add support for timestamptz for postgres
+
 Version 1.2.3:
 
 * Fix table name for namespaced and inherited models #70 #67
