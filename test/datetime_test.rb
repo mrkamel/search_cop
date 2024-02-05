@@ -102,13 +102,14 @@ class DatetimeTest < SearchCop::TestCase
   end
 
   if DATABASE == "postgres" && ActiveRecord::VERSION::MAJOR >= 7
-    def test_timezone
-      product = create(:product, timestamp_with_zone: Time.parse("2014-05-01 12:30:30"))
+    def test_timestamp_with_zone
+      product = create(:product, timestamp_with_zone: Time.parse("2014-05-01 12:30:30 CEST"))
 
       assert_includes Product.search("timestamp_with_zone: 2014"), product
       assert_includes Product.search("timestamp_with_zone: 2014-05"), product
       assert_includes Product.search("timestamp_with_zone: 2014-05-01"), product
-      assert_includes Product.search("timestamp_with_zone: '2014-05-01 12:30:30'"), product
+      assert_includes Product.search("timestamp_with_zone: '2014-05-01 12:30:30 CEST'"), product
+      refute_includes Product.search("timestsamp_with_zone '2014-05-01 12:30:30 UTC'"), product
     end
   end
 

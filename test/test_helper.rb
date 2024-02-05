@@ -52,7 +52,7 @@ class Product < ActiveRecord::Base
       if ActiveRecord::VERSION::MAJOR >= 7
         attributes :timestamp_with_zone
       end
-      
+
       attributes nested_jsonb_name: "nested_jsonb->nested->name", jsonb_name: "jsonb->name", hstore_name: "hstore->name"
 
       options :title, dictionary: "english"
@@ -140,7 +140,7 @@ ActiveRecord::Base.connection.create_table :products do |t|
   if DATABASE == "postgres" && ActiveRecord::VERSION::MAJOR >= 7
     t.timestamptz :timestamp_with_zone
   end
-  
+
   if DATABASE == "postgres"
     t.jsonb :jsonb
     t.jsonb :nested_jsonb
