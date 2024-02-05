@@ -101,6 +101,17 @@ class DatetimeTest < SearchCop::TestCase
     refute_includes Product.search("created_at <= '3 years ago'"), product
   end
 
+  if DATABASE == "postgres" && ActiveRecord::VERSION::MAJOR >= 7
+    def test_timezone
+      product = create(:product, timestamp_with_zone: Time.parse("2014-05-01 12:30:30"))
+
+      assert_includes Product.search("timestamp_with_zone: 2014"), product
+      assert_includes Product.search("timestamp_with_zone: 2014-05"), product
+      assert_includes Product.search("timestamp_with_zone: 2014-05-01"), product
+      assert_includes Product.search("timestamp_with_zone: '2014-05-01 12:30:30'"), product
+    end
+  end
+
   def test_no_overflow
     assert_nothing_raised do
       Product.search("created_at: 1000000").to_a
