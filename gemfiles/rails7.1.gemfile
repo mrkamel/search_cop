@@ -12,7 +12,7 @@ platforms :ruby do
   gem "pg"
   gem "rake"
   gem "rubocop"
-  gem "sqlite3"
+  gem "sqlite3", "~> 1.7"
 end
 
 gemspec path: "../"
