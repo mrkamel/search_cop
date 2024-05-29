@@ -9,6 +9,7 @@ jobs:
         ruby: ["2.7", "3.0", "3.1", "3.2", "3.3"]
         rails: ["rails5", "rails6", "rails7"]
         database: ["sqlite", "postgres", "mysql"]
+        adapter: ["default"]
         exclude:
           - ruby: "3.0"
             rails: "rails5"
