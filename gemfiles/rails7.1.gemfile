@@ -9,6 +9,7 @@ platforms :ruby do
   gem "factory_bot"
   gem "minitest"
   gem "mysql2"
+  gem "trilogy"
   gem "pg"
   gem "rake"
   gem "rubocop"
