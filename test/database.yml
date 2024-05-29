@@ -4,7 +4,7 @@ sqlite:
   database: ":memory:"
 
 mysql:
-  adapter: <%= DATABASE == "mysql" && Rails.version.to_f >= 7.1 ? "trilogy" : "mysql2" %>
+  adapter: <%= DATABASE == "mysql" && RUBY_VERSION.to_f >= 3.3 ? "trilogy" : "mysql2" %>
   database: search_cop
   host: 127.0.0.1
   username: root
