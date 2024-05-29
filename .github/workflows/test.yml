@@ -20,7 +20,7 @@ jobs:
             rails: "rails5"
         include:
           - ruby: "3.3"
-            rails: "rails7-trilogy"
+            rails: "rails7"
             database: "mysql"
             adapter: "trilogy"
     services:
