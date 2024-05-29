@@ -22,6 +22,7 @@ jobs:
           - ruby: "3.3"
             rails: "rails7-trilogy"
             database: "mysql"
+            adapter: "trilogy"
     services:
       postgres:
         image: styriadigital/postgres_hstore:10
@@ -49,6 +50,7 @@ jobs:
       - name: test
         env:
           DATABASE: ${{ matrix.database }}
+          ADAPTER: ${{ matrix.adapter }}
         run: |
           bundle config set --local gemfile "gemfiles/${{ matrix.rails }}.gemfile"
           bundle install
