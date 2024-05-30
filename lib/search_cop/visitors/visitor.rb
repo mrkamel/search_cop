@@ -8,7 +8,7 @@ module SearchCop
       def initialize(connection)
         @connection = connection
 
-        extend(SearchCop::Visitors::Mysql) if @connection.adapter_name =~ /mysql/i
+        extend(SearchCop::Visitors::Mysql) if @connection.adapter_name =~ /mysql|trilogy/i
         extend(SearchCop::Visitors::Postgres) if @connection.adapter_name =~ /postgres|postgis/i
         extend(SearchCop::Visitors::Sqlite) if @connection.adapter_name =~ /sqlite/i
       end

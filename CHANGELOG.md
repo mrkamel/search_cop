@@ -1,6 +1,10 @@
 
 # Changelog
 
+Version 1.4.0:
+
+* Add support for the trilogy mysql connection adapter
+
 Version 1.3.0:
 
 * Support json fields for postgres, mysql and sqlite

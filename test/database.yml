@@ -4,7 +4,7 @@ sqlite:
   database: ":memory:"
 
 mysql:
-  adapter: mysql2
+  adapter: <%= ENV["DATABASE"] == "mysql" && ENV["ADAPTER"] == "trilogy" ? "trilogy" : "mysql2" %>
   database: search_cop
   host: 127.0.0.1
   username: root

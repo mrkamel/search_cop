@@ -14,10 +14,11 @@ require "minitest/autorun"
 require "active_record"
 require "factory_bot"
 require "yaml"
+require "erb"
 
 DATABASE = ENV["DATABASE"] || "sqlite"
 
-ActiveRecord::Base.establish_connection YAML.load_file(File.expand_path("database.yml", __dir__))[DATABASE]
+ActiveRecord::Base.establish_connection YAML.load(ERB.new(File.read(File.expand_path("database.yml", __dir__))).result)[DATABASE]
 
 class User < ActiveRecord::Base; end
 
