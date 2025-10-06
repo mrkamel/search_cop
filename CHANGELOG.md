@@ -1,6 +1,10 @@
 
 # Changelog
 
+Version 1.4.1:
+
+* Fix fulltext query with only special charaters
+
 Version 1.4.0:
 
 * Add support for the trilogy mysql connection adapter
