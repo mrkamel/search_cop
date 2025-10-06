@@ -13,6 +13,14 @@ class FulltextTest < SearchCop::TestCase
     assert_includes results, product3
   end
 
+  def test_special_characters
+    product1 = create(:product, title: "+")
+    product2 = create(:product, title: "-")
+    product3 = create(:product, title: "other")
+
+    assert Product.search("+-").empty?
+  end
+
   def test_mixed
     expected = create(:product, title: "Expected title", stock: 1)
     rejected = create(:product, title: "Expected title", stock: 0)
