@@ -15,6 +15,8 @@ module SearchCop
         def visit_SearchCopGrammar_Nodes_MatchesFulltext(node)
           words = node.right.split(/[\s+'"<>()~-]+/)
 
+          return "" if words.empty?
+
           words.size > 1 ? "\"#{words.join " "}\"" : words.first
         end
 
