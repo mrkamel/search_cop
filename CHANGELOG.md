@@ -1,6 +1,10 @@
 
 # Changelog
 
+Version 1.5.0:
+
+* Add support for rails 8
+
 Version 1.4.1:
 
 * Fix fulltext query with only special charaters
