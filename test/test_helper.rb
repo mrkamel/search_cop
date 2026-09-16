@@ -55,6 +55,7 @@ class Product < ActiveRecord::Base
       end
 
       attributes nested_jsonb_name: "nested_jsonb->nested->name", jsonb_name: "jsonb->name", hstore_name: "hstore->name"
+      attributes :citext
 
       options :title, dictionary: "english"
     end
@@ -121,6 +122,8 @@ FactoryBot.define do
   end
 end
 
+ActiveRecord::Base.connection.enable_extension "citext" if DATABASE == "postgres"
+
 ActiveRecord::Base.connection.execute "DROP TABLE IF EXISTS products"
 ActiveRecord::Base.connection.execute "DROP TABLE IF EXISTS posts"
 ActiveRecord::Base.connection.execute "DROP TABLE IF EXISTS comments"
@@ -146,6 +149,7 @@ ActiveRecord::Base.connection.create_table :products do |t|
     t.jsonb :jsonb
     t.jsonb :nested_jsonb
     t.hstore :hstore
+    t.citext :citext
   end
 
   t.json :json

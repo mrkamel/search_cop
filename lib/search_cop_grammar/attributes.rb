@@ -181,6 +181,7 @@ module SearchCopGrammar
     end
 
     class Text < String; end
+    class Citext < String; end
     class Jsonb < String; end
     class Json < String; end
     class Hstore < String; end

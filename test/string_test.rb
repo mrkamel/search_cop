@@ -180,4 +180,13 @@ class StringTest < SearchCop::TestCase
     assert_includes Product.search("hstore_name: expected"), product
     refute_includes Product.search("hstore_name: rejected"), product
   end
+
+  def test_citext
+    return if DATABASE != "postgres"
+
+    product = create(:product, citext: "Expected")
+
+    assert_includes Product.search("citext: expected"), product
+    refute_includes Product.search("citext: rejected"), product
+  end
 end
