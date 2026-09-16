@@ -1,6 +1,10 @@
 
 # Changelog
 
+Version 1.6.0:
+
+* Add support for postgres citext
+
 Version 1.5.0:
 
 * Add support for rails 8
