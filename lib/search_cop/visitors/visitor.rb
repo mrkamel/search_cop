@@ -75,6 +75,7 @@ module SearchCop
 
       alias :visit_SearchCopGrammar_Attributes_String :visit_attribute
       alias :visit_SearchCopGrammar_Attributes_Text :visit_attribute
+      alias :visit_SearchCopGrammar_Attributes_Citext :visit_attribute
       alias :visit_SearchCopGrammar_Attributes_Float :visit_attribute
       alias :visit_SearchCopGrammar_Attributes_Integer :visit_attribute
       alias :visit_SearchCopGrammar_Attributes_Decimal :visit_attribute
